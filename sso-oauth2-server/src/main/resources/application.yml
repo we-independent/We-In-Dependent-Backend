@@ -1,0 +1,11 @@
+#=================================================================================
+# spring 组件相关设置
+spring:
+  application:
+    name: ym-paas-sso-oauth
+  profiles:
+    active: dev
+server:
+  port: 8086
+  servlet:
+    context-path: /sso

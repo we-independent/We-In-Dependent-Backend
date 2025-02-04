@@ -1,0 +1,75 @@
+server:
+  port: 8081
+  name: t_m
+  undertow:
+    io-threads: 24
+    worker-threads: 200
+  servlet:
+    context-path: /client
+spring:
+  devtools:
+    restart:
+      enabled: true
+  session:
+    store-type: none
+  freemarker:
+    request-context-attribute: request
+    cache: false
+  #指定打包环境
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+  # Jackson
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+logging:
+  level:
+    root: info
+  config: classpath:logback-spring.xml
+
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath*:com.weindependent.app.mapper/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.weindependent.entity
+  global-config:
+    #字段策略 0:\"忽略判断\",1:\"非 NULL 判断\"),2:\"非空判断\"
+    field-strategy: 2
+    #刷新mapper 调试神器
+    refresh: true
+  configuration:
+    cache-enabled: false
+---
+#=========================== development =============================
+HOST:
+  SERVER: 127.0.0.1
+  OAUTH_URL: http://${HOST.SERVER}:8086/sso
+  FRONT_URL:
+spring:
+  profiles: dev
+#  datasource:
+#    url: jdbc:mysql://${HOST.SERVER}:3399/db?serverTimezone=Asia/Shanghai&characterEncoding=utf8&rewriteBatchedStatements=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+#    username: root
+#    password:
+security:
+  oauth2:
+    client:
+      client-id: TestManagement
+      client-secret: user123
+      access-token-uri: ${HOST.OAUTH_URL}/oauth/token
+      user-authorization-uri: ${HOST.OAUTH_URL}/oauth/authorize
+    resource:
+      jwt:
+        key-uri: ${HOST.OAUTH_URL}/oauth/token_key
+#      token-info-uri: ${HOST.OAUTH_UR}/oauth/check_token
+exit_url: ${HOST.OAUTH_URL}/exit
+---
+#=========================== test =============================
+spring:
+  profiles: test
+
+
+
