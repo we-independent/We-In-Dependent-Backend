@@ -62,5 +62,3 @@ service:
 logging:
   level:
     com.alibaba.druid.sql: DEBUG
-
-
