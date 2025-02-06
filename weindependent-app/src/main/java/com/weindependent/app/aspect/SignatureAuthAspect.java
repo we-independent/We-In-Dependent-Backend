@@ -35,7 +35,7 @@ public class SignatureAuthAspect {
     /**
      * 签名验证  表示所有的带有SignValidate的注解
      */
-    @Pointcut("@annotation(com.smics.datacollect.annotation.SignatureAuth)")
+    @Pointcut("@annotation(com.weindependent.app.annotation.SignatureAuth)")
     public void signatureAuth() {
     }
 
