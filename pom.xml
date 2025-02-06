@@ -9,8 +9,6 @@
     <description>weindependent website</description>
     <packaging>pom</packaging>
     <modules>
-        <module>sso-oauth2-server</module>
-        <module>sso-oauth2-client</module>
         <module>weindependent-app</module>
     </modules>
     <parent>
