@@ -8,8 +8,10 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +22,8 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(tags = "用户管理")
+//@Api(tags = "用户管理")
+@Tag(name = "用户管理")
 @Slf4j
 @RestController
 @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
@@ -29,7 +32,8 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @ApiOperation(value = "登录")
+//    @ApiOperation(value = "登录")
+    @Operation(summary = "登录")
     @SignatureAuth
     @PostMapping("/login")
     public String login(@Validated LoginVO loginVo){
