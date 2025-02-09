@@ -37,8 +37,8 @@ public class LoginController {
 
         logger.info("Login attempt by user: {}", username);
 
-        if ("demo".equals(username) && "xxxxxxxx".equals(password)) {
-//        if (user != null) {
+//        if ("demo".equals(username) && "xxxxxxxx".equals(password)) {
+        if (user != null) {
             StpUtil.login(user.getId());
 
             Map<String, Object> response = new HashMap<>();
