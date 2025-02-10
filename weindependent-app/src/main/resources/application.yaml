@@ -25,9 +25,12 @@ spring:
 #下面这些内容是为了让MyBatis映射
 #指定Mybatis的Mapper文件
 mybatis:
-  mapper-locations: classpath:com.weindependent.app.mapper/*.xml
+#  mapper-locations: classpath:com.weindependent.app.mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml
   #指定Mybatis的实体目录
-  type-aliases-package: com.weindependent.app.entity
+#  type-aliases-package: com.weindependent.app.entity
+  type-aliases-package: com.weindependent.app.database.dataobject
+
 
 # Sa-Token
 sa-token:
