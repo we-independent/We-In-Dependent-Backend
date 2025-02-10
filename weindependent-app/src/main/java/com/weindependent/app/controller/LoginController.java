@@ -30,16 +30,13 @@ public class LoginController {
     @PostMapping
     public Map<String, Object> login(@Valid @RequestBody LoginVO loginVO) {
         String username = loginVO.getUsername();
-        String password = loginVO.getPassword();
 
-        UserDO user = userService.queryByUsernameAndPassword(username, password);
-
+        UserDO user = userService.queryByUsernameAndPassword(loginVO.getUsername(), loginVO.getPassword());
 
         logger.info("Login attempt by user: {}", username);
 
-//        if ("demo".equals(username) && "xxxxxxxx".equals(password)) {
         if (user != null) {
-            StpUtil.login(user.getId());
+            StpUtil.login(username);
 
             Map<String, Object> response = new HashMap<>();
             response.put("code", 0);
