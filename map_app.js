@@ -38,7 +38,6 @@ app.get('/api/schools/nearby', (req, res) => {
     FROM esl_schools
     WHERE latitude IS NOT NULL AND longitude IS NOT NULL
     ORDER BY distance
-    LIMIT 10;
 `;
 
   db.query(query, [latitude, longitude, latitude], (err, results) => {
