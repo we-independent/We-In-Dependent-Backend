@@ -16,16 +16,18 @@
 
 package com.weindependent.app.web;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:chenxilzx1@gmail.com">theonefx</a>
  */
-@Controller
+@RestController
+@CrossOrigin(origins = "https://5720-209-6-112-127.ngrok-free.app", allowCredentials = "true")
 public class BasicController {
 
     // http://127.0.0.1:8080/hello?name=lisi
@@ -44,6 +46,20 @@ public class BasicController {
         user.setAge(666);
         return user;
     }
+
+    @CrossOrigin(origins = "https://5720-209-6-112-127.ngrok-free.app", allowCredentials = "true")
+    @RequestMapping(value = "/api/submit", method = {RequestMethod.OPTIONS, RequestMethod.POST})
+    public ResponseEntity<Map<String, String>> submit(@RequestBody(required = false) Map<String, Object> formData) {
+        if (formData == null) {
+            return ResponseEntity.ok(new HashMap<>());
+        }
+
+        System.out.println("Received data: " + formData);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Submission successful!");
+        return ResponseEntity.ok(response);
+    }
+
 
     // http://127.0.0.1:8080/save_user?name=newName&age=11
     @RequestMapping("/save_user")
