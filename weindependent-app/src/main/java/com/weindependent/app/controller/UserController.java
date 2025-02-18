@@ -14,9 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -36,6 +34,7 @@ public class UserController {
     @Operation(summary = "登录")
     @SignatureAuth
     @PostMapping("/login")
+    @CrossOrigin(origins = "*")
     public String login(@Validated LoginVO loginVo){
         UserDO user = userService.queryByUsernameAndPassword(loginVo.getUsername(), loginVo.getPassword());
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
@@ -51,7 +50,8 @@ public class UserController {
 
     @SignatureAuth
     @PostMapping("/demo")
+    @CrossOrigin(origins = "*")
     public String demo() {
-        return "";
+        return "This is just for demo";
     }
 }
