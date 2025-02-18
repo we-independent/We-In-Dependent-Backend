@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.enums.ErrorCode;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -35,12 +36,12 @@ public class LoginController {
 
         logger.info("Login attempt by user: {}", username);
 
+        Map<String, Object> response = new HashMap<>();
         if (user != null) {
             StpUtil.login(username);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("code", 0);
-            response.put("msg", "登录成功");
+            response.put("code", ErrorCode.SUCCESS.getCode());
+            response.put("msg", ErrorCode.SUCCESS.getTitle());
             Map<String, Object> data = new HashMap<>();
             data.put("token", StpUtil.getTokenValue());
             response.put("data", data);
@@ -50,9 +51,8 @@ public class LoginController {
         }
 
         // 登录失败
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", 1);
-        response.put("msg", "用户名或密码错误");
+        response.put("code", ErrorCode.INVALID_PARAM.getCode());
+        response.put("msg", ErrorCode.INVALID_PARAM.getTitle());
         response.put("data", null);
 
         logger.warn("Login failed for user: {}", username);
@@ -68,8 +68,8 @@ public class LoginController {
         StpUtil.logout();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("code", 0);
-        result.put("msg", "登出成功");
+        result.put("code", ErrorCode.SUCCESS.getCode());
+        result.put("msg", ErrorCode.SUCCESS.getTitle());
         result.put("data", null);
 
         logger.info("User logged out");
@@ -83,8 +83,8 @@ public class LoginController {
     @GetMapping("/isLogin")
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
-        result.put("code", 0);
-        result.put("msg", "查询成功");
+        result.put("code", ErrorCode.SUCCESS.getCode());
+        result.put("msg", ErrorCode.SUCCESS.getTitle());
         Map<String, Object> data = new HashMap<>();
         data.put("isLogin", StpUtil.isLogin());
         result.put("data", data);
