@@ -7,4 +7,8 @@
         SELECT * FROM t_system_user
         WHERE account = #{username} AND password = #{password}
     </select>
+
+    <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user
+    </select>
 </mapper>

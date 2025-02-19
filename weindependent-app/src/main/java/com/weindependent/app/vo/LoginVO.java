@@ -1,9 +1,9 @@
 package com.weindependent.app.vo;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import lombok.Data;
 
 @Data
 public class LoginVO {
-    private String username;
-    private String password;
+    private SaTokenInfo saTokenInfo;
 }

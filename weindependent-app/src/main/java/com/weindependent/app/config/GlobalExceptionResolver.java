@@ -36,7 +36,7 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
                 log.error("签名验证异常,当前请求URL：{}，当前请求Header：{}，异常信息：{}", requestUrl, headerMap, exception);
                 map.put("code", exception.getCode());
                 map.put("msg", exception.getMessage());
-                map.put("result", "");
+                map.put("data", "");
             } else {
                 String body = null;
                 try {
@@ -47,7 +47,7 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
                 log.error("系统异常,当前请求URL：{}，当前请求Header：{}，当前请求Body：{}，异常信息：{}", requestUrl, headerMap, body, e);
                 map.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
                 map.put("msg", StringUtils.isEmpty(e.getMessage()) ? "系统异常，请稍后操作":e.getMessage());
-                map.put("result", "");
+                map.put("data", "");
             }
         }
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());

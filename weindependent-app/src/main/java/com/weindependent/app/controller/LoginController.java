@@ -1,5 +1,6 @@
 package com.weindependent.app.controller;
 
+import com.weindependent.app.dto.LoginQry;
 import org.springframework.beans.factory.annotation.Autowired;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.vo.LoginVO;
@@ -29,10 +30,10 @@ public class LoginController {
      * @return 登录成功或失败的消息
      */
     @PostMapping
-    public Map<String, Object> login(@Valid @RequestBody LoginVO loginVO) {
-        String username = loginVO.getUsername();
+    public Map<String, Object> login(@Valid @RequestBody LoginQry loginQry) {
+        String username = loginQry.getUsername();
 
-        UserDO user = userService.queryByUsernameAndPassword(loginVO.getUsername(), loginVO.getPassword());
+        UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
 
         logger.info("Login attempt by user: {}", username);
 

@@ -41,7 +41,8 @@ public class ExtHandlerMethodReturnValueHandler implements HandlerMethodReturnVa
     }
 
     private Object getValue(Object returnValue) {
-        return returnValue instanceof List ? (ObjectUtils.isEmpty(returnValue) ? "[]" : getList(returnValue)) : (ObjectUtils.isEmpty(returnValue) ? "{}" : returnValue);
+//        return returnValue instanceof List ? (ObjectUtils.isEmpty(returnValue) ? "[]" : getList(returnValue)) : (ObjectUtils.isEmpty(returnValue) ? "{}" : returnValue);
+        return returnValue instanceof List ? (ObjectUtils.isEmpty(returnValue) ? "[]" : returnValue) : (ObjectUtils.isEmpty(returnValue) ? "{}" : returnValue);
     }
 
     private Map getList(Object returnValue) {

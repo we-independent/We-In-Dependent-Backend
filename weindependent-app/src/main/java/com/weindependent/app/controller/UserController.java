@@ -4,12 +4,15 @@ import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.dto.LoginQry;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
 //import io.swagger.annotations.Api;
 //import io.swagger.annotations.ApiOperation;
+import com.weindependent.app.vo.UserVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +20,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //@Api(tags = "用户管理")
@@ -35,17 +40,17 @@ public class UserController {
     @SignatureAuth
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
-    public String login(@Validated LoginVO loginVo){
-        UserDO user = userService.queryByUsernameAndPassword(loginVo.getUsername(), loginVo.getPassword());
+    public LoginVO login(@Validated LoginQry loginQry){
+        UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
         SaLoginModel loginModel = new SaLoginModel();
-        loginModel.setExtra("username", user.getUsername());
+        loginModel.setExtra("username", user.getAccount());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
-        Map<String, Object> map = new HashMap<>();
-        map.put("saTokenInfo", saTokenInfo);
-        return JSON.toJSONString(map);
+        LoginVO loginVO = new LoginVO();
+        loginVO.setSaTokenInfo(saTokenInfo);
+        return loginVO;
     }
 
     @SignatureAuth
@@ -53,5 +58,14 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public String demo() {
         return "This is just for demo";
+    }
+
+//    @SignatureAuth
+    @PostMapping("/list")
+    @CrossOrigin(origins = "*")
+    public List<UserVO> userList() {
+        PageHelper.startPage(1, 2);
+        List<UserVO> list = userService.getAllUsers();
+        return list;
     }
 }

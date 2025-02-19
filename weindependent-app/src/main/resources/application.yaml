@@ -25,12 +25,18 @@ spring:
 #下面这些内容是为了让MyBatis映射
 #指定Mybatis的Mapper文件
 mybatis:
+#  config-location: classpath:mybatis-config.xml
 #  mapper-locations: classpath:com.weindependent.app.mapper/*.xml
   mapper-locations: classpath:mapper/*.xml
   #指定Mybatis的实体目录
 #  type-aliases-package: com.weindependent.app.entity
   type-aliases-package: com.weindependent.app.database.dataobject
-
+  configuration:
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    default-statement-timeout: 30
+    default-fetch-size: 100
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # Sa-Token
 sa-token:
