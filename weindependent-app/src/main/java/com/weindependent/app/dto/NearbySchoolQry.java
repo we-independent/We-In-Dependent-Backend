@@ -7,4 +7,6 @@ public class NearbySchoolQry {
     private Double latitude;
     private Double longitude;
     private Double radius;
+    private Integer page;
+    private Integer limit;
 }

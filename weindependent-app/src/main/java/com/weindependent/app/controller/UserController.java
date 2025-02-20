@@ -63,8 +63,8 @@ public class UserController {
 //    @SignatureAuth
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
-    public List<UserVO> userList() {
-        PageHelper.startPage(1, 2);
+    public List<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
+        PageHelper.startPage((int) requestMap.get("page"), (int) requestMap.get("limit"));
         List<UserVO> list = userService.getAllUsers();
         return list;
     }
