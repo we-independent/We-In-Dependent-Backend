@@ -40,7 +40,7 @@ public class UserController {
     @SignatureAuth
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
-    public LoginVO login(@Validated LoginQry loginQry){
+    public LoginVO login(@Validated @RequestBody LoginQry loginQry){
         UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
         SaLoginModel loginModel = new SaLoginModel();
@@ -63,8 +63,8 @@ public class UserController {
 //    @SignatureAuth
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
-    public List<UserVO> userList() {
-        PageHelper.startPage(1, 2);
+    public List<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
+        PageHelper.startPage((int) requestMap.get("page"), (int) requestMap.get("limit"));
         List<UserVO> list = userService.getAllUsers();
         return list;
     }
