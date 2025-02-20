@@ -1,8 +1,7 @@
-package com.example;
+package com.weindependent.app;
 
-import com.example.models.School;
-import com.example.repo.SchoolRepository;
-import com.example.service.SchoolService;
+import com.weindependent.app.service.SchoolService;
+import com.weindependent.app.vo.SchoolVO;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,11 +13,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = Application.class)  // Specify the configuration class
+@SpringBootTest(classes = AppApplication.class)  // Specify the configuration class
 public class SchoolServiceTest {
-
-    @Mock
-    private SchoolRepository schoolRepository;
 
     // Inject the mock repository into the service
     @InjectMocks
@@ -27,9 +23,9 @@ public class SchoolServiceTest {
     @Test
     public void testGetNearbySchools() {
         // Mock the data: let's say 10 nearby schools with unique names
-        List<School> mockSchools = new ArrayList<>();
+        List<SchoolVO> mockSchools = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
-            School school = new School();
+            SchoolVO school = new SchoolVO();
             school.setName("School " + i);
             school.setLatitude(40.7128 + i * 0.001);  // Adjust latitudes slightly
             school.setLongitude(-74.0060 + i * 0.001);  // Adjust longitudes slightly
@@ -37,11 +33,11 @@ public class SchoolServiceTest {
         }
 
         // Mock the repository call to return the list of schools
-        Mockito.when(schoolRepository.findNearbySchools(Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyDouble()))
+        Mockito.when(schoolService.getNearbySchools(Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyDouble()))
                .thenReturn(mockSchools);
 
         // Call the service method on the injected instance
-        List<School> schools = schoolService.getNearbySchools(40.7128, -74.0060, 1.0);
+        List<SchoolVO> schools = schoolService.getNearbySchools(40.7128, -74.0060, 1.0);
 
         // Assert the results
         assertNotNull(schools);

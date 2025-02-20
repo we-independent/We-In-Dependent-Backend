@@ -40,7 +40,7 @@ public class UserController {
     @SignatureAuth
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
-    public LoginVO login(@Validated LoginQry loginQry){
+    public LoginVO login(@Validated @RequestBody LoginQry loginQry){
         UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
         SaLoginModel loginModel = new SaLoginModel();
