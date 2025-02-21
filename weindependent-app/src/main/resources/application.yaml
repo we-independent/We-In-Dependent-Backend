@@ -1,0 +1,73 @@
+# 应用服务 WEB 访问端口
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://mysql.sqlpub.com:3306/weindependent?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: wi_user
+    password: P1q7SrJqSRwH87Dn
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      filters: stat,wall,log4j
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+#下面这些内容是为了让MyBatis映射
+#指定Mybatis的Mapper文件
+mybatis:
+#  config-location: classpath:mybatis-config.xml
+#  mapper-locations: classpath:com.weindependent.app.mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml
+  #指定Mybatis的实体目录
+#  type-aliases-package: com.weindependent.app.entity
+  type-aliases-package: com.weindependent.app.database.dataobject
+  configuration:
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    default-statement-timeout: 30
+    default-fetch-size: 100
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Sa-Token
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: satoken
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 604800
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  active-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # jwt秘钥
+  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+  # 是否输出操作日志
+  is-log: false
+
+#是否激活 swagger true or false
+swagger:
+  enable: true
+
+service:
+  weindependent:
+    thread-pool:
+      corePoolSize: 8
+      maximumPoolSize: 32
+      keepAliveTime: 10000
+
+logging:
+  level:
+    com.alibaba.druid.sql: DEBUG
