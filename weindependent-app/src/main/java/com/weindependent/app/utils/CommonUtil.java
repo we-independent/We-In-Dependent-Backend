@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-public class CommonUtils {
+public class CommonUtil {
 
     public static String getRequestBody(HttpServletRequest request) {
         try (InputStream is = request.getInputStream()) {
