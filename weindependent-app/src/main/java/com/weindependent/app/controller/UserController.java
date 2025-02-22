@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
@@ -63,9 +64,9 @@ public class UserController {
 //    @SignatureAuth
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
-    public List<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
-        PageHelper.startPage((int) requestMap.get("page"), (int) requestMap.get("limit"));
-        List<UserVO> list = userService.getAllUsers();
-        return list;
+    public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
+        int pageNum = (int) requestMap.get("pageNum");
+        int pageSize = (int) requestMap.get("pageSize");
+        return userService.getAllUsers(pageNum, pageSize);
     }
 }

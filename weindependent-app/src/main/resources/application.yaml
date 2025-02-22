@@ -38,6 +38,14 @@ mybatis:
     default-fetch-size: 100
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+# 分页配置参数
+pagehelper:
+  page-size-zero: true
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql
+
 # Sa-Token
 sa-token:
   # token名称 (同时也是cookie名称)
