@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.weindependent.app.enums.ErrorCode;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -36,22 +37,75 @@ public class UserController {
     @Resource
     private UserService userService;
 
-//    @ApiOperation(value = "登录")
+    //    @ApiOperation(value = "登录")
     @Operation(summary = "登录")
     @SignatureAuth
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
-    public LoginVO login(@Validated @RequestBody LoginQry loginQry){
+    public Map<String, Object> login(@Validated @RequestBody LoginQry loginQry) {
+        String username = loginQry.getUsername();
         UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
-        // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
-        SaLoginModel loginModel = new SaLoginModel();
-        loginModel.setExtra("username", user.getAccount());
-        StpUtil.login(user.getId(), loginModel);
 
-        SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
-        LoginVO loginVO = new LoginVO();
-        loginVO.setSaTokenInfo(saTokenInfo);
-        return loginVO;
+        log.info("Login attempt by user: {}", username);
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            SaLoginModel loginModel = new SaLoginModel();
+            loginModel.setExtra("username", user.getAccount());
+            StpUtil.login(user.getId(), loginModel);
+
+            SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
+
+            response.put("code", ErrorCode.SUCCESS.getCode());
+            response.put("msg", ErrorCode.SUCCESS.getTitle());
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", saTokenInfo.getTokenValue());
+            data.put("tokenInfo", saTokenInfo);
+            response.put("data", data);
+
+            log.info("Login successful for user: {}", username);
+            return response;
+        }
+
+        // 登录失败
+        response.put("code", ErrorCode.INVALID_PARAM.getCode());
+        response.put("msg", ErrorCode.INVALID_PARAM.getTitle());
+        response.put("data", null);
+
+        log.warn("Login failed for user: {}", username);
+        return response;
+    }
+
+    @SignatureAuth
+    @Operation(summary = "登出")
+    @GetMapping("/logout")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> logout() {
+        StpUtil.logout();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", ErrorCode.SUCCESS.getCode());
+        result.put("msg", ErrorCode.SUCCESS.getTitle());
+        result.put("data", null);
+
+        log.info("User logged out");
+        return result;
+    }
+
+    @SignatureAuth
+    @Operation(summary = "查询登录状态")
+    @GetMapping("/isLogin")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> isLogin() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", ErrorCode.SUCCESS.getCode());
+        result.put("msg", ErrorCode.SUCCESS.getTitle());
+        Map<String, Object> data = new HashMap<>();
+        data.put("isLogin", StpUtil.isLogin());
+        result.put("data", data);
+
+        log.info("Login status checked: isLogin={}", StpUtil.isLogin());
+        return result;
     }
 
     @SignatureAuth
@@ -61,7 +115,7 @@ public class UserController {
         return "This is just for demo";
     }
 
-//    @SignatureAuth
+    //    @SignatureAuth
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
     public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
