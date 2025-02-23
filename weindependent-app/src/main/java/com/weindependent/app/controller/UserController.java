@@ -40,7 +40,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    //    @ApiOperation(value = "登录")
     @Operation(summary = "登录")
     @SignatureAuth
     @PostMapping("/login")
