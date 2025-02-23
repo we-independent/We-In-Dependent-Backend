@@ -46,6 +46,7 @@ public class UserController {
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
         SaLoginModel loginModel = new SaLoginModel();
         loginModel.setExtra("username", user.getAccount());
+        log.info("user.getId() is {}", user.getId());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
@@ -61,7 +62,7 @@ public class UserController {
         return "This is just for demo";
     }
 
-//    @SignatureAuth
+    @SignatureAuth
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
     public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
