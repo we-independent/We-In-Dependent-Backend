@@ -10,6 +10,7 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
 //import io.swagger.annotations.Api;
@@ -44,11 +45,11 @@ public class UserController {
     @SignatureAuth
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
-    public LoginVO login(@Validated @RequestBody LoginQry loginQry){
+    public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
         UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
         if (ObjectUtils.isEmpty(user)) {
             log.error("Login failed for user: {}", loginQry.getUsername());
-            throw new Exception(ErrorCode.INVALID_PARAM.getTitle());
+            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
         }
         
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）

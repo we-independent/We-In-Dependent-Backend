@@ -8,7 +8,8 @@ public enum ErrorCode {
     NON_TIMESTAMP(4, "时间戳不能为空"),
     NON_SIGN(5, "签名不能为空"),
     UNDEFINED_ERROR(6, "未知错误"),
-    INTERNAL_SERVER_ERROR(100, "服务器内部错误");
+    INTERNAL_SERVER_ERROR(100, "服务器内部错误"),
+    USERNAME_PASSWORD_ERROR(101, "用户名或密码错误");
 
     private int code;
     private final String title;
