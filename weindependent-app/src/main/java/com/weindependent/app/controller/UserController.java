@@ -9,6 +9,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
+import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
 //import io.swagger.annotations.Api;
@@ -17,8 +18,10 @@ import com.weindependent.app.vo.UserVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.weindependent.app.enums.ErrorCode;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -36,23 +39,61 @@ public class UserController {
     @Resource
     private UserService userService;
 
-//    @ApiOperation(value = "登录")
+    //    @ApiOperation(value = "登录")
     @Operation(summary = "登录")
     @SignatureAuth
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
     public LoginVO login(@Validated @RequestBody LoginQry loginQry){
         UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
+        if (ObjectUtils.isEmpty(user)) {
+            log.error("Login failed for user: {}", loginQry.getUsername());
+            throw new Exception(ErrorCode.INVALID_PARAM.getTitle());
+        }
+        
         // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
         SaLoginModel loginModel = new SaLoginModel();
         loginModel.setExtra("username", user.getAccount());
-        log.info("user.getId() is {}", user.getId());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
         LoginVO loginVO = new LoginVO();
         loginVO.setSaTokenInfo(saTokenInfo);
+
+        log.info("Login successful for user: {}", loginQry.getUsername());
         return loginVO;
+    }
+
+    @SignatureAuth
+    @Operation(summary = "登出")
+    @GetMapping("/logout")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> logout() {
+        StpUtil.logout();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", ErrorCode.SUCCESS.getCode());
+        result.put("msg", ErrorCode.SUCCESS.getTitle());
+        result.put("data", null);
+
+        log.info("User logged out");
+        return result;
+    }
+
+    @SignatureAuth
+    @Operation(summary = "查询登录状态")
+    @GetMapping("/isLogin")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> isLogin() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", ErrorCode.SUCCESS.getCode());
+        result.put("msg", ErrorCode.SUCCESS.getTitle());
+        Map<String, Object> data = new HashMap<>();
+        data.put("isLogin", StpUtil.isLogin());
+        result.put("data", data);
+
+        log.info("Login status checked: isLogin={}", StpUtil.isLogin());
+        return result;
     }
 
     @SignatureAuth
