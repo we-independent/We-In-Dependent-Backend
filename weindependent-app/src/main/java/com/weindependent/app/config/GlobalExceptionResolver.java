@@ -2,6 +2,7 @@ package com.weindependent.app.config;
 
 import com.weindependent.app.aspect.SignatureAuthAspect;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.exception.SignatureAuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +46,13 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
                     log.error("当前请求URL：{}，RequestWrapper invoke getBodyString occur exception: ", requestUrl, exception);
                 }
                 log.error("系统异常,当前请求URL：{}，当前请求Header：{}，当前请求Body：{}，异常信息：{}", requestUrl, headerMap, body, e);
-                map.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
-                map.put("msg", StringUtils.isEmpty(e.getMessage()) ? "系统异常，请稍后操作":e.getMessage());
+
+                if (e instanceof ResponseException) {
+                    map.put("code", ((ResponseException) e).getErrorCode());
+                } else {
+                    map.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
+                }
+                map.put("msg", StringUtils.isEmpty(e.getMessage()) ? "系统异常，请稍后操作" : e.getMessage());
                 map.put("data", "");
             }
         }
