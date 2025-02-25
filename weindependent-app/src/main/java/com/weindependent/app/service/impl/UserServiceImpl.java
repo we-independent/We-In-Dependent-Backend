@@ -37,4 +37,17 @@ public class UserServiceImpl implements UserService {
         PageInfo<UserDO> userDOPageInfo = new PageInfo<>(userDOList);
         return PageInfoUtil.pageInfo2DTO(userDOPageInfo, UserVO.class);
     }
+
+    @Override
+    public UserDO findOrCreateUser(String email, String username) {
+        UserDO user = new UserDO();
+        user.setAccount(email);
+        user.setRealName(username);
+        user.setPassword(""); // Empty password for OAuth user
+
+        userMapper.insertIfNotExists(user);
+
+        return userMapper.findUserByEmail(email);
+
+    }
 }

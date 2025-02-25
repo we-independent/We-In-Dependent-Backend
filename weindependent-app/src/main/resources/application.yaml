@@ -1,6 +1,8 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8080
+frontend:
+  url: ${FRONTEND_URL:http://localhost:5173}
 
 spring:
   datasource:
@@ -79,3 +81,17 @@ service:
 logging:
   level:
     com.alibaba.druid.sql: DEBUG
+
+
+google:
+  client:
+    id: 542544138093-qd5117ig05qslhod86vcnoao2ddmv6o3.apps.googleusercontent.com
+    secret: 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
+  redirect:
+    uri: http://localhost:8080/auth/googleCallback
+  scope: openid profile email
+  token:
+    uri: https://oauth2.googleapis.com/token
+  user:
+    info:
+      uri: https://www.googleapis.com/oauth2/v3/userinfo

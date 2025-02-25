@@ -11,4 +11,15 @@
     <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
         SELECT * FROM t_system_user
     </select>
+
+    <insert id="insertIfNotExists" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        INSERT IGNORE INTO t_system_user (account, real_name, password)
+        VALUES (#{account}, #{realName}, #{password});
+    </insert>
+
+    <select id="findUserByEmail" parameterType="String" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT id, account, real_name
+        FROM t_system_user
+        WHERE account = #{email};
+    </select>
 </mapper>
