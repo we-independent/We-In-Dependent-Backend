@@ -45,9 +45,9 @@ public class UserController {
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
     public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
-        UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
+        UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
         if (ObjectUtils.isEmpty(user)) {
-            log.error("Login failed for user: {}", loginQry.getUsername());
+            log.error("Login failed for user: {}", loginQry.getEmail());
             throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
         }
         
@@ -59,8 +59,10 @@ public class UserController {
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
         LoginVO loginVO = new LoginVO();
         loginVO.setSaTokenInfo(saTokenInfo);
+        loginVO.setEmail(loginQry.getEmail());
+        loginVO.setUsername(user.getAccount());
 
-        log.info("Login successful for user: {}", loginQry.getUsername());
+        log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
     }
 
@@ -72,11 +74,6 @@ public class UserController {
         StpUtil.logout();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("code", ErrorCode.SUCCESS.getCode());
-        result.put("msg", ErrorCode.SUCCESS.getTitle());
-        result.put("data", null);
-
-        log.info("User logged out");
         return result;
     }
 
@@ -86,15 +83,27 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
-        result.put("code", ErrorCode.SUCCESS.getCode());
-        result.put("msg", ErrorCode.SUCCESS.getTitle());
-        Map<String, Object> data = new HashMap<>();
-        data.put("isLogin", StpUtil.isLogin());
-        result.put("data", data);
+        result.put("isLogin", StpUtil.isLogin());
 
         log.info("Login status checked: isLogin={}", StpUtil.isLogin());
         return result;
     }
+
+//    @SignatureAuth
+//    @Operation(summary = "用户注册")
+//    @GetMapping("/register")
+//    @CrossOrigin(origins = "*")
+//    public Map<String, Object> register(@Validated @RequestBody ) {
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("code", ErrorCode.SUCCESS.getCode());
+//        result.put("msg", ErrorCode.SUCCESS.getTitle());
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("isLogin", StpUtil.isLogin());
+//        result.put("data", data);
+//
+//        log.info("Login status checked: isLogin={}", StpUtil.isLogin());
+//        return result;
+//    }
 
     @SignatureAuth
     @PostMapping("/demo")

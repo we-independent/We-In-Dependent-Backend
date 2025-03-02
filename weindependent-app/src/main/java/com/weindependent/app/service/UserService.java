@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface UserService {
     UserDO queryByUsernameAndPassword(String username, String password);
+    UserDO queryByEmailAndPassword(String email, String password);
     PageInfo<UserVO> getAllUsers(int pageNum, int pageSize);
 }

@@ -5,7 +5,18 @@
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.UserMapper">
     <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.UserDO">
         SELECT * FROM t_system_user
-        WHERE account = #{username} AND password = #{password}
+      <where>
+          <if test="username!=null and username!=''">
+              AND account = #{username}
+          </if>
+          <if test="email!=null and email!=''">
+              AND email = #{email}
+          </if>
+          <if test="password!=null and password!=''">
+              AND password = #{password}
+          </if>
+      </where>
+
     </select>
 
     <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">

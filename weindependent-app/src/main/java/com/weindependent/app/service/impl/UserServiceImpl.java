@@ -31,6 +31,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDO queryByEmailAndPassword(String email, String password) {
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("email", email);
+        paramMap.put("password", password);
+        return userMapper.query(paramMap);
+    }
+
+    @Override
     public PageInfo<UserVO> getAllUsers(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<UserDO> userDOList = userMapper.getAllUsers();
