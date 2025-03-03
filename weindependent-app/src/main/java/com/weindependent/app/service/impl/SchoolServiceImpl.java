@@ -25,7 +25,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public List<SchoolVO> getNearbySchools(Double latitude, Double longitude, Double radius) {
-        // 这里将 SchoolDO 转换为 SchoolVO
+        //这里将 SchoolDO 转换为 SchoolVO
         return schoolMapper.findNearbySchools(latitude, longitude, radius)
                 .stream()
                 .map(this::convertToSchoolVO) // 调用转换方法
