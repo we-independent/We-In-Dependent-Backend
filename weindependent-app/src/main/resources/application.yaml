@@ -2,7 +2,7 @@
 server:
   port: 8080
 frontend:
-  url: ${FRONTEND_URL:http://localhost:5173}
+  url: ${FRONTEND_URL:ttp://localhost:5173h}
 
 spring:
   datasource:
@@ -88,7 +88,7 @@ google:
     id: 542544138093-qd5117ig05qslhod86vcnoao2ddmv6o3.apps.googleusercontent.com
     secret: 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
   redirect:
-    uri: http://localhost:8080/auth/googleCallback
+    uri: http://localhost:8080/auth/googleLogin
   scope: openid profile email
   token:
     uri: https://oauth2.googleapis.com/token

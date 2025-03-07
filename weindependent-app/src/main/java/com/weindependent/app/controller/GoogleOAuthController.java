@@ -4,8 +4,10 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.weindependent.app.service.UserService;
+import com.weindependent.app.dto.UserDTO;
 import com.weindependent.app.vo.LoginVO;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.enums.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -48,45 +50,43 @@ public class GoogleOAuthController {
   private String frontendUrl;
 
   /**
-   * Step 1: Redirect to Google's OAuth 2.0 Authorization Endpoint
-   */
-  @Operation(summary = "Google Login")
-  @GetMapping("/googleLogin")
-  @CrossOrigin(origins = "*")
-  public void googleLogin(javax.servlet.http.HttpServletResponse response) throws java.io.IOException {
-    String authorizationUri = "https://accounts.google.com/o/oauth2/v2/auth" +
-        "?client_id=" + clientId +
-        "&redirect_uri=" + redirectUri +
-        "&response_type=code" +
-        "&scope=" + scope +
-        "&access_type=offline";
-
-    response.sendRedirect(authorizationUri);
-  }
-
-
-  /**
    * Step 2: Handle Callback from Google
    */
-  @Operation(summary = "Google Callback")
-  @GetMapping("/googleCallback")
+  @Operation(summary = "Google Login")
+  @GetMapping("/google-login")
   @CrossOrigin(origins = "*")
-  public void googleCallback(@RequestParam("code") String code, javax.servlet.http.HttpServletResponse response) throws java.io.IOException {
+  public UserDTO googleLogin(@RequestParam("code") String code) {
+    // Step 1: Exchange Authorization Code for Access Token
     String accessToken = getAccessToken(code);
+    if (accessToken == null) {
+      throw new RuntimeException("Failed to obtain access token");
+    }
+
+    // Step 2: Fetch User Info from Google
     Map<String, String> userInfo = getUserInfo(accessToken);
+    if ( !userInfo.containsKey("email")) {
+      throw new RuntimeException("Failed to retrieve user info from Google");
+    }
+
+    // Extract user details
     String email = userInfo.get("email");
     String name = userInfo.get("name");
 
-    // Find or Create User, then get the UserDO object
-    UserDO user = userService.findOrCreateUser(email, name);
+    // Step 3: Create or Retrieve User
+    UserDO user = new UserDO();
+    user.setEmail(email);
+    user.setAccount(name);
+    user.setRealName(name);
+    user.setLoginProvider("google");
+    user.setPassword("googlegoogle");
 
-    // Authenticate with Sa-Token using userId
-    StpUtil.login(user.getId());
-    StpUtil.getSession().set("name", user.getRealName());
-    StpUtil.getSession().set("email", user.getAccount());
+    UserDTO foundUser = userService.findOrCreateUser(user);
 
-    // Redirect to Frontend
-    response.sendRedirect(frontendUrl);
+    // Step 4: Authenticate with Sa-Token
+    StpUtil.login(foundUser.getId());
+
+    log.info("User {} google logged in successfully", email);
+    return foundUser;
   }
 
   /**

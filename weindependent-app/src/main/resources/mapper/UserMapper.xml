@@ -12,14 +12,13 @@
         SELECT * FROM t_system_user
     </select>
 
-    <insert id="insertIfNotExists" parameterType="com.weindependent.app.database.dataobject.UserDO">
-        INSERT IGNORE INTO t_system_user (account, real_name, password)
-        VALUES (#{account}, #{realName}, #{password});
+    <insert id="insertUser" parameterType="com.weindependent.app.database.dataobject.UserDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_system_user (account, real_name, email, password, login_provider)
+        VALUES (#{account}, #{realName}, #{email}, #{password}, #{loginProvider})
     </insert>
 
     <select id="findUserByEmail" parameterType="String" resultType="com.weindependent.app.database.dataobject.UserDO">
-        SELECT id, account, real_name
-        FROM t_system_user
-        WHERE account = #{email};
+        SELECT id, account, real_name, email, login_provider FROM t_system_user
+        WHERE email = #{email};
     </select>
 </mapper>

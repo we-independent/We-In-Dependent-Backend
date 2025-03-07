@@ -10,6 +10,6 @@ import java.util.Map;
 public interface UserMapper {
     UserDO query(Map<String, String> paramMap);
     List<UserDO> getAllUsers();
-    void insertIfNotExists(UserDO user);
+    void insertUser(UserDO user);
     UserDO findUserByEmail(String email);
 }

@@ -9,6 +9,8 @@ import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.vo.UserVO;
+import com.weindependent.app.dto.UserDTO;
+import com.weindependent.app.convertor.UserConvertor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private UserConvertor userConvertor;
 
     @Override
     public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -39,15 +44,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDO findOrCreateUser(String email, String username) {
-        UserDO user = new UserDO();
-        user.setAccount(email);
-        user.setRealName(username);
-        user.setPassword(""); // Empty password for OAuth user
-
-        userMapper.insertIfNotExists(user);
-
-        return userMapper.findUserByEmail(email);
-
+    public UserDTO findOrCreateUser(UserDO user) {
+        UserDO foundUser= userMapper.findUserByEmail(user.getEmail());
+        boolean isNewUser=false;
+        if(foundUser==null){
+            isNewUser=true;
+            userMapper.insertUser(user);
+            foundUser=user;
+        }
+        return userConvertor.toUserDTOEntity(foundUser,isNewUser);
     }
 }

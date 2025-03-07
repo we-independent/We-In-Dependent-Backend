@@ -8,4 +8,6 @@ public class UserDO {
     private String account;
     private String password;
     private String realName;
+    private String email;
+    private String loginProvider;
 }
