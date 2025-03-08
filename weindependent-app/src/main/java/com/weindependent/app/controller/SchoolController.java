@@ -25,7 +25,7 @@ public class SchoolController {
     }
 
     @PostMapping("/nearby")
-    public List<SchoolVO> getNearbySchools(@RequestBody NearbySchoolQry nearbySchoolQry) {
+    public PageInfo<SchoolVO> getNearbySchools(@RequestBody NearbySchoolQry nearbySchoolQry) {
         PageHelper.startPage(nearbySchoolQry.getPage(), nearbySchoolQry.getLimit());
         return schoolService.getNearbySchools(nearbySchoolQry.getLatitude(), nearbySchoolQry.getLongitude(), nearbySchoolQry.getRadius());
     }
