@@ -22,4 +22,13 @@
     <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
         SELECT * FROM t_system_user
     </select>
+
+    <select id="findByAccount" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE account = #{account} LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        INSERT INTO t_system_user (account, password, real_name)
+        VALUES (#{account}, #{password}, #{realName})
+    </insert>
 </mapper>
