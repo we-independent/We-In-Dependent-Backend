@@ -9,6 +9,8 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
+import com.weindependent.app.dto.RegisterQry;
+import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
@@ -22,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.weindependent.app.enums.ErrorCode;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -40,31 +41,66 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @Operation(summary = "登录")
     @SignatureAuth
+    @Operation(summary = "用户注册")
+    @PostMapping("/register")
+    @CrossOrigin(origins = "*")
+    public void register(@Validated @RequestBody RegisterQry registerQry) {
+        userService.registerUser(registerQry);
+        log.info("User registered successfully: {}", registerQry.getAccount());
+    }
+
+    @SignatureAuth
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
     public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
         UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
-        if (ObjectUtils.isEmpty(user)) {
+
+        if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(loginQry.getPassword(), user.getPassword())) {
             log.error("Login failed for user: {}", loginQry.getEmail());
-            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
+            throw new ResponseException(401, "Invalid username or password");
         }
-        
-        // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
+
         SaLoginModel loginModel = new SaLoginModel();
-        loginModel.setExtra("username", user.getAccount());
+        loginModel.setExtra("username", user.getRealName());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
         LoginVO loginVO = new LoginVO();
         loginVO.setSaTokenInfo(saTokenInfo);
-        loginVO.setEmail(loginQry.getEmail());
-        loginVO.setUsername(user.getAccount());
+        loginVO.setEmail(user.getAccount());
+        loginVO.setUsername(user.getRealName());
 
         log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
     }
+
+//    @Operation(summary = "登录")
+//    @SignatureAuth
+//    @PostMapping("/login")
+//    @CrossOrigin(origins = "*")
+//    public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
+//        UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
+//        if (ObjectUtils.isEmpty(user)) {
+//            log.error("Login failed for user: {}", loginQry.getEmail());
+//            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
+//        }
+//
+//        // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
+//        SaLoginModel loginModel = new SaLoginModel();
+//        loginModel.setExtra("username", user.getAccount());
+//        StpUtil.login(user.getId(), loginModel);
+//
+//        SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
+//        LoginVO loginVO = new LoginVO();
+//        loginVO.setSaTokenInfo(saTokenInfo);
+//        loginVO.setEmail(loginQry.getEmail());
+//        loginVO.setUsername(user.getAccount());
+//
+//        log.info("Login successful for user: {}", loginQry.getEmail());
+//        return loginVO;
+//    }
 
     @SignatureAuth
     @Operation(summary = "登出")
