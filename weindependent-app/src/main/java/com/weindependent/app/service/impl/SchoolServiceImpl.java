@@ -1,5 +1,7 @@
 package com.weindependent.app.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.SchoolDO;
 import com.weindependent.app.database.mapper.weindependent.SchoolMapper;
 import com.weindependent.app.service.SchoolService;
@@ -24,12 +26,13 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public List<SchoolVO> getNearbySchools(Double latitude, Double longitude, Double radius) {
+    public PageInfo<SchoolVO> getNearbySchools(Double latitude, Double longitude, Double radius) {
         //这里将 SchoolDO 转换为 SchoolVO
-        return schoolMapper.findNearbySchools(latitude, longitude, radius)
+        List<SchoolVO> schoolVOList= schoolMapper.findNearbySchools(latitude, longitude, radius)
                 .stream()
                 .map(this::convertToSchoolVO) // 调用转换方法
                 .collect(Collectors.toList());
+        return new PageInfo<>(schoolVOList);
     }
 
     // SchoolDO 转换为 SchoolVO

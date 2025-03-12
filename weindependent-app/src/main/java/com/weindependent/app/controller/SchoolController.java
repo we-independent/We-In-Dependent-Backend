@@ -1,16 +1,12 @@
 package com.weindependent.app.controller;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.dto.NearbySchoolQry;
 import com.weindependent.app.service.SchoolService;
 import com.weindependent.app.vo.SchoolVO;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value ="/schools", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")

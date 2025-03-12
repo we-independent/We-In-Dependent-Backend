@@ -40,7 +40,7 @@ public class SchoolServiceTest {
                .thenReturn(mockSchools);
 
         // 调用测试方法
-        List<SchoolVO> schools = schoolService.getNearbySchools(40.7128, -74.0060, 1.0);
+        List<SchoolVO> schools = schoolService.getNearbySchools(40.7128, -74.0060, 1.0).getList();
 
         // 验证测试结果
         assertNotNull(schools);

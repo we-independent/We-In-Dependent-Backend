@@ -1,5 +1,6 @@
 package com.weindependent.app.service;
 
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.vo.SchoolVO;
 
 import java.util.List;
