@@ -11,8 +11,11 @@ import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
 import com.weindependent.app.dto.RegisterQry;
 import com.weindependent.app.utils.PasswordUtil;
+import com.weindependent.app.dto.SendMailQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.EmailService;
+import com.weindependent.app.service.SendEmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
 //import io.swagger.annotations.Api;
@@ -40,6 +43,10 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private SendEmailService sendEmailService;
+
 
     @SignatureAuth
     @Operation(summary = "用户注册")
@@ -141,12 +148,14 @@ public class UserController {
 //        return result;
 //    }
 
-    @SignatureAuth
-    @PostMapping("/demo")
+//    @SignatureAuth
+    @PostMapping("/send/email")
     @CrossOrigin(origins = "*")
-    public String demo() {
-        return "This is just for demo";
+    public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
+        return sendEmailService.send(sendMailQry.getTemplateId(), sendMailQry.getEmail());
     }
+
+
 
     @SignatureAuth
     @PostMapping("/list")
