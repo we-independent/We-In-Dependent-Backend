@@ -19,8 +19,13 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
     @Resource
     private EmailConfig emailConfig;
 
-    private final static String subject = "Reset Password";
-    private final static String text = "<font color=\"green\">This is test email.</font>";
+    private final static String subject = "Reset Your We Independent Password";
+    private final static String text = "<p>Hi,</p>"
+            + "<p>A request to reset your We Independent password has been made.</p>"
+            + "<p>If you did not make this request, simply ignore this email.</p>"
+            + "<p>Thank you,</p>"
+            + "<p>Team We Independent</p>"
+            + "<p style='color:gray;font-size:12px;'>If you continue to have problems, please reach out to our support team.</p>";
 
     public boolean send(String email) {
         try {
