@@ -9,6 +9,7 @@ import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
+import com.weindependent.app.vo.GoogleUserVO;
 import com.weindependent.app.vo.UserVO;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -72,5 +74,17 @@ public class UserServiceImpl implements UserService {
         user.setRealName(dto.getRealName());
 
         return userMapper.insert(user) > 0;
+    }
+
+    @Override
+    public GoogleUserVO findOrCreateUser(UserDO user) {
+        UserDO foundUser = userMapper.findUserByEmail(user.getEmail());
+        boolean isNewUser = false;
+        if (Objects.isNull(foundUser)) {
+            isNewUser = true;
+            userMapper.insert(user);
+            foundUser = user;
+        }
+        return UserConvertor.toUserDTOEntity(foundUser, isNewUser);
     }
 }
