@@ -1,6 +1,8 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8080
+frontend:
+  url: ${FRONTEND_URL:ttp://localhost:5173h}
 
 spring:
   datasource:
