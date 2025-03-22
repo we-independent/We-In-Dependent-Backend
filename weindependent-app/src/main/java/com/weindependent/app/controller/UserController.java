@@ -78,6 +78,9 @@ public class UserController {
         loginVO.setSaTokenInfo(saTokenInfo);
         loginVO.setEmail(user.getAccount());
         loginVO.setUsername(user.getRealName());
+        loginVO.setLanguage(user.getLanguage());
+        loginVO.setVisaType(user.getVisaType());
+        loginVO.setSubscription(user.isSubscription());
 
         log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;

@@ -10,4 +10,7 @@ public class UserDO {
     private String realName;
     private String email;
     private String loginProvider;
+    private String language;
+    private String visaType;
+    private boolean subscription;
 }

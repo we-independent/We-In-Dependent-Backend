@@ -9,4 +9,7 @@ public class GoogleUserVO {
   private String realName;
   private String loginProvider;
   private boolean isNewUser;
+  private String language;
+  private String visaType;
+
 }

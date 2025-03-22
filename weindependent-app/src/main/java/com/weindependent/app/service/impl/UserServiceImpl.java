@@ -72,6 +72,9 @@ public class UserServiceImpl implements UserService {
         user.setAccount(dto.getAccount());
         user.setPassword(hashedPassword);
         user.setRealName(dto.getRealName());
+        user.setLanguage(dto.getLanguage());
+        user.setVisaType(dto.getVisaType());
+        user.setSubscription(dto.isSubscription());
 
         return userMapper.insert(user) > 0;
     }

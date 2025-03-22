@@ -43,9 +43,6 @@ public class GoogleOAuthController {
   @Value("${google.user.info.uri}")
   private String userInfoUri;
 
-  @Value("${frontend.url}")
-  private String frontendUrl;
-
   /**
    * Step 2: Handle Callback from Google
    */
@@ -68,6 +65,9 @@ public class GoogleOAuthController {
     // Extract user details
     String email = userInfo.get("email");
     String name = userInfo.get("name");
+    String language = userInfo.get("language");
+    String visaType = userInfo.get("visaType");
+
 
     // Step 3: Create or Retrieve User
     UserDO user = new UserDO();
@@ -76,6 +76,8 @@ public class GoogleOAuthController {
     user.setRealName(name);
     user.setLoginProvider("google");
     user.setPassword("googlegoogle");
+    user.setLanguage(language);
+    user.setVisaType(visaType);
 
     GoogleUserVO foundUser = userService.findOrCreateUser(user);
 

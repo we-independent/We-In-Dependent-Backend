@@ -10,6 +10,9 @@ public class UserConvertor {
         UserVO userVO = new UserVO();
         userVO.setUsername(userDO.getAccount());
         userVO.setName(userDO.getRealName());
+        userVO.setLanguage(userDO.getLanguage());
+        userVO.setVisaType(userDO.getVisaType());
+        userVO.setSubscription(userDO.isSubscription());
         return userVO;
     }
 
@@ -21,6 +24,8 @@ public class UserConvertor {
         googleUserVO.setAccount(userDO.getAccount());
         googleUserVO.setNewUser(isNewUser);
         googleUserVO.setLoginProvider(userDO.getLoginProvider());
+        googleUserVO.setLanguage(userDO.getLanguage());
+        googleUserVO.setVisaType(userDO.getVisaType());
         return googleUserVO;
     }
 }
