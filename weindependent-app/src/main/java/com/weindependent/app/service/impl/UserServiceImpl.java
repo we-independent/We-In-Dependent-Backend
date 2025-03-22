@@ -1,6 +1,5 @@
 package com.weindependent.app.service.impl;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.UserConvertor;
@@ -15,9 +14,7 @@ import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -74,20 +71,17 @@ public class UserServiceImpl implements UserService {
         user.setRealName(dto.getRealName());
         user.setLanguage(dto.getLanguage());
         user.setVisaType(dto.getVisaType());
+        user.setLoginProvider("local");
         user.setSubscription(dto.isSubscription());
 
         return userMapper.insert(user) > 0;
     }
 
     @Override
-    public GoogleUserVO findOrCreateUser(UserDO user) {
-        UserDO foundUser = userMapper.findUserByEmail(user.getEmail());
-        boolean isNewUser = false;
-        if (Objects.isNull(foundUser)) {
-            isNewUser = true;
-            userMapper.insert(user);
-            foundUser = user;
-        }
-        return UserConvertor.toUserDTOEntity(foundUser, isNewUser);
+    public GoogleUserVO findOrCreateGoogleUser(UserDO user) {
+        user.setLoginProvider("google");
+        int rowInserted = userMapper.insert(user);
+        UserDO existingUser = userMapper.findByAccount(user.getAccount());
+        return UserConvertor.toGoogleUserVOEntity(existingUser, rowInserted>0);
     }
 }

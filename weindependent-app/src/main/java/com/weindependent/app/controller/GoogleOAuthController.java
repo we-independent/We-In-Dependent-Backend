@@ -65,26 +65,22 @@ public class GoogleOAuthController {
     // Extract user details
     String email = userInfo.get("email");
     String name = userInfo.get("name");
-    String language = userInfo.get("language");
-    String visaType = userInfo.get("visaType");
 
 
     // Step 3: Create or Retrieve User
     UserDO user = new UserDO();
     user.setEmail(email);
-    user.setAccount(name);
+    user.setAccount(email);
     user.setRealName(name);
     user.setLoginProvider("google");
     user.setPassword("googlegoogle");
-    user.setLanguage(language);
-    user.setVisaType(visaType);
 
-    GoogleUserVO foundUser = userService.findOrCreateUser(user);
+    GoogleUserVO foundUser = userService.findOrCreateGoogleUser(user);
 
     // Step 4: Authenticate with Sa-Token
     StpUtil.login(foundUser.getId());
 
-    log.info("User {} google logged in successfully", email);
+    log.info("User {} google logged in successfully using email {}", name, email);
     return foundUser;
   }
 

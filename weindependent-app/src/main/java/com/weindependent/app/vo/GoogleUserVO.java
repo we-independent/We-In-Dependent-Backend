@@ -5,11 +5,9 @@ import lombok.Data;
 public class GoogleUserVO {
   private Long id;
   private String account;
-  private String email;
-  private String realName;
+  private String userName;
   private String loginProvider;
   private boolean isNewUser;
   private String language;
   private String visaType;
-
 }
