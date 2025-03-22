@@ -6,26 +6,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
-import javax.annotation.Resource;
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Properties;
 
 @Slf4j
 @Service
 public class ResetUserPasswordEmailServiceImpl implements EmailService {
-    @Resource
+    @Autowired
     private EmailConfig emailConfig;
 
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     private final static String subject = "Reset Your We Independent Password";
-    private final static String text = "<p>Hi,</p>"
-            + "<p>A request to reset your We Independent password has been made.</p>"
-            + "<p>If you did not make this request, simply ignore this email.</p>"
-            + "<p>Thank you,</p>"
-            + "<p>Team We Independent</p>"
-            + "<p style='color:gray;font-size:12px;'>If you continue to have problems, please reach out to our support team.</p>";
 
     public boolean send(String email) {
         try {
@@ -42,9 +44,9 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
             mailProperties.put("mail.smtp.auth", true);
             mailProperties.put("mail.smtp.starttls.enable", true);
             javaMailSender.setJavaMailProperties(mailProperties);
-            MimeMessage mimeMessage = getMimeMessage(email, subject, text, javaMailSender);
+            MimeMessage mimeMessage = getMimeMessage(email, subject, getEmailHtml(), javaMailSender);
             javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             log.error("发往 {} 重置密码邮件发送异常", email, e);
             return false;
         }
@@ -59,5 +61,12 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(text, true);
         return mimeMessage;
+    }
+
+    private String getEmailHtml() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:email/reset-password.html");
+        try (InputStream inputStream = resource.getInputStream()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }
