@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import javax.servlet.http.HttpServletResponse;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,7 +144,7 @@ public class GoogleOAuthController {
   }
 
   /**
-   * Step 2.2: Fetch User Info from Google
+    Fetch User Info from Google
    */
   private Map<String, String> getUserInfo(String accessToken) {
     RestTemplate restTemplate = new RestTemplate();
@@ -160,4 +162,36 @@ public class GoogleOAuthController {
     return userInfo;
   }
 
+
+  /**
+   This is a temp function for simulating getting google oAuth code at frontend side,
+   Taking this code and call auth/google-login to test google login flow.
+   TODO: remove this function after frontend integration is done or making admin authorization to this endpoint.
+   */
+  @Operation(summary = "Google Login Get Code")
+  @GetMapping("temp/google-login-callback")
+  @CrossOrigin(origins = "*")
+  private String googleCallBackTemp(@RequestParam String code) {
+    System.out.println("Code from google oAuth: "+ code);
+    return code;
+  }
+
+  /**
+   This is a temp function for simulating connecting google oAuth from frontend side,
+   This function would redirect to google oAuth page and trigger callback function above
+   TODO: remove this function after frontend integration is done or making admin authorization to this endpoint.
+   */
+  @Operation(summary = "Google Login Simulation")
+  @GetMapping("temp/google-login")
+  @CrossOrigin(origins = "*")
+  private void onGoogleBtnClicked(HttpServletResponse response) throws IOException {
+    String googleOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
+            + "?client_id=" + clientId
+            + "&redirect_uri=" + redirectUri
+            + "&response_type=code"
+            + "&scope=" + scope
+            + "&access_type=offline";
+
+    response.sendRedirect(googleOAuthUrl);
+  }
 }

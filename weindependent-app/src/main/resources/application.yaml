@@ -88,7 +88,7 @@ google:
     id: 542544138093-qd5117ig05qslhod86vcnoao2ddmv6o3.apps.googleusercontent.com
     secret: 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
   redirect:
-    uri: http://localhost:8080/auth/googleLogin
+    uri: http://localhost:8080/auth/temp/google-login-callback
   scope: openid profile email
   token:
     uri: https://oauth2.googleapis.com/token
