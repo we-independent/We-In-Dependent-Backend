@@ -75,7 +75,16 @@ public class GoogleOAuthController {
     user.setLoginProvider("google");
     user.setPassword("googlegoogle");
 
-    GoogleUserVO foundUser = userService.findOrCreateGoogleUser(user);
+    GoogleUserVO foundUser;
+    try {
+      foundUser = userService.findOrCreateGoogleUser(user);
+      if (foundUser == null || foundUser.getId() == null) {
+        throw new RuntimeException("User creation or retrieval failed: user ID is null");
+      }
+    } catch (Exception e) {
+      log.error("Error in findOrCreateUser: {}", e.getMessage(), e);
+      throw new RuntimeException("Google login failed: " + e.getMessage());
+    }
 
     // Step 4: Authenticate with Sa-Token
     StpUtil.login(foundUser.getId());
@@ -111,7 +120,7 @@ public class GoogleOAuthController {
       // Check if access_token is present
       if (!json.containsKey("access_token")) {
         log.error("Failed to get access token: " + json.toJSONString());
-        throw new RuntimeException("Failed to get access token: " + json.toJSONString());
+        throw new RuntimeException("Failed to get access token " + json.toJSONString());
       }
 
       return json.getString("access_token");
@@ -119,7 +128,8 @@ public class GoogleOAuthController {
     } catch (org.springframework.web.client.HttpClientErrorException e) {
       // Handles HTTP errors (e.g., 400, 401, 500)
       log.error("HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-      throw new RuntimeException("Failed to get access token: " + e.getMessage());
+      throw new RuntimeException("Failed to get access token, this may happened if the token is used more than 1 time or the token is expired, or the GCP oAuth account is not matched" +
+              " try using new google oAuth code and try again: " + e.getMessage());
     } catch (org.springframework.web.client.ResourceAccessException e) {
       // Handles connection timeout or network issues
       log.error("Network Error: " + e.getMessage());

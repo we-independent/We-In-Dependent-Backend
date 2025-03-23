@@ -80,8 +80,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public GoogleUserVO findOrCreateGoogleUser(UserDO user) {
         user.setLoginProvider("google");
-        int rowInserted = userMapper.insert(user);
+        int insertStatus = userMapper.insert(user); // return 1 when user not exists, return 2 when user exists and update last_login_time successfully
         UserDO existingUser = userMapper.findByAccount(user.getAccount());
-        return UserConvertor.toGoogleUserVOEntity(existingUser, rowInserted>0);
+        return UserConvertor.toGoogleUserVOEntity(existingUser, insertStatus==1);
     }
 }
