@@ -22,4 +22,18 @@
     <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
         SELECT * FROM t_system_user
     </select>
+
+    <select id="findByAccount" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE account = #{account}
+    </select>
+
+    <select id="findUserByEmail" parameterType="String" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT id, account, real_name, email, login_provider FROM t_system_user
+        WHERE email = #{email}
+    </select>
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        INSERT INTO t_system_user (account, password, real_name)
+        VALUES (#{account}, #{password}, #{realName})
+    </insert>
 </mapper>

@@ -56,14 +56,14 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
             sendMailParams.put("logo",LOGO);
             MimeMessage mimeMessage = getMimeMessage(email, getEmailHtml(sendMailParams), javaMailSender);
             javaMailSender.send(mimeMessage);
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException e) {
             log.error("发往 {} 重置密码邮件发送异常", email, e);
             return false;
         }
         return true;
     }
 
-    private MimeMessage getMimeMessage(String toEmail, String text, JavaMailSenderImpl javaMailSender) throws MessagingException {
+    private MimeMessage getMimeMessage(String toEmail, String subject, String text, JavaMailSenderImpl javaMailSender) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, emailConfig.getEncoding());
         mimeMessageHelper.setFrom(emailConfig.getSenderName());

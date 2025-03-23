@@ -8,4 +8,7 @@ public class LoginVO {
     private SaTokenInfo saTokenInfo;
     private String email;
     private String username;
+    private String language;
+    private String visaType;
+    private boolean subscription;
 }

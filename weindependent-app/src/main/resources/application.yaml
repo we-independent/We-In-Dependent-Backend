@@ -1,6 +1,8 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8080
+frontend:
+  url: ${FRONTEND_URL:ttp://localhost:5173h}
 
 spring:
   datasource:
@@ -21,15 +23,6 @@ spring:
       validation-query: SELECT 1 FROM DUAL
       filters: stat,wall,log4j
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-  #邮件配置
-  email:
-    host: smtp.zoho.com
-    port: 587
-    username: info@weindependent.org
-    password: V2VpbmRlcGVuZGVudDIwMjUh
-    senderName: info@weindependent.org
-    protocol: smtp
-    encoding: UTF-8
 
 #下面这些内容是为了让MyBatis映射
 #指定Mybatis的Mapper文件
@@ -88,3 +81,17 @@ service:
 logging:
   level:
     com.alibaba.druid.sql: DEBUG
+
+
+google:
+  client:
+    id: 542544138093-qd5117ig05qslhod86vcnoao2ddmv6o3.apps.googleusercontent.com
+    secret: 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
+  redirect:
+    uri: http://localhost:8080/auth/googleLogin
+  scope: openid profile email
+  token:
+    uri: https://oauth2.googleapis.com/token
+  user:
+    info:
+      uri: https://www.googleapis.com/oauth2/v3/userinfo
