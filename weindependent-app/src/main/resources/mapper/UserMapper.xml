@@ -27,13 +27,9 @@
         SELECT * FROM t_system_user WHERE account = #{account}
     </select>
 
-    <select id="findUserByEmail" parameterType="String" resultType="com.weindependent.app.database.dataobject.UserDO">
-        SELECT id, account, real_name, email, login_provider FROM t_system_user
-        WHERE email = #{email}
-    </select>
-
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
-        INSERT INTO t_system_user (account, password, real_name)
-        VALUES (#{account}, #{password}, #{realName})
+        INSERT INTO t_system_user (account, password, real_name, login_provider)
+        VALUES (#{account}, #{password}, #{realName}, #{loginProvider})
+        ON DUPLICATE KEY UPDATE last_login_time = NOW();
     </insert>
 </mapper>

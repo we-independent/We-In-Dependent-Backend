@@ -12,6 +12,5 @@ public interface UserMapper {
     UserDO query(Map<String, String> paramMap);
     List<UserDO> getAllUsers();
     UserDO findByAccount(String account);
-    UserDO findUserByEmail(String email);
     int insert(UserDO user);
 }
