@@ -38,6 +38,6 @@
     </select>
 
     <update id="updatePassword" parameterType="map">
-        UPDATE users SET password = #{password} WHERE id = #{id}
+        UPDATE t_system_user SET password = #{password} WHERE id = #{id}
     </update>
 </mapper>
