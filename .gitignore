@@ -6,5 +6,6 @@
 /*/target/
 /weindependent-app/app.iml
 /web.iml
+.DS_Store
 /weindependent-app/we-in-dependent.iml
 /.vscode/

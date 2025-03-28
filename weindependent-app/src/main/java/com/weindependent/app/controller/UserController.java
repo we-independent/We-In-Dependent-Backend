@@ -168,7 +168,11 @@ public class UserController {
     @PostMapping("/send/email")
     @CrossOrigin(origins = "*")
     public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
-        return sendEmailService.send(sendMailQry.getTemplateId(), sendMailQry.getEmail());
+        Map<String, String> sendMailParams = new HashMap<>();
+        // TODO: connecting database to retrieve username and generate temp reset password link
+        sendMailParams.put("name", "Nero");
+        sendMailParams.put("link", "http://www.weindependent.org/?reset-password=true");
+        return sendEmailService.send(sendMailQry.getTemplateId(), sendMailQry.getEmail(), sendMailParams);
     }
 
 
