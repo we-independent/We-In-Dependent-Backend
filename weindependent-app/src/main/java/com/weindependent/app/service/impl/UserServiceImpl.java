@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
-    
+
     @Autowired
     private ResetUserPasswordEmailServiceImpl resetUserPasswordEmailService;
 
