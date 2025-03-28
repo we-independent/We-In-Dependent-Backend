@@ -91,9 +91,9 @@ public class UserController {
     @PostMapping("/user/reset/password")
     @CrossOrigin(origins = "*")
     public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry){
-        boolean success = userService.resetPassword(resetPasswordQry.getEmail(), resetPasswordQry.getPassword());
+        boolean success = userService.resetPassword(resetPasswordQry.getToken(), resetPasswordQry.getPassword());
         if (success) {
-            log.info("Reset password successful for user: {}", resetPasswordQry.getEmail());
+            log.info("Reset password successful for user: {}", resetPasswordQry.getToken());
         } else {
             log.info("Reset password failed");
         }

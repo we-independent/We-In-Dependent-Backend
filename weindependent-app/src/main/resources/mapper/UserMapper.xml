@@ -32,4 +32,8 @@
         VALUES (#{account}, #{password}, #{realName}, #{loginProvider})
         ON DUPLICATE KEY UPDATE last_login_time = NOW();
     </insert>
+
+    <select id="findById" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE id = #{id}
+    </select>
 </mapper>

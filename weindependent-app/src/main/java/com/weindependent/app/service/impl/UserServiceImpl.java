@@ -11,6 +11,8 @@ import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.UserVO;
 
+import cn.dev33.satoken.temp.SaTempUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
@@ -87,8 +89,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean resetPassword(String email, String newPassword){
-        UserDO user = userMapper.findByAccount(email);
+    public boolean resetPassword(String token, String newPassword){
+        String user_id = SaTempUtil.parseToken(token, String.class);
+        UserDO user = userMapper.findById(user_id);
         if (user == null) return false; //user does not exist
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);

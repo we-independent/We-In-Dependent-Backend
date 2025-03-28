@@ -13,4 +13,5 @@ public interface UserMapper {
     List<UserDO> getAllUsers();
     UserDO findByAccount(String account);
     int insert(UserDO user);
+    UserDO findById(String id);
 }

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ResetPasswordQry {
-    private String email;
+    private String token;
     private String password;
 }
