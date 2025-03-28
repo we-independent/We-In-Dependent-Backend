@@ -94,7 +94,6 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
         if (userMapper.insert(user) <= 0) return false; //database insertion failed
-
-        return resetUserPasswordEmailService.send(email);
+        return true;
     }
 }

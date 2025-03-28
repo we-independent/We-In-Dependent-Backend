@@ -54,7 +54,14 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
             javaMailSender.setJavaMailProperties(mailProperties);
             sendMailParams.put("contactEmail",CONTACT_EMAIL);
             sendMailParams.put("logo",LOGO);
-            MimeMessage mimeMessage = getMimeMessage(email, getEmailHtml(sendMailParams), javaMailSender);
+            String emailHtml;
+            try{
+                emailHtml = getEmailHtml(sendMailParams);
+            } catch(IOException e){
+                log.error("Error loading email HTML template", e);
+                return false;
+            }
+            MimeMessage mimeMessage = getMimeMessage(email, subject, emailHtml, javaMailSender);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("发往 {} 重置密码邮件发送异常", email, e);
