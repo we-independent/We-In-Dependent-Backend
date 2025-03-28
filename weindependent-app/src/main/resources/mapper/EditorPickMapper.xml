@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.EditorPickMapper">
+    
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.EditorPickDO">
+        INSERT INTO editor_picks (
+            article_id, create_user_id, create_time
+        ) VALUES (
+            #{articleId}, #{createUserId}, NOW()
+        )
+    </insert>
+
+    <delete id="deleteByArticleId">
+        DELETE FROM editor_picks WHERE article_id = #{articleId}
+    </delete>
+
+    <select id="findEditorPickArticleIds" resultType="java.lang.Integer">
+        SELECT article_id FROM editor_picks
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="isEditorPick" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM editor_picks WHERE article_id = #{articleId}
+    </select>
+
+</mapper>
