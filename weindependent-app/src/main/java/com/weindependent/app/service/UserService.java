@@ -12,4 +12,5 @@ public interface UserService {
     PageInfo<UserVO> getAllUsers(int pageNum, int pageSize);
     boolean registerUser(RegisterQry dto);
     GoogleUserVO findOrCreateGoogleUser(UserDO user);
+    boolean resetPassword(String email, String newPassword);
 }

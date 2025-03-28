@@ -5,11 +5,14 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.UserConvertor;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
+import com.weindependent.app.service.EmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.GoogleUserVO;
 import com.weindependent.app.vo.UserVO;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 
@@ -22,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
+    
+    @Autowired
+    private ResetUserPasswordEmailServiceImpl resetUserPasswordEmailService;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -83,5 +89,17 @@ public class UserServiceImpl implements UserService {
         int insertStatus = userMapper.insert(user); // return 1 when user not exists, return 2 when user exists and update last_login_time successfully
         UserDO existingUser = userMapper.findByAccount(user.getAccount());
         return UserConvertor.toGoogleUserVOEntity(existingUser, insertStatus==1);
+    }
+
+    @Override
+    public boolean resetPassword(String email, String newPassword){
+        UserDO user = userMapper.findByAccount(email);
+        if (user == null) return false; //user does not exist
+
+        String hashedPassword = PasswordUtil.hashPassword(newPassword);
+        user.setPassword(hashedPassword);
+        if (userMapper.insert(user) <= 0) return false; //database insertion failed
+
+        return resetUserPasswordEmailService.send(email);
     }
 }

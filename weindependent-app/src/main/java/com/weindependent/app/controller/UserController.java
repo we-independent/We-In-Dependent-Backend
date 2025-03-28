@@ -12,6 +12,7 @@ import com.weindependent.app.dto.LoginQry;
 import com.weindependent.app.dto.RegisterQry;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.dto.SendMailQry;
+import com.weindependent.app.dto.ResetPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.EmailService;
@@ -84,6 +85,18 @@ public class UserController {
 
         log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
+    }
+    @SignatureAuth
+    @Operation(summary = "重置密码")
+    @PostMapping("/user/reset/password")
+    @CrossOrigin(origins = "*")
+    public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry){
+        boolean success = userService.resetPassword(resetPasswordQry.getEmail(), resetPasswordQry.getPassword());
+        if (success) {
+            log.info("Reset password successful for user: {}", resetPasswordQry.getEmail());
+        } else {
+            log.info("Reset password failed");
+        }
     }
 
 //    @Operation(summary = "登录")
