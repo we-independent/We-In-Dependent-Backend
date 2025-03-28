@@ -8,14 +8,12 @@ import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
-import com.weindependent.app.vo.GoogleUserVO;
 import com.weindependent.app.vo.UserVO;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -78,10 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GoogleUserVO findOrCreateGoogleUser(UserDO user) {
-        user.setLoginProvider("google");
-        int insertStatus = userMapper.insert(user); // return 1 when user not exists, return 2 when user exists and update last_login_time successfully
-        UserDO existingUser = userMapper.findByAccount(user.getAccount());
-        return UserConvertor.toGoogleUserVOEntity(existingUser, insertStatus==1);
+    public UserDO findUserByAccount(String account) {
+        return userMapper.findByAccount(account);
     }
 }
