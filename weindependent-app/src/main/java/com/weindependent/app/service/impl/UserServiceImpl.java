@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
-        if (userMapper.insert(user) <= 0) return -3; //database insertion failed
+        if (userMapper.updatePassword(Integer.parseInt(user_id), hashedPassword) <= 0) return -3; //database insertion failed
         SaTempUtil.deleteToken(token);
         return 1;
     }

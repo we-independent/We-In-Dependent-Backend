@@ -36,4 +36,8 @@
     <select id="findById" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
         SELECT * FROM t_system_user WHERE id = #{id}
     </select>
+
+    <update id="updatePassword" parameterType="map">
+        UPDATE users SET password = #{password} WHERE id = #{id}
+    </update>
 </mapper>

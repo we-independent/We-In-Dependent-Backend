@@ -1,7 +1,7 @@
 package com.weindependent.app.database.mapper.weindependent;
 
 import com.weindependent.app.database.dataobject.UserDO;
-import org.apache.ibatis.annotations.Mapper;
+import com.weindependent.app.web.User;
 
 import java.util.List;
 import java.util.Map;
@@ -14,4 +14,5 @@ public interface UserMapper {
     UserDO findByAccount(String account);
     int insert(UserDO user);
     UserDO findById(String id);
+    int updatePassword(@Param("id") int id, @Param("password") String password);
 }
