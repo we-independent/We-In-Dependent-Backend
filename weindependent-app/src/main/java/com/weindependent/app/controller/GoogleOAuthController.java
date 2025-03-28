@@ -1,9 +1,10 @@
 package com.weindependent.app.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.weindependent.app.convertor.UserConvertor;
+import com.weindependent.app.dto.GoogleUserDTO;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.service.GoogleOAuthService;
-import com.weindependent.app.vo.GoogleUserVO;
 import com.weindependent.app.database.dataobject.UserDO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,48 +38,31 @@ public class GoogleOAuthController {
   @Value("${google.scope}")
   private String scope;
 
-  /**
-   * Handles the Google OAuth login flow.
-   * <p>This method accepts an authorization code returned from Google's OAuth 2.0 consent screen,
-   * exchanges it for an access token, retrieves user profile info from Google,
-   * creates or fetches a corresponding user in the database, and logs the user in using Sa-Token.</p>
-   *
-   * @param code the authorization code from Google's OAuth callback
-   * @return a {@link GoogleUserVO} representing the authenticated user
-   * @throws RuntimeException if any part of the OAuth or user creation process fails
-   */
   @Operation(summary = "Google Login")
   @GetMapping("/google-login")
   @CrossOrigin(origins = "*")
-  public GoogleUserVO googleLogin(@RequestParam("code") String code) {
+  public GoogleUserDTO googleLogin(@RequestParam("code") String code) {
     Map<String, String> userInfo = googleOAuthService.exchangeCodeForUserInfo(code);
     if (!userInfo.containsKey("email")) {
       throw new RuntimeException("Failed to retrieve user info from Google");
     }
 
-    // Extract user details
+    // Extract user details from Google
     String email = userInfo.get("email");
     String name = userInfo.get("name");
 
-    // Step 3: Create or Retrieve User
-    UserDO user = new UserDO();
-    user.setEmail(email);
-    user.setAccount(email);
-    user.setRealName(name);
-    user.setLoginProvider("google");
-    user.setPassword(GOOGLE_PASSWORD);
-
-    GoogleUserVO foundUser;
-    foundUser = userService.findOrCreateGoogleUser(user);
+    UserDO foundUser = userService.findUserByAccount(email);
     if (foundUser == null || foundUser.getId() == null) {
-      throw new RuntimeException("User creation or retrieval failed: user ID is null");
+        GoogleUserDTO googleUserDTO = new GoogleUserDTO();
+        googleUserDTO.setRealName(name);
+        googleUserDTO.setAccount(email);
+        googleUserDTO.setNewUser(true);
+      return googleUserDTO;
     }
 
-    // Step 4: Authenticate with Sa-Token
     StpUtil.login(foundUser.getId());
-
     log.info("User {} google logged in successfully using email {}", name, email);
-    return foundUser;
+    return UserConvertor.toGoogleUserDTOEntity(foundUser,false);
   }
 
   /**

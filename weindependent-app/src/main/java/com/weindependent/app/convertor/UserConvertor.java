@@ -1,7 +1,7 @@
 package com.weindependent.app.convertor;
 
 import com.weindependent.app.database.dataobject.UserDO;
-import com.weindependent.app.vo.GoogleUserVO;
+import com.weindependent.app.dto.GoogleUserDTO;
 import com.weindependent.app.vo.UserVO;
 
 public class UserConvertor {
@@ -16,15 +16,15 @@ public class UserConvertor {
         return userVO;
     }
 
-    public static GoogleUserVO toGoogleUserVOEntity(UserDO userDO, boolean isNewUser) {
-        GoogleUserVO googleUserVO = new GoogleUserVO();
-        googleUserVO.setId(userDO.getId());
-        googleUserVO.setUserName(userDO.getRealName());
-        googleUserVO.setAccount(userDO.getAccount());
-        googleUserVO.setNewUser(isNewUser);
-        googleUserVO.setLoginProvider(userDO.getLoginProvider());
-        googleUserVO.setLanguage(userDO.getLanguage());
-        googleUserVO.setVisaType(userDO.getVisaType());
-        return googleUserVO;
+    public static GoogleUserDTO toGoogleUserDTOEntity(UserDO userDO, boolean isNewUser) {
+        GoogleUserDTO googleUserDTO = new GoogleUserDTO();
+        googleUserDTO.setId(userDO.getId());
+        googleUserDTO.setRealName(userDO.getRealName());
+        googleUserDTO.setAccount(userDO.getAccount());
+        googleUserDTO.setNewUser(isNewUser);
+        googleUserDTO.setLoginProvider(userDO.getLoginProvider());
+        googleUserDTO.setLanguage(userDO.getLanguage());
+        googleUserDTO.setVisaType(userDO.getVisaType());
+        return googleUserDTO;
     }
 }
