@@ -3,6 +3,7 @@ package com.weindependent.app.controller;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.temp.SaTempUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -30,6 +31,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,9 @@ public class UserController {
 
     @Resource
     private SendEmailService sendEmailService;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
 
     @SignatureAuth
@@ -169,9 +174,11 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
         Map<String, String> sendMailParams = new HashMap<>();
-        // TODO: connecting database to retrieve username and generate temp reset password link
-        sendMailParams.put("name", "Nero");
-        sendMailParams.put("link", "http://www.weindependent.org/?reset-password=true");
+        String email= sendMailQry.getEmail();;
+        UserDO user= userService.findUserByAccount(email);
+        sendMailParams.put("name", user.getRealName());
+        String token = SaTempUtil.createToken(user.getId(), 900);
+        sendMailParams.put("link", frontendUrl + "/?reset-password=true&token="+token);
         return sendEmailService.send(sendMailQry.getTemplateId(), sendMailQry.getEmail(), sendMailParams);
     }
 

@@ -2,7 +2,7 @@
 server:
   port: 8080
 frontend:
-  url: ${FRONTEND_URL:ttp://localhost:5173h}
+  url: ${FRONTEND_URL:http://localhost:5173}
 
 spring:
   datasource:
