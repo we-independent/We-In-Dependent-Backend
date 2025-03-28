@@ -176,6 +176,7 @@ public class UserController {
         Map<String, String> sendMailParams = new HashMap<>();
         String email= sendMailQry.getEmail();;
         UserDO user= userService.findUserByAccount(email);
+        if(user==null) return true; // no such user return true directly
         sendMailParams.put("name", user.getRealName());
         String token = SaTempUtil.createToken(user.getId(), 900);
         sendMailParams.put("link", frontendUrl + "/?reset-password=true&token="+token);
