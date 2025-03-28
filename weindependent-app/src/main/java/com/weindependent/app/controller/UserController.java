@@ -93,14 +93,21 @@ public class UserController {
     }
     @SignatureAuth
     @Operation(summary = "重置密码")
-    @PostMapping("/user/reset/password")
+    @PostMapping("/reset/password")
     @CrossOrigin(origins = "*")
-    public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry){
-        boolean success = userService.resetPassword(resetPasswordQry.getToken(), resetPasswordQry.getPassword());
-        if (success) {
-            log.info("Reset password successful for user: {}", resetPasswordQry.getToken());
-        } else {
-            log.info("Reset password failed");
+    public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry)throws Exception{
+        int success = userService.resetPassword(resetPasswordQry.getToken(), resetPasswordQry.getPassword());
+        if (success == 1) {
+            log.info("Reset password successful for user: {}");
+        } else if (success == -1){
+            log.info("Reset password failed because token does not exist.");
+            throw new ResponseException(-1, "Token does not exist or expired.");
+        } else if (success == -2){
+            log.info("Reset password failed because user does not exist.");
+            throw new ResponseException(-2, "User does not exist");
+        } else if (success == -3){
+            log.info("Reset password failed because cannot update in DB.");
+            throw new ResponseException(-3, "Cannot update in DB");
         }
     }
 

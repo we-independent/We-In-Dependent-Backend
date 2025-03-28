@@ -89,14 +89,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean resetPassword(String token, String newPassword){
+    public int resetPassword(String token, String newPassword){
         String user_id = SaTempUtil.parseToken(token, String.class);
+
+        long timeout = SaTempUtil.getTimeout(token);
+        if (timeout < 0){
+            return -1; //Token does not exist or expired.
+        } 
+
         UserDO user = userMapper.findById(user_id);
-        if (user == null) return false; //user does not exist
+        if (user == null) return -2; //user does not exist
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
-        if (userMapper.insert(user) <= 0) return false; //database insertion failed
-        return true;
+        if (userMapper.insert(user) <= 0) return -3; //database insertion failed
+        SaTempUtil.deleteToken(token);
+        return 1;
     }
 }
