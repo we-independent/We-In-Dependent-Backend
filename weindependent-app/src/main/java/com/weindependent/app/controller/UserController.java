@@ -97,8 +97,9 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry)throws Exception{
         int success = userService.resetPassword(resetPasswordQry.getToken(), resetPasswordQry.getPassword());
-        if (success == 1) {
+        if (success == 0) {
             log.info("Reset password successful for user: {}");
+            throw new ResponseException(0, "Reset Password successful.");
         } else if (success == -1){
             log.info("Reset password failed because token does not exist.");
             throw new ResponseException(-1, "Token does not exist or expired.");

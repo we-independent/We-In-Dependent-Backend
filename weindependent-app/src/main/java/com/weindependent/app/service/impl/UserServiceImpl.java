@@ -90,6 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int resetPassword(String token, String newPassword){
+        //temp token see reference https://sa-token.cc/doc.html#/plugin/temp-token?id=临时token令牌认证
         String user_id = SaTempUtil.parseToken(token, String.class);
 
         long timeout = SaTempUtil.getTimeout(token);
@@ -102,8 +103,8 @@ public class UserServiceImpl implements UserService {
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
-        if (userMapper.updatePassword(Integer.parseInt(user_id), hashedPassword) <= 0) return -3; //database insertion failed
+        if (userMapper.updatePassword(Integer.parseInt(user_id), hashedPassword) <= 0) return -3; //database update failed
         SaTempUtil.deleteToken(token);
-        return 1;
+        return 0; //success
     }
 }
