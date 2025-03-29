@@ -77,6 +77,7 @@ public class UserController {
 
         SaLoginModel loginModel = new SaLoginModel();
         loginModel.setExtra("username", user.getRealName());
+        loginModel.setIsLastingCookie(loginQry.getRememberMe());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
