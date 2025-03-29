@@ -72,12 +72,12 @@ public class UserController {
 
         if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(loginQry.getPassword(), user.getPassword())) {
             log.error("Login failed for user: {}", loginQry.getEmail());
-            throw new ResponseException(401, "Invalid username or password");
+            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
         }
 
         SaLoginModel loginModel = new SaLoginModel();
         loginModel.setExtra("username", user.getRealName());
-        loginModel.setIsLastingCookie(loginQry.getRememberMe());
+        loginModel.setIsLastingCookie(loginQry.getRemember());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
@@ -97,19 +97,16 @@ public class UserController {
     @PostMapping("/reset/password")
     @CrossOrigin(origins = "*")
     public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry)throws Exception{
-        int success = userService.resetPassword(resetPasswordQry.getToken(), resetPasswordQry.getPassword());
+        String token = resetPasswordQry.getToken();
+        int success = userService.resetPassword(token, resetPasswordQry.getPassword());
         if (success == 0) {
-            log.info("Reset password successful for user: {}");
-            throw new ResponseException(0, "Reset Password successful.");
-        } else if (success == -1){
-            log.info("Reset password failed because token does not exist.");
-            throw new ResponseException(-1, "Token does not exist or expired.");
-        } else if (success == -2){
-            log.info("Reset password failed because user does not exist.");
-            throw new ResponseException(-2, "User does not exist");
-        } else if (success == -3){
-            log.info("Reset password failed because cannot update in DB.");
-            throw new ResponseException(-3, "Cannot update in DB");
+            return;
+        } else if (success == ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode()){
+            throw new ResponseException(ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode(), ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getTitle());
+        } else if (success == ErrorCode.USER_NOT_EXIST.getCode()){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
+        } else if (success == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), ErrorCode.UPDATE_DB_FAILED.getTitle());
         }
     }
 
@@ -185,7 +182,9 @@ public class UserController {
         Map<String, String> sendMailParams = new HashMap<>();
         String email= sendMailQry.getEmail();;
         UserDO user= userService.findUserByAccount(email);
-        if(user==null) return true; // no such user return true directly
+        if(user == null) {
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle()); // no such user return true directly
+        }
         sendMailParams.put("name", user.getRealName());
         String token = SaTempUtil.createToken(user.getId(), 900);
         sendMailParams.put("link", frontendUrl + "/?reset-password=true&token="+token);

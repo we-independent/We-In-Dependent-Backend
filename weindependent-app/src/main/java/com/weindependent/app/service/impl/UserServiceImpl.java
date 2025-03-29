@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.UserConvertor;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
+import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.service.EmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -13,6 +14,7 @@ import com.weindependent.app.vo.UserVO;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
@@ -21,6 +23,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Resource
@@ -91,20 +94,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public int resetPassword(String token, String newPassword){
         //temp token see reference https://sa-token.cc/doc.html#/plugin/temp-token?id=临时token令牌认证
-        String user_id = SaTempUtil.parseToken(token, String.class);
+        String userId = SaTempUtil.parseToken(token, String.class);
 
         long timeout = SaTempUtil.getTimeout(token);
         if (timeout < 0){
-            return -1; //Token does not exist or expired.
-        } 
+            log.info("Reset password failed because token does not exist for userId: {}.", userId);
+            return ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode(); //Token does not exist or expired.
+        }
 
-        UserDO user = userMapper.findById(user_id);
-        if (user == null) return -2; //user does not exist
+        UserDO user = userMapper.findById(userId);
+        if (user == null) {
+            log.info("Reset password failed because user does not exist for userId: {}.", userId);
+            return ErrorCode.USER_NOT_EXIST.getCode(); //user does not exist
+        }
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
-        if (userMapper.updatePassword(Integer.parseInt(user_id), hashedPassword) <= 0) return -3; //database update failed
+        if (userMapper.updatePassword(Integer.parseInt(userId), hashedPassword) <= 0) {
+            log.info("Reset password failed because cannot update in DB for userId: {}.", userId);
+            return ErrorCode.UPDATE_DB_FAILED.getCode(); //database update failed
+        }
+
         SaTempUtil.deleteToken(token);
+        log.info("Reset password successful for userId: {}.", userId);
         return 0; //success
     }
 }
