@@ -12,6 +12,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -83,7 +84,14 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
     private String getEmailHtml(Map<String, String> params) throws IOException {
         Resource resource = resourceLoader.getResource(RESET_PASSWORD_HTML);
         try (InputStream inputStream = resource.getInputStream()) {
-            String html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024]; // 或者其他合适的缓冲区大小
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+            String html = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
             // 替換模板中的 {{key}} 為參數值
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 html = html.replace("{{" + entry.getKey() + "}}", entry.getValue());
