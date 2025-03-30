@@ -6,6 +6,8 @@ import com.weindependent.app.dto.GoogleUserDTO;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.service.GoogleOAuthService;
 import com.weindependent.app.database.dataobject.UserDO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +18,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@Tag(name = "Google OAuth")
+@Tag(name = "谷歌验证管理")
 @Slf4j
 @RestController
 @RequestMapping(value = "/auth", produces = "application/json;charset=UTF-8")
 public class GoogleOAuthController {
 
-  public static final String GOOGLE_PASSWORD = "googlegoogle";
+//  public static final String GOOGLE_PASSWORD = "googlegoogle";
   @Resource
   private UserService userService;
 

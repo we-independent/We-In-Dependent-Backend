@@ -5,9 +5,13 @@ import com.weindependent.app.exception.SignatureAuthException;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,17 @@ public class ExtHandlerMethodReturnValueHandler implements HandlerMethodReturnVa
 
     @Override
     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+        // 排除 Swagger 相关请求
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) attrs).getRequest();
+            String uri = request.getRequestURI();
+            if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") || uri.startsWith("/webjars/swagger-ui")) {
+                handler.handleReturnValue(returnValue, returnType, mavContainer, webRequest); // Swagger 请求不处理
+                return;
+            }
+        }
+        // 非 Swagger 请求继续使用原有逻辑判断
         Map<String, Object> map = new HashMap<>();
         try {
             map.put("code", ErrorCode.SUCCESS.getCode());
@@ -41,18 +56,18 @@ public class ExtHandlerMethodReturnValueHandler implements HandlerMethodReturnVa
     }
 
     private Object getValue(Object returnValue) {
+        // 排除 Swagger 相关请求
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) attrs).getRequest();
+            String uri = request.getRequestURI();
+            if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") || uri.startsWith("/webjars/swagger-ui")) {
+                return returnValue;
+            }
+        }
+        // 非 Swagger 请求继续使用原有逻辑判断
 //        return returnValue instanceof List ? (ObjectUtils.isEmpty(returnValue) ? "[]" : getList(returnValue)) : (ObjectUtils.isEmpty(returnValue) ? "{}" : returnValue);
         return returnValue instanceof List ? (ObjectUtils.isEmpty(returnValue) ? "[]" : returnValue) : (ObjectUtils.isEmpty(returnValue) ? "{}" : returnValue);
-    }
-
-    private Map getList(Object returnValue) {
-        Map map = new HashMap();
-        map.put("data", returnValue);
-        map.put("pageSize", 20);
-        map.put("pageNo", 1);
-        map.put("totalCount", 200);
-        map.put("totalPage", 10);
-        return map;
     }
 
 }

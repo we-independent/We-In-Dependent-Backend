@@ -5,6 +5,9 @@ frontend:
   url: ${FRONTEND_URL:http://localhost:5173}
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
     url: jdbc:mysql://mysql.sqlpub.com:3306/weindependent?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: wi_user
@@ -78,6 +81,11 @@ sa-token:
 #是否激活 swagger true or false
 swagger:
   enable: true
+
+springdoc:
+  swagger-ui:
+    enabled: true # 开启swagger界面
+    disable-swagger-default-url: true
 
 service:
   weindependent:

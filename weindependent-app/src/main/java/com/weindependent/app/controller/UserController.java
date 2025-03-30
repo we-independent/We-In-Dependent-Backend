@@ -16,12 +16,9 @@ import com.weindependent.app.dto.SendMailQry;
 import com.weindependent.app.dto.ResetPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.EmailService;
 import com.weindependent.app.service.SendEmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
-//import io.swagger.annotations.Api;
-//import io.swagger.annotations.ApiOperation;
 import com.weindependent.app.vo.UserVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,12 +29,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-//@Api(tags = "用户管理")
 @Tag(name = "用户管理")
 @Slf4j
 @RestController
@@ -176,6 +170,7 @@ public class UserController {
 //    }
 
 //    @SignatureAuth
+    @Operation(summary = "发送邮件")
     @PostMapping("/send/email")
     @CrossOrigin(origins = "*")
     public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
@@ -194,6 +189,7 @@ public class UserController {
 
 
     @SignatureAuth
+    @Operation(summary = "用户列表")
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
     public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
