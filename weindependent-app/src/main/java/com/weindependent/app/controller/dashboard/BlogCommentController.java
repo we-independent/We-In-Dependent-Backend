@@ -25,7 +25,7 @@ import com.weindependent.app.service.IBlogCommentService;
  * 博客评论Controller
  * 
  * @author christina
- * @date 2025-03-23
+ * 2025-03-23
  */
 @Tag(name = "博客评论管理")
 @RestController

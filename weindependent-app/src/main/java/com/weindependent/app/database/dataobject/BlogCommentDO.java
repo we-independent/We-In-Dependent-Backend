@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * 博客评论对象 blog_comment
  * 
  * @author christina
- * @date 2025-03-23
+ *    2025-03-23
  */
 @Data
 public class BlogCommentDO

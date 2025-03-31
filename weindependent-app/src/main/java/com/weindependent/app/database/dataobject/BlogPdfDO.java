@@ -11,7 +11,7 @@ import java.util.Date;
  * 博客文章pdf对象 blog_pdf
  * 
  * @author christina
- * @date 2025-03-23
+ *    2025-03-23
  */
 @Data
 public class BlogPdfDO

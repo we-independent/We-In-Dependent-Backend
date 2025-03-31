@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * dashboard 查询包含 isDeleted=1 的 record
  * 
  * @author christina
- * @date 2025-03-23
+ *    2025-03-23
  */
 @Mapper
 public interface BlogCommentMapper 
