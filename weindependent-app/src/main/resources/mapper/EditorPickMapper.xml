@@ -17,13 +17,23 @@
     </delete>
 
     <select id="findEditorPickArticleIds" resultType="java.lang.Integer">
-        SELECT article_id FROM editor_picks
+        SELECT article_id
+        FROM editor_pick
+        WHERE status = 1
         ORDER BY create_time DESC
         LIMIT #{limit}
     </select>
 
     <select id="isEditorPick" resultType="boolean">
-        SELECT COUNT(*) > 0 FROM editor_picks WHERE article_id = #{articleId}
+        SELECT COUNT(1) > 0
+        FROM editor_pick
+        WHERE article_id = #{articleId} AND status = 1
     </select>
+
+    <update id="updateStatusByArticleId">
+        UPDATE editor_pick
+        SET status = #{status}
+        WHERE article_id = #{articleId}
+    </update>
 
 </mapper>

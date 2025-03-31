@@ -48,7 +48,7 @@ public class EditorPickController {
     @PostMapping("/{articleId}")
     public Map<String, Object> addEditorPickArticle(
         @PathVariable Integer articleId,
-        @RequestParam Integer userId){
+        @RequestParam(defaultValue = "1") Integer userId){
             Map<String, Object> result = new HashMap<>();
         
             try {

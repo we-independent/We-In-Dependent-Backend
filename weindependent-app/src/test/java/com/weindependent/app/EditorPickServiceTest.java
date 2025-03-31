@@ -89,12 +89,17 @@ public class EditorPickServiceTest {
         when(blogArticleMapper.findById(123)).thenReturn(article);
         
         when(editorPickMapper.insert(any(EditorPickDO.class))).thenReturn(1);
-
+    
         boolean result = editorPickService.addEditorPickArticle(123, 456);
-
+    
         assertTrue(result);
         
-        Mockito.verify(editorPickMapper).insert(any(EditorPickDO.class));
+        // 使用argThat进行更详细的验证
+        Mockito.verify(editorPickMapper).insert(Mockito.argThat(editorPick -> 
+            editorPick.getArticleId() == 123 && 
+            editorPick.getCreateUserId() == 456 && 
+            editorPick.getStatus() == 1 // 验证状态被设置为有效
+        ));
     }
     
     @Test
@@ -149,26 +154,26 @@ public class EditorPickServiceTest {
 
     @Test
     public void testRemoveEditorPickArticle() {
-        // Mock editorPickMapper的删除方法
-        when(editorPickMapper.deleteByArticleId(123)).thenReturn(1);
-
+        // Mock editorPickMapper的更新状态方法
+        when(editorPickMapper.updateStatusByArticleId(123, 0)).thenReturn(1);
+    
         boolean result = editorPickService.removeEditorPickArticle(123);
-
+    
         assertTrue(result);
         
-        Mockito.verify(editorPickMapper).deleteByArticleId(123);
+        // 验证调用的是状态更新方法，而不是物理删除方法
+        Mockito.verify(editorPickMapper).updateStatusByArticleId(123, 0);
     }
     
     @Test
     public void testRemoveEditorPickArticleNotExist() {
-        // Mock editorPickMapper的删除方法，返回0表示没有删除任何记录
-        when(editorPickMapper.deleteByArticleId(123)).thenReturn(0);
-
+        // Mock editorPickMapper的更新状态方法，返回0表示没有更新任何记录
+        when(editorPickMapper.updateStatusByArticleId(123, 0)).thenReturn(0);
+    
         boolean result = editorPickService.removeEditorPickArticle(123);
-
+    
         assertFalse(result);
     }
-
     @Test
     public void testIsEditorPickArticle() {
         // Mock editorPickMapper的isEditorPick方法

@@ -51,12 +51,14 @@ public class EditorPickServiceImpl implements EditorPickService {
         EditorPickDO editorPick = new EditorPickDO();
         editorPick.setArticleId(articleId);
         editorPick.setCreateUserId(userId);
+        editorPick.setStatus(1);
         return editorPickMapper.insert(editorPick) > 0;
     }
 
     @Override
     public boolean removeEditorPickArticle(Integer articleId) {
-        return editorPickMapper.deleteByArticleId(articleId) > 0;
+        // 逻辑删除，将状态设置为无效
+        return editorPickMapper.updateStatusByArticleId(articleId, 0) > 0;
     }   
 
     @Override

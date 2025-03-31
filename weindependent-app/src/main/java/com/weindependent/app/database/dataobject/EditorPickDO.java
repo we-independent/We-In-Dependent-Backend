@@ -9,6 +9,7 @@ public class EditorPickDO {
     private Integer articleId;
     private Date createTime;
     private Integer createUserId;
+    private Integer status; // 0:无效/已删除, 1:有效
 
 }
 
