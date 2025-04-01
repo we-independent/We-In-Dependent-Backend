@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.TagDO;
+import com.weindependent.app.dto.CategoryQry;
+import com.weindependent.app.dto.TagQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +44,10 @@ public class TagController
     @SignatureAuth
     @Operation(summary = "查询标签列表")
     @GetMapping("/list")
-    public PageInfo<TagDO> list(@RequestBody Map<String, Object> requestMap)
+    public PageInfo<TagDO> list(@RequestBody TagQry tagQry)
     {
-        int pageNum = (int) requestMap.get("pageNum");
-        int pageSize = (int) requestMap.get("pageSize");
-        JSONObject jsonObject = JSON.parseObject((String) requestMap.get("data"));
-        TagDO tag = jsonObject.toJavaObject(TagDO.class);
-        return  tagService.selectTagList(tag, pageNum, pageSize);
+
+        return  tagService.selectTagList(tagQry);
     }
 
 

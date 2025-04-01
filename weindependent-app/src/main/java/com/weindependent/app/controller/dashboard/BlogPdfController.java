@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
+import com.weindependent.app.dto.BlogPdfQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,13 +46,9 @@ public class BlogPdfController
     @SignatureAuth
     @Operation(summary = "查询博客文章pdf列表")
     @GetMapping("/list")
-    public PageInfo<BlogPdfDO> list(@RequestBody Map<String, Object> requestMap)
+    public PageInfo<BlogPdfDO> list(@RequestBody BlogPdfQry blogPdfQry)
     {
-        int pageNum = (int) requestMap.get("pageNum");
-        int pageSize = (int) requestMap.get("pageSize");
-        JSONObject jsonObject = JSON.parseObject((String) requestMap.get("data"));
-        BlogPdfDO blogPdf =  jsonObject.toJavaObject(BlogPdfDO.class);
-        return  blogPdfService.selectBlogPdfList(blogPdf, pageNum, pageSize);
+        return blogPdfService.selectBlogPdfList(blogPdfQry);
     }
 
     /**

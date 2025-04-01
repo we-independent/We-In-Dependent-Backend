@@ -5,9 +5,12 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.database.mapper.dashboard.BlogPdfMapper;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
+import com.weindependent.app.dto.BlogPdfQry;
 import com.weindependent.app.utils.PageInfoUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,17 +44,17 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     /**
      * 查询博客文章pdf列表
      * 
-     * @param blogPdf 博客文章pdf
+     * @param blogPdfQry 博客文章pdf查询模板
      * @return 博客文章pdf
      */
     @Override
-    public PageInfo<BlogPdfDO> selectBlogPdfList(BlogPdfDO blogPdf, int pageNum, int pageSize)
+    public PageInfo<BlogPdfDO> selectBlogPdfList(BlogPdfQry blogPdfQry)
     {
-        PageHelper.startPage(pageNum, pageSize);
-        List<BlogPdfDO> BlogPdfDOList =  blogPdfMapper.selectBlogPdfList(blogPdf);
-        PageInfo<BlogPdfDO> BlogPdfDOPageInfo = new PageInfo<>(BlogPdfDOList);
-        return PageInfoUtil.pageInfo2DTO(BlogPdfDOPageInfo, BlogPdfDO.class);
-
+        BlogPdfDO blogPdfDO = new BlogPdfDO();
+        BeanUtils.copyProperties(blogPdfQry, blogPdfDO);
+        List<BlogPdfDO> list = blogPdfMapper.selectBlogPdfList(blogPdfDO);
+        PageInfo<BlogPdfDO> pageInfo = new PageInfo<>(list);
+        return PageInfoUtil.pageInfo2DTO(pageInfo,BlogPdfDO.class);
     }
 
     /**

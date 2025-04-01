@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
+import com.weindependent.app.dto.BlogCommentQry;
 
 /**
  * 博客评论Service接口
@@ -24,10 +25,10 @@ public interface IBlogCommentService
     /**
      * 查询博客评论列表
      * 
-     * @param blogComment 博客评论
+     * @param blogCommentQry 博客评论查找模板
      * @return 博客评论集合
      */
-    PageInfo<BlogCommentDO> selectBlogCommentList(BlogCommentDO blogComment, int pageNum, int pageSize);
+    PageInfo<BlogCommentDO> selectBlogCommentList(BlogCommentQry blogCommentQry);
 
     /**
      * 新增博客评论

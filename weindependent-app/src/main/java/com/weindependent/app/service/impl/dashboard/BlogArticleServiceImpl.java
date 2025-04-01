@@ -5,9 +5,12 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.database.mapper.dashboard.BlogArticleMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.utils.PageInfoUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,18 +49,18 @@ public class BlogArticleServiceImpl implements IBlogArticleService
     /**
      * 查询博客文章列表
      * 
-     * @param blogArticle 博客文章
+     * @param blogArticleQry 博客文章
      * @return 博客文章
      */
     @Override
-    public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleDO blogArticle,int pageNum,int pageSize)
+    public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleQry blogArticleQry)
     {
-        PageHelper.startPage(pageNum, pageSize);
-        List<BlogArticleDO> BlogArticleDOList =  blogArticleMapper.selectBlogArticleList(blogArticle);
-        PageInfo<BlogArticleDO> BlogArticleDOPageInfo = new PageInfo<>(BlogArticleDOList);
-        return PageInfoUtil.pageInfo2DTO(BlogArticleDOPageInfo, BlogArticleDO.class);
-
-
+        BlogArticleDO blogArticleDO = new BlogArticleDO();
+        BeanUtils.copyProperties(blogArticleDO,blogArticleDO);
+        PageHelper.startPage(blogArticleQry.getPageNum(), blogArticleQry.getPageSize());
+        List<BlogArticleDO> BlogArticleDOList = blogArticleMapper.selectBlogArticleList(blogArticleDO);
+        PageInfo<BlogArticleDO> PageInfo = new PageInfo<>(BlogArticleDOList);
+        return PageInfoUtil.pageInfo2DTO(PageInfo, BlogArticleDO.class);
     }
 
     /**

@@ -7,8 +7,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.CategoryDO;
+import com.weindependent.app.dto.CategoryQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,7 +31,7 @@ import com.weindependent.app.service.ICategoryService;
  */
 @Tag(name = "分类管理")
 @RestController
-@RequestMapping("/dashboard/category")
+@RequestMapping("api/dashboard/category")
 public class CategoryController
 {
     private final ICategoryService categoryService;
@@ -43,17 +45,12 @@ public class CategoryController
      */
     @SignatureAuth
     @Operation(summary = "查询分类列表")
-    @GetMapping("/list")
-    public PageInfo<CategoryDO> list(@RequestBody Map<String, Object> requestMap)
+    @PostMapping("/list")
+
+    public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry)
     {
-        int pageNum = (int) requestMap.get("pageNum");
-        int pageSize = (int) requestMap.get("pageSize");
-        JSONObject jsonObject = JSON.parseObject((String) requestMap.get("data"));
-        CategoryDO category =jsonObject.toJavaObject(CategoryDO.class);
-        return categoryService.selectCategoryList(category, pageNum, pageSize);
+        return categoryService.selectCategoryList(categoryQry);
     }
-
-
 
     /**
      * 获取分类详细信息
@@ -73,6 +70,8 @@ public class CategoryController
     @PostMapping
     public boolean add(@RequestBody CategoryDO category)
     {
+        category.setCreateUserId(1);
+        category.setUpdateUserId(1);
         return categoryService.insertCategory(category) > 0;
     }
 

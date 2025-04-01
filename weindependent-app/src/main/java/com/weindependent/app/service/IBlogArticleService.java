@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.dto.BlogArticleQry;
 
 
 /**
@@ -25,10 +26,10 @@ public interface IBlogArticleService
     /**
      * 查询博客文章列表
      * 
-     * @param blogArticle 博客文章
+     * @param blogArticleQry 博客文章查询模板
      * @return 博客文章集合
      */
-    public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleDO blogArticle,int pageNum,int pageSize);
+    public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleQry blogArticleQry);
 
     /**
      * 新增博客文章

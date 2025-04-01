@@ -1,14 +1,20 @@
 package com.weindependent.app.controller.dashboard;
 
+import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
+import com.weindependent.app.database.dataobject.CategoryDO;
+import com.weindependent.app.dto.BlogCommentQry;
+import com.weindependent.app.utils.PageInfoUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,6 +41,7 @@ public class BlogCommentController
     private final IBlogCommentService blogCommentService;
 
     public BlogCommentController(IBlogCommentService blogCommentService) {
+
         this.blogCommentService = blogCommentService;
     }
 
@@ -44,13 +51,12 @@ public class BlogCommentController
     @SignatureAuth
     @Operation(summary = "查询博客评论列表")
     @GetMapping("/list")
-    public PageInfo<BlogCommentDO> list(@RequestBody Map<String, Object> requestMap)
+    public PageInfo<BlogCommentDO> list(@RequestBody BlogCommentQry blogCommentQry)
     {
-        int pageNum = (int) requestMap.get("pageNum");
-        int pageSize = (int) requestMap.get("pageSize");
-        JSONObject jsonObject = JSON.parseObject((String) requestMap.get("data"));
-        BlogCommentDO blogComment =  jsonObject.toJavaObject(BlogCommentDO.class);
-        return  blogCommentService.selectBlogCommentList(blogComment, pageNum, pageSize);
+
+
+        return  blogCommentService.selectBlogCommentList(blogCommentQry);
+
     }
 
     /**

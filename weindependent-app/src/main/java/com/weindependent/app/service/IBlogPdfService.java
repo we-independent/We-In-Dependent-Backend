@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
+import com.weindependent.app.dto.BlogPdfQry;
 
 /**
  * 博客文章pdfService接口
@@ -24,10 +25,10 @@ public interface IBlogPdfService
     /**
      * 查询博客文章pdf列表
      * 
-     * @param blogPdf 博客文章pdf
+     * @param blogPdfQry 博客文章pdf查询模板
      * @return 博客文章pdf集合
      */
-    public PageInfo<BlogPdfDO> selectBlogPdfList(BlogPdfDO blogPdf, int pageNum, int pageSize);
+    public PageInfo<BlogPdfDO> selectBlogPdfList(BlogPdfQry blogPdfQry);
 
     /**
      * 新增博客文章pdf

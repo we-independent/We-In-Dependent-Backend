@@ -5,9 +5,12 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.database.mapper.dashboard.TagMapper;
 import com.weindependent.app.database.dataobject.TagDO;
+import com.weindependent.app.dto.TagQry;
 import com.weindependent.app.utils.PageInfoUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,16 +44,18 @@ public class TagServiceImpl implements ITagService
     /**
      * 查询标签列表
      * 
-     * @param tag 标签
+     * @param tagQry 标签搜索模板
      * @return 标签
      */
     @Override
-    public PageInfo<TagDO> selectTagList(TagDO tag, int pageNum, int pageSize)
+    public PageInfo<TagDO> selectTagList(TagQry tagQry)
     {
-        PageHelper.startPage(pageNum, pageSize);
-        List<TagDO> TagDOList =  tagMapper.selectTagList(tag);
-        PageInfo<TagDO> TagDOPageInfo = new PageInfo<>(TagDOList);
-        return PageInfoUtil.pageInfo2DTO(TagDOPageInfo, TagDO.class);
+        TagDO tagDO = new TagDO();
+        BeanUtils.copyProperties(tagQry, tagDO);
+        PageHelper.startPage(tagQry.getPageNum(), tagQry.getPageSize());
+        List<TagDO> TagDOList = tagMapper.selectTagList(tagDO);
+        PageInfo<TagDO> pageInfo = new PageInfo<>(TagDOList);
+        return PageInfoUtil.pageInfo2DTO(pageInfo, TagDO.class);
     }
 
     /**

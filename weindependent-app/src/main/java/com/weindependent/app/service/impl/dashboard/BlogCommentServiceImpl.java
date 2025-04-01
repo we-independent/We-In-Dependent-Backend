@@ -5,9 +5,12 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.database.mapper.dashboard.BlogCommentMapper;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
+import com.weindependent.app.dto.BlogCommentQry;
 import com.weindependent.app.utils.PageInfoUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,17 +44,20 @@ public class BlogCommentServiceImpl implements IBlogCommentService
     /**
      * 查询博客评论列表
      * 
-     * @param blogComment 博客评论
+     * @param blogCommentQry 博客评论
      * @return 博客评论
      */
     @Override
-    public  PageInfo<BlogCommentDO>  selectBlogCommentList(BlogCommentDO blogComment,int pageNum,int pageSize)
+    public  PageInfo<BlogCommentDO>  selectBlogCommentList(BlogCommentQry blogCommentQry)
     {
 
-        PageHelper.startPage(pageNum, pageSize);
-        List<BlogCommentDO> BlogCommentDOList =  blogCommentMapper.selectBlogCommentList(blogComment);
-        PageInfo<BlogCommentDO> BlogCommentDOPageInfo = new PageInfo<>(BlogCommentDOList);
-        return PageInfoUtil.pageInfo2DTO(BlogCommentDOPageInfo, BlogCommentDO.class);
+        BlogCommentDO blogCommentDO = new BlogCommentDO();
+        BeanUtils.copyProperties(blogCommentQry,blogCommentDO);
+        PageHelper.startPage(blogCommentQry.getPageNum(), blogCommentQry.getPageSize());
+        List<BlogCommentDO>  blogCommentDOList =  blogCommentMapper.selectBlogCommentList(blogCommentDO);
+        PageInfo<BlogCommentDO> PageInfo = new PageInfo<>(blogCommentDOList);
+        return PageInfoUtil.pageInfo2DTO(PageInfo, BlogCommentDO.class);
+
 
     }
 

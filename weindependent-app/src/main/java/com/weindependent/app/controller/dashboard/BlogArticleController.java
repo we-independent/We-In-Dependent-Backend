@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.dto.BlogCommentQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -40,13 +42,9 @@ public class BlogArticleController
     @SignatureAuth
     @Operation(summary = "查询博客文章列表")
     @GetMapping("/list")
-    public PageInfo<BlogArticleDO> list(@RequestBody Map<String, Object> requestMap)
+    public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry)
     {
-        int pageNum = (int) requestMap.get("pageNum");
-        int pageSize = (int) requestMap.get("pageSize");
-        JSONObject jsonObject = JSON.parseObject((String) requestMap.get("data"));
-        BlogArticleDO blogArticle = jsonObject.toJavaObject(BlogArticleDO.class);
-        return blogArticleService.selectBlogArticleList(blogArticle, pageNum, pageSize);
+        return blogArticleService.selectBlogArticleList(blogArticleQry);
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.TagDO;
+import com.weindependent.app.dto.TagQry;
 
 /**
  * 标签Service接口
@@ -24,10 +25,10 @@ public interface ITagService
     /**
      * 查询标签列表
      * 
-     * @param tag 标签
+     * @param tagQry 标签查询模板
      * @return 标签集合
      */
-    public PageInfo<TagDO> selectTagList(TagDO tag, int pageNum, int pageSize);
+    public PageInfo<TagDO> selectTagList(TagQry tagQry);
 
     /**
      * 新增标签
