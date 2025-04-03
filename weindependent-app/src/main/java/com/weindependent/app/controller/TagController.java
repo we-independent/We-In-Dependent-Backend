@@ -24,6 +24,7 @@ public class TagController {
     public List<TagDO> getTags(@RequestParam(required = false) String category) throws Exception {
         if (category != null) {
             return tagService.getTagsByCategory(category);
+            
         }
         return tagService.getAllTags();
     }
