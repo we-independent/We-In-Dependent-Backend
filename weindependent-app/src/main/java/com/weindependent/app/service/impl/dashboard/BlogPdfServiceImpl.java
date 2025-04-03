@@ -163,7 +163,7 @@ public class BlogPdfServiceImpl implements IBlogPdfService
             PdfRendererBuilder builder = new PdfRendererBuilder();
             String fontPath = this.getClass().getClassLoader().getResource("fonts/NotoSansSC-Regular.ttf").getPath();
             builder.useFastMode();  // 更换模式
-            builder.withHtmlContent(html, null);
+            builder.withHtmlContent(safeHtml, null);
             builder.useFont(
             new File(fontPath),
             "Noto Sans SC",
