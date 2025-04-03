@@ -155,6 +155,8 @@ public class BlogPdfServiceImpl implements IBlogPdfService
 
         // 3. 渲染 HTML 字符串
         String html = templateEngine.process("blog_pdf_template", context);
+        // 3.1 清洗 HTML 中的非法 & 符号，避免 PDF 渲染异常
+        String safeHtml = HtmlSanitizerUtil.cleanHtmlForXml(html);
         
         // 4. 用 OpenHTMLtoPDF 渲染为 PDF
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
