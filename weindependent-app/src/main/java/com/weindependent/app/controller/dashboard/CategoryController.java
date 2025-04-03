@@ -1,17 +1,12 @@
 package com.weindependent.app.controller.dashboard;
 
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.dto.CategoryQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,10 +41,9 @@ public class CategoryController
     @SignatureAuth
     @Operation(summary = "查询分类列表")
     @PostMapping("/list")
-
     public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry)
     {
-        return categoryService.selectCategoryList(categoryQry);
+        return categoryService.selectCategoryListPage(categoryQry);
     }
 
     /**
