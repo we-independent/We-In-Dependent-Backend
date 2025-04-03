@@ -10,6 +10,7 @@ This merge request adds the capability to export blog articles as PDF documents,
 - `GET /dashboard/pdf/export/{blogId}` API endpoint
 - Thymeleaf HTML template `blog_pdf_template.html`
 - PDF rendering logic using `openhtmltopdf` in `BlogPdfServiceImpl`
+- HTML cleaning function: `HtmlSanitizerUtil.java` in `utils`
 - Branch-level documentation: `README-feature-blog-pdf.md`
 
 ### 🧱 Modified
@@ -32,7 +33,7 @@ This merge request adds the capability to export blog articles as PDF documents,
 - Updated `application.yaml`:
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/weindependent_career
+    url: jdbc:mysql://localhost:3306/
     username: root
     password: rootroot
 Commented out @SignatureAuth for local access:
@@ -61,6 +62,7 @@ README-feature-blog-pdf.md	Added	Branch-specific documentation
 - [x] Thymeleaf template prepared
 - [x] Thymeleaf dependency added to `pom.xml`
 - [x] Local testing completed
+- [x] Swagger-UI testing completed
 - [ ] Input parameter validation to be improved
 - [ ] Security annotation (`@SignatureAuth`) to be re-enabled
 
