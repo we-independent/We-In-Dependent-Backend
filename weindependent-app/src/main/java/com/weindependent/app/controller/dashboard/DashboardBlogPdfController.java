@@ -27,7 +27,7 @@ import com.weindependent.app.service.IBlogPdfService;
  */
 @Tag(name = "博客文章pdf管理")
 @RestController
-@RequestMapping("/dashboard/pdf")
+@RequestMapping("api/dashboard/pdf")
 public class DashboardBlogPdfController
 {
     private final IBlogPdfService blogPdfService;
@@ -41,7 +41,7 @@ public class DashboardBlogPdfController
      */
     @SignatureAuth
     @Operation(summary = "查询博客文章pdf列表")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public PageInfo<BlogPdfDO> list(@RequestBody BlogPdfQry blogPdfQry)
     {
         return blogPdfService.selectBlogPdfList(blogPdfQry);
@@ -66,6 +66,8 @@ public class DashboardBlogPdfController
     @PostMapping
     public boolean add(@RequestBody BlogPdfDO blogPdf)
     {
+        blogPdf.setCreateUserId(1);
+        blogPdf.setUpdateUserId(1);
         return blogPdfService.insertBlogPdf(blogPdf) > 0;
     }
 
@@ -77,6 +79,7 @@ public class DashboardBlogPdfController
     @PutMapping
     public boolean edit(@RequestBody BlogPdfDO blogPdf)
     {
+
         return blogPdfService.updateBlogPdf(blogPdf) > 0;
     }
 

@@ -26,7 +26,7 @@ import com.weindependent.app.service.IBlogCommentService;
  */
 @Tag(name = "博客评论管理")
 @RestController
-@RequestMapping("/dashboard/comment")
+@RequestMapping("api/dashboard/comment")
 public class DashboardBlogCommentController
 {
     private final IBlogCommentService blogCommentService;
@@ -41,7 +41,7 @@ public class DashboardBlogCommentController
      */
     @SignatureAuth
     @Operation(summary = "查询博客评论列表")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public PageInfo<BlogCommentDO> list(@RequestBody BlogCommentQry blogCommentQry)
     {
 
@@ -69,6 +69,8 @@ public class DashboardBlogCommentController
     @PostMapping
     public boolean add(@RequestBody BlogCommentDO blogComment)
     {
+        blogComment.setCreateUserId(1);
+        blogComment.setUpdateUserId(1);
         return blogCommentService.insertBlogComment(blogComment) > 0;
     }
 
