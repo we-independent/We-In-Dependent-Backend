@@ -5,18 +5,18 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 标签对象 tag
+ * 分类对象 category
  * 
- * @author chistina
+ * @author christina
  *    2025-03-23
  */
 @Data
-public class TagDO
+public class CategoryDO
 {
-    /** 标签ID **/
+    /** 分类ID */
     private Integer id;
 
-    /** tag名称 */
+    /** 分类名称 */
     private String name;
 
     /** 0-未删除, 1-已删除 */

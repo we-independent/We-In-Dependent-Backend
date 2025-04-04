@@ -1,23 +1,26 @@
-package com.weindependent.app.database.dataobject;
+package com.weindependent.app.dto;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
-/**
- * 标签对象 tag
- * 
- * @author chistina
- *    2025-03-23
- */
 @Data
-public class TagDO
-{
-    /** 标签ID **/
+public class BlogCommentQry {
+
+    /** 评论ID */
     private Integer id;
 
-    /** tag名称 */
-    private String name;
+    /** 文章ID */
+    private Integer articleId;
+
+    /** 上级评论ID */
+    private Integer parentCommentId;
+
+    /** 评论内容 */
+    private String content;
+
+    /** 评论者ID */
+    private Integer commentAuthorUserId;
 
     /** 0-未删除, 1-已删除 */
     private Boolean isDeleted;
@@ -34,4 +37,7 @@ public class TagDO
     /** 最后更新时间 */
     private LocalDateTime  updateTime;
 
+    private  Integer pageNum;
+
+    private  Integer pageSize;
 }

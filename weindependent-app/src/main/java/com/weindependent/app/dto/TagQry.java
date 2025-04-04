@@ -1,17 +1,10 @@
-package com.weindependent.app.database.dataobject;
+package com.weindependent.app.dto;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
-
-/**
- * 标签对象 tag
- * 
- * @author chistina
- *    2025-03-23
- */
 @Data
-public class TagDO
+public class TagQry
 {
     /** 标签ID **/
     private Integer id;
@@ -34,4 +27,6 @@ public class TagDO
     /** 最后更新时间 */
     private LocalDateTime  updateTime;
 
+    private  Integer pageNum;
+    private  Integer pageSize;
 }

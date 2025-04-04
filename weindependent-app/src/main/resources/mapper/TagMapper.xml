@@ -11,8 +11,8 @@
 
     <select id = "getTagsByCategoryName" parameterType="string" resultType="com.weindependent.app.database.dataobject.TagDO">
         SELECT t.id, t.name FROM tag t
-        JOIN tag_category_relation tcr ON t.id = tcr.tag_id
-        JOIN category c ON c.id = tcr.category_id
+                                     JOIN tag_category_relation tcr ON t.id = tcr.tag_id
+                                     JOIN category c ON c.id = tcr.category_id
         WHERE c.name = #{category} AND t.is_deleted = 0;
     </select>
 </mapper>
