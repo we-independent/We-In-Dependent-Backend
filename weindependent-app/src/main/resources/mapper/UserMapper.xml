@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.UserMapper">
+    <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user
+      <where>
+          <if test="username!=null and username!=''">
+              AND account = #{username}
+          </if>
+          <if test="email!=null and email!=''">
+              AND email = #{email}
+          </if>
+          <if test="password!=null and password!=''">
+              AND password = #{password}
+          </if>
+      </where>
+
+    </select>
+
+    <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user
+    </select>
+
+    <select id="findByAccount" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE account = #{account}
+    </select>
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        INSERT INTO t_system_user (account, password, real_name, login_provider)
+        VALUES (#{account}, #{password}, #{realName}, #{loginProvider})
+        ON DUPLICATE KEY UPDATE last_login_time = NOW();
+    </insert>
+
+    <select id="findById" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE id = #{id}
+    </select>
+
+    <update id="updatePassword" parameterType="map">
+        UPDATE t_system_user SET password = #{password} WHERE id = #{id}
+    </update>
+</mapper>
