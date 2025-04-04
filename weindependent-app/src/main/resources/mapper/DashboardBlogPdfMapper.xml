@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.weindependent.app.database.mapper.dashboard.BlogPdfMapper">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogPdfMapper">
     
     <resultMap type="BlogPdfDO" id="BlogPdfResult">
         <result property="id"    column="id"    />

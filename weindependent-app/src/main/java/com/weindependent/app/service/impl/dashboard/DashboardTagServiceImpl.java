@@ -5,8 +5,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.CategoryDO;
-import com.weindependent.app.database.mapper.dashboard.TagMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.dto.TagQry;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -24,10 +23,10 @@ import com.weindependent.app.service.ITagService;
  *   2025-03-23
  */
 @Service
-public class TagServiceImpl implements ITagService 
+public class DashboardTagServiceImpl implements ITagService
 {
     @Autowired
-    private TagMapper tagMapper;
+    private DashboardTagMapper dashboardTagMapper;
 
     /**
      * 查询标签
@@ -38,7 +37,7 @@ public class TagServiceImpl implements ITagService
     @Override
     public TagDO selectTagById(Integer id)
     {
-        return tagMapper.selectTagById(id);
+        return dashboardTagMapper.selectTagById(id);
     }
 
     /**
@@ -53,7 +52,7 @@ public class TagServiceImpl implements ITagService
         TagDO tagDO = new TagDO();
         BeanUtils.copyProperties(tagQry, tagDO);
         PageHelper.startPage(tagQry.getPageNum(), tagQry.getPageSize());
-        List<TagDO> TagDOList = tagMapper.selectTagList(tagDO);
+        List<TagDO> TagDOList = dashboardTagMapper.selectTagList(tagDO);
         PageInfo<TagDO> pageInfo = new PageInfo<>(TagDOList);
         return PageInfoUtil.pageInfo2DTO(pageInfo, TagDO.class);
     }
@@ -72,17 +71,17 @@ public class TagServiceImpl implements ITagService
     @Override
     public int insertTag(TagDO newTag)
     {
-        TagDO existTag=tagMapper.selectTagByName(newTag.getName());
+        TagDO existTag= dashboardTagMapper.selectTagByName(newTag.getName());
         if(existTag!=null){
             if(existTag.getIsDeleted()){
-                tagMapper.recoverTag(existTag);
+                dashboardTagMapper.recoverTag(existTag);
                 return 0;
             }else{
                 return 0;
             }
         }
         newTag.setCreateTime(LocalDateTime.now());
-        return tagMapper.insertTag(newTag);
+        return dashboardTagMapper.insertTag(newTag);
     }
 
     /**
@@ -95,7 +94,7 @@ public class TagServiceImpl implements ITagService
     public int updateTag(TagDO tag)
     {
         tag.setUpdateTime(LocalDateTime.now());
-        return tagMapper.updateTag(tag);
+        return dashboardTagMapper.updateTag(tag);
     }
 
     /**
@@ -107,7 +106,7 @@ public class TagServiceImpl implements ITagService
     @Override
     public int deleteTagByIds(Integer[] ids)
     {
-        return tagMapper.deleteTagByIds(ids);
+        return dashboardTagMapper.deleteTagByIds(ids);
     }
 
     /**
@@ -119,6 +118,6 @@ public class TagServiceImpl implements ITagService
     @Override
     public int deleteTagById(Integer id)
     {
-        return tagMapper.deleteTagById(id);
+        return dashboardTagMapper.deleteTagById(id);
     }
 }

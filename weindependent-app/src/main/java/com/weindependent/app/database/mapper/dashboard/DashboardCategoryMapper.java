@@ -3,7 +3,6 @@ package com.weindependent.app.database.mapper.dashboard;
 import java.util.List;
 
 import com.weindependent.app.database.dataobject.CategoryDO;
-import com.weindependent.app.dto.CategoryQry;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -14,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  *    2025-03-23
  */
 @Mapper
-public interface CategoryMapper 
+public interface DashboardCategoryMapper
 {
     /**
      * 查询分类

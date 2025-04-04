@@ -27,11 +27,11 @@ import com.weindependent.app.service.ICategoryService;
 @Tag(name = "分类管理")
 @RestController
 @RequestMapping("api/dashboard/category")
-public class CategoryController
+public class DashboardCategoryController
 {
     private final ICategoryService categoryService;
 
-    public CategoryController(ICategoryService categoryService) {
+    public DashboardCategoryController(ICategoryService categoryService) {
         this.categoryService = categoryService;
     }
 

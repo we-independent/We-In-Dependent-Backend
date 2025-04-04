@@ -5,13 +5,11 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.CategoryDO;
-import com.weindependent.app.database.mapper.dashboard.BlogArticleMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.utils.PageInfoUtil;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogArticleService;
@@ -25,12 +23,12 @@ import com.weindependent.app.service.IBlogArticleService;
  *  2025-03-23
  */
 @Service
-public class BlogArticleServiceImpl implements IBlogArticleService 
+public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 {
-    private final BlogArticleMapper blogArticleMapper;
+    private final DashboardBlogArticleMapper blogArticleMapper;
 
-    public BlogArticleServiceImpl(BlogArticleMapper blogArticleMapper) {
-        this.blogArticleMapper = blogArticleMapper;
+    public DashboardBlogArticleServiceImpl(DashboardBlogArticleMapper dashboardBlogArticleMapper) {
+        this.blogArticleMapper = dashboardBlogArticleMapper;
     }
 
 

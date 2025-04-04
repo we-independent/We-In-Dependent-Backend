@@ -5,8 +5,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.CategoryDO;
-import com.weindependent.app.database.mapper.dashboard.BlogCommentMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardBlogCommentMapper;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
 import com.weindependent.app.dto.BlogCommentQry;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -24,10 +23,10 @@ import com.weindependent.app.service.IBlogCommentService;
  *    2025-03-23
  */
 @Service
-public class BlogCommentServiceImpl implements IBlogCommentService 
+public class DashboardBlogCommentServiceImpl implements IBlogCommentService
 {
     @Autowired
-    private BlogCommentMapper blogCommentMapper;
+    private DashboardBlogCommentMapper dashboardBlogCommentMapper;
 
     /**
      * 查询博客评论
@@ -38,7 +37,7 @@ public class BlogCommentServiceImpl implements IBlogCommentService
     @Override
     public BlogCommentDO selectBlogCommentById(Integer id)
     {
-        return blogCommentMapper.selectBlogCommentById(id);
+        return dashboardBlogCommentMapper.selectBlogCommentById(id);
     }
 
     /**
@@ -54,7 +53,7 @@ public class BlogCommentServiceImpl implements IBlogCommentService
         BlogCommentDO blogCommentDO = new BlogCommentDO();
         BeanUtils.copyProperties(blogCommentQry,blogCommentDO);
         PageHelper.startPage(blogCommentQry.getPageNum(), blogCommentQry.getPageSize());
-        List<BlogCommentDO>  blogCommentDOList =  blogCommentMapper.selectBlogCommentList(blogCommentDO);
+        List<BlogCommentDO>  blogCommentDOList =  dashboardBlogCommentMapper.selectBlogCommentList(blogCommentDO);
         PageInfo<BlogCommentDO> PageInfo = new PageInfo<>(blogCommentDOList);
         return PageInfoUtil.pageInfo2DTO(PageInfo, BlogCommentDO.class);
 
@@ -71,7 +70,7 @@ public class BlogCommentServiceImpl implements IBlogCommentService
     public int insertBlogComment(BlogCommentDO blogComment)
     {
         blogComment.setCreateTime(LocalDateTime.now());
-        return blogCommentMapper.insertBlogComment(blogComment);
+        return dashboardBlogCommentMapper.insertBlogComment(blogComment);
     }
 
     /**
@@ -84,7 +83,7 @@ public class BlogCommentServiceImpl implements IBlogCommentService
     public int updateBlogComment(BlogCommentDO blogComment)
     {
         blogComment.setUpdateTime(LocalDateTime.now());
-        return blogCommentMapper.updateBlogComment(blogComment);
+        return dashboardBlogCommentMapper.updateBlogComment(blogComment);
     }
 
     /**
@@ -96,7 +95,7 @@ public class BlogCommentServiceImpl implements IBlogCommentService
     @Override
     public int deleteBlogCommentByIds(Integer[] ids)
     {
-        return blogCommentMapper.deleteBlogCommentByIds(ids);
+        return dashboardBlogCommentMapper.deleteBlogCommentByIds(ids);
     }
 
     /**
@@ -108,6 +107,6 @@ public class BlogCommentServiceImpl implements IBlogCommentService
     @Override
     public int deleteBlogCommentById(Integer id)
     {
-        return blogCommentMapper.deleteBlogCommentById(id);
+        return dashboardBlogCommentMapper.deleteBlogCommentById(id);
     }
 }

@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  *    2025-03-23
  */
 @Mapper
-public interface BlogPdfMapper 
+public interface DashboardBlogPdfMapper
 {
     /**
      * 查询博客文章pdf

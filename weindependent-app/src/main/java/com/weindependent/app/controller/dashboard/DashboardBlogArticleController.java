@@ -1,15 +1,9 @@
 package com.weindependent.app.controller.dashboard;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.dto.BlogCommentQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +22,11 @@ import com.weindependent.app.service.IBlogArticleService;
 @Tag(name = "博客文章管理")
 @RestController
 @RequestMapping("/dashboard/blog")
-public class BlogArticleController
+public class DashboardBlogArticleController
 {
     private final IBlogArticleService blogArticleService;
 
-    public BlogArticleController(IBlogArticleService blogArticleService){
+    public DashboardBlogArticleController(IBlogArticleService blogArticleService){
         this.blogArticleService=blogArticleService;
     }
 

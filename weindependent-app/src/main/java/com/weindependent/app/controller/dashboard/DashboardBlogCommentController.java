@@ -1,20 +1,11 @@
 package com.weindependent.app.controller.dashboard;
 
-import java.util.List;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
-import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.dto.BlogCommentQry;
-import com.weindependent.app.utils.PageInfoUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,11 +27,11 @@ import com.weindependent.app.service.IBlogCommentService;
 @Tag(name = "博客评论管理")
 @RestController
 @RequestMapping("/dashboard/comment")
-public class BlogCommentController
+public class DashboardBlogCommentController
 {
     private final IBlogCommentService blogCommentService;
 
-    public BlogCommentController(IBlogCommentService blogCommentService) {
+    public DashboardBlogCommentController(IBlogCommentService blogCommentService) {
 
         this.blogCommentService = blogCommentService;
     }

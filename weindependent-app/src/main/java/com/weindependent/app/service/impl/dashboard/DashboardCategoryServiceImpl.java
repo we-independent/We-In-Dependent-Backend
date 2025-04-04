@@ -5,8 +5,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.TagDO;
-import com.weindependent.app.database.mapper.dashboard.CategoryMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardCategoryMapper;
 import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.dto.CategoryQry;
 import com.weindependent.app.enums.ErrorCode;
@@ -26,10 +25,10 @@ import com.weindependent.app.service.ICategoryService;
  *    2025-03-23
  */
 @Service
-public class CategoryServiceImpl implements ICategoryService 
+public class DashboardCategoryServiceImpl implements ICategoryService
 {
     @Autowired
-    private CategoryMapper categoryMapper;
+    private DashboardCategoryMapper dashboardCategoryMapper;
 
     /**
      * 查询分类
@@ -40,7 +39,7 @@ public class CategoryServiceImpl implements ICategoryService
     @Override
     public CategoryDO selectCategoryById(Integer id)
     {
-        return categoryMapper.selectCategoryById(id);
+        return dashboardCategoryMapper.selectCategoryById(id);
     }
 
     /**
@@ -55,7 +54,7 @@ public class CategoryServiceImpl implements ICategoryService
         CategoryDO categoryDO = new CategoryDO();
         BeanUtils.copyProperties(categoryQry,categoryDO);
         PageHelper.startPage(categoryQry.getPageNum(), categoryQry.getPageSize());
-        List<CategoryDO> CategoryDOList =  categoryMapper.selectCategoryList(categoryDO);
+        List<CategoryDO> CategoryDOList =  dashboardCategoryMapper.selectCategoryList(categoryDO);
         PageInfo<CategoryDO> CategoryDOPageInfo = new PageInfo<>(CategoryDOList);
         return PageInfoUtil.pageInfo2DTO(CategoryDOPageInfo, CategoryDO.class);
     }
@@ -73,17 +72,17 @@ public class CategoryServiceImpl implements ICategoryService
      */
     @Override
     public int insertCategory(CategoryDO category) {
-        CategoryDO existCategory = categoryMapper.selectCategoryByName(category.getName());
+        CategoryDO existCategory = dashboardCategoryMapper.selectCategoryByName(category.getName());
         if (existCategory != null) {
             if (existCategory.getIsDeleted()) {
-                categoryMapper.recoverCategory(existCategory);
+                dashboardCategoryMapper.recoverCategory(existCategory);
                 throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "被删除分类已经恢复");
             } else {
                 throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "同名分类已经存在");
             }
         }
         category.setCreateTime(LocalDateTime.now());
-        return categoryMapper.insertCategory(category);
+        return dashboardCategoryMapper.insertCategory(category);
     }
 
     /**
@@ -96,7 +95,7 @@ public class CategoryServiceImpl implements ICategoryService
     public int updateCategory(CategoryDO category)
     {
         category.setUpdateTime(LocalDateTime.now());
-        return categoryMapper.updateCategory(category);
+        return dashboardCategoryMapper.updateCategory(category);
     }
 
     /**
@@ -108,7 +107,7 @@ public class CategoryServiceImpl implements ICategoryService
     @Override
     public int deleteCategoryByIds(Integer[] ids)
     {
-        return categoryMapper.deleteCategoryByIds(ids);
+        return dashboardCategoryMapper.deleteCategoryByIds(ids);
     }
 
     /**
@@ -120,6 +119,6 @@ public class CategoryServiceImpl implements ICategoryService
     @Override
     public int deleteCategoryById(Integer id)
     {
-        return categoryMapper.deleteCategoryById(id);
+        return dashboardCategoryMapper.deleteCategoryById(id);
     }
 }

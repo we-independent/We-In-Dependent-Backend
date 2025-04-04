@@ -1,9 +1,5 @@
 package com.weindependent.app.controller.dashboard;
 
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
@@ -32,11 +28,11 @@ import com.weindependent.app.service.IBlogPdfService;
 @Tag(name = "博客文章pdf管理")
 @RestController
 @RequestMapping("/dashboard/pdf")
-public class BlogPdfController
+public class DashboardBlogPdfController
 {
     private final IBlogPdfService blogPdfService;
 
-    public BlogPdfController(IBlogPdfService blogPdfService) {
+    public DashboardBlogPdfController(IBlogPdfService blogPdfService) {
         this.blogPdfService = blogPdfService;
     }
 

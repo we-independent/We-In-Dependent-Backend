@@ -3,10 +3,8 @@ package com.weindependent.app.service.impl.dashboard;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.CategoryDO;
-import com.weindependent.app.database.mapper.dashboard.BlogPdfMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardBlogPdfMapper;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
 import com.weindependent.app.dto.BlogPdfQry;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -24,10 +22,10 @@ import com.weindependent.app.service.IBlogPdfService;
  *    2025-03-23
  */
 @Service
-public class BlogPdfServiceImpl implements IBlogPdfService 
+public class DashboardBlogPdfServiceImpl implements IBlogPdfService
 {
     @Autowired
-    private BlogPdfMapper blogPdfMapper;
+    private DashboardBlogPdfMapper dashboardBlogPdfMapper;
 
     /**
      * 查询博客文章pdf
@@ -38,7 +36,7 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     @Override
     public BlogPdfDO selectBlogPdfById(Integer id)
     {
-        return blogPdfMapper.selectBlogPdfById(id);
+        return dashboardBlogPdfMapper.selectBlogPdfById(id);
     }
 
     /**
@@ -52,7 +50,7 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     {
         BlogPdfDO blogPdfDO = new BlogPdfDO();
         BeanUtils.copyProperties(blogPdfQry, blogPdfDO);
-        List<BlogPdfDO> list = blogPdfMapper.selectBlogPdfList(blogPdfDO);
+        List<BlogPdfDO> list = dashboardBlogPdfMapper.selectBlogPdfList(blogPdfDO);
         PageInfo<BlogPdfDO> pageInfo = new PageInfo<>(list);
         return PageInfoUtil.pageInfo2DTO(pageInfo,BlogPdfDO.class);
     }
@@ -67,7 +65,7 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     public int insertBlogPdf(BlogPdfDO blogPdf)
     {
         blogPdf.setCreateTime(LocalDateTime.now());
-        return blogPdfMapper.insertBlogPdf(blogPdf);
+        return dashboardBlogPdfMapper.insertBlogPdf(blogPdf);
     }
 
     /**
@@ -80,7 +78,7 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     public int updateBlogPdf(BlogPdfDO blogPdf)
     {
         blogPdf.setUpdateTime(LocalDateTime.now());
-        return blogPdfMapper.updateBlogPdf(blogPdf);
+        return dashboardBlogPdfMapper.updateBlogPdf(blogPdf);
     }
 
     /**
@@ -92,7 +90,7 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     @Override
     public int deleteBlogPdfByIds(Integer[] ids)
     {
-        return blogPdfMapper.deleteBlogPdfByIds(ids);
+        return dashboardBlogPdfMapper.deleteBlogPdfByIds(ids);
     }
 
     /**
@@ -104,6 +102,6 @@ public class BlogPdfServiceImpl implements IBlogPdfService
     @Override
     public int deleteBlogPdfById(Integer id)
     {
-        return blogPdfMapper.deleteBlogPdfById(id);
+        return dashboardBlogPdfMapper.deleteBlogPdfById(id);
     }
 }

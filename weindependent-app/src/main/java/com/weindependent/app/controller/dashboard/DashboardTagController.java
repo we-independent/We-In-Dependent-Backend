@@ -1,13 +1,8 @@
 package com.weindependent.app.controller.dashboard;
 
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.TagDO;
-import com.weindependent.app.dto.CategoryQry;
 import com.weindependent.app.dto.TagQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +28,7 @@ import com.weindependent.app.service.ITagService;
 @Tag(name = "标签管理")
 @RestController
 @RequestMapping("/dashboard/tag")
-public class TagController
+public class DashboardTagController
 {
     @Autowired
     private ITagService tagService;
