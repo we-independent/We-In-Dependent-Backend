@@ -35,7 +35,7 @@ public class DashboardBlogArticleController
      */
     @SignatureAuth
     @Operation(summary = "查询博客文章列表")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry)
     {
         return blogArticleService.selectBlogArticleList(blogArticleQry);
@@ -60,6 +60,8 @@ public class DashboardBlogArticleController
     @PostMapping
     public boolean add(@RequestBody BlogArticleDO blogArticle)
     {
+        blogArticle.setCreateUserId(1);
+        blogArticle.setUpdateUserId(1);
         return blogArticleService.insertBlogArticle(blogArticle) > 0;
     }
 
@@ -78,7 +80,7 @@ public class DashboardBlogArticleController
      * 删除博客文章
      */
     @SignatureAuth
-    @Operation(summary = "查询博客文章列表")
+    @Operation(summary = "删除博客文章")
 	@DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids)
     {

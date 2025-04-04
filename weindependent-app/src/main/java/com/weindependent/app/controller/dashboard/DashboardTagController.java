@@ -38,14 +38,11 @@ public class DashboardTagController
      */
     @SignatureAuth
     @Operation(summary = "查询标签列表")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public PageInfo<TagDO> list(@RequestBody TagQry tagQry)
     {
-
         return  tagService.selectTagList(tagQry);
     }
-
-
 
     /**
      * 查询标签详细信息
