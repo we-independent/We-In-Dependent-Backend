@@ -27,7 +27,7 @@ import com.weindependent.app.service.IBlogPdfService;
  */
 @Tag(name = "博客文章pdf管理")
 @RestController
-@RequestMapping("/dashboard/pdf")
+@RequestMapping("api/dashboard/pdf")
 public class DashboardBlogPdfController
 {
     private final IBlogPdfService blogPdfService;

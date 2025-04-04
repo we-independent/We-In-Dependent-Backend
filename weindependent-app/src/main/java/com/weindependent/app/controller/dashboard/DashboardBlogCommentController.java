@@ -26,7 +26,7 @@ import com.weindependent.app.service.IBlogCommentService;
  */
 @Tag(name = "博客评论管理")
 @RestController
-@RequestMapping("/dashboard/comment")
+@RequestMapping("api/dashboard/comment")
 public class DashboardBlogCommentController
 {
     private final IBlogCommentService blogCommentService;

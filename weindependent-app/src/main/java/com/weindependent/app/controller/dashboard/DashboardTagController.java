@@ -27,7 +27,7 @@ import com.weindependent.app.service.ITagService;
  */
 @Tag(name = "标签管理")
 @RestController
-@RequestMapping("/dashboard/tag")
+@RequestMapping("api/dashboard/tag")
 public class DashboardTagController
 {
     @Autowired

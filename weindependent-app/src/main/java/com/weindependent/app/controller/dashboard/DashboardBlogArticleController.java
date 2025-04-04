@@ -21,7 +21,7 @@ import com.weindependent.app.service.IBlogArticleService;
  */
 @Tag(name = "博客文章管理")
 @RestController
-@RequestMapping("/dashboard/blog")
+@RequestMapping("api/dashboard/blog")
 public class DashboardBlogArticleController
 {
     private final IBlogArticleService blogArticleService;
