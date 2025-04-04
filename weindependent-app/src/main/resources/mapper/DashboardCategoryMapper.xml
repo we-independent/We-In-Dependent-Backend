@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.weindependent.app.database.mapper.dashboard.TagMapper">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardCategoryMapper">
     
-    <resultMap type="TagDO" id="TagResult">
+    <resultMap type="CategoryDO" id="CategoryResult">
         <result property="id"    column="id"    />
         <result property="name"    column="name"    />
         <result property="isDeleted"    column="is_deleted"    />
@@ -14,12 +14,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectTagVo">
-        select id, name, is_deleted, create_user_id, create_time, update_user_id, update_time from tag
+    <sql id="selectCategoryVo">
+        select id, name, is_deleted, create_user_id, create_time, update_user_id, update_time from category
     </sql>
 
-    <select id="selectTagList" parameterType="TagDO" resultMap="TagResult">
-        <include refid="selectTagVo"/>
+    <select id="selectCategoryList" parameterType="CategoryDO" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
         <where>  
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
@@ -30,14 +30,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectTagById" parameterType="Integer" resultMap="TagResult">
-        <include refid="selectTagVo"/>
+    <select id="selectCategoryById" parameterType="Integer" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
         where id = #{id}
     </select>
 
-
-    <insert id="insertTag" parameterType="TagDO" useGeneratedKeys="true" keyProperty="id">
-        insert into tag
+    <insert id="insertCategory" parameterType="CategoryDO" useGeneratedKeys="true" keyProperty="id">
+        insert into category
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="isDeleted != null">is_deleted,</if>
@@ -56,11 +55,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateTag" parameterType="TagDO">
-        update tag
+    <update id="updateCategory" parameterType="CategoryDO">
+        update category
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
-            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="isDeleted">is_deleted = #{isDeleted},</if>
             <if test="createUserId != null">create_user_id = #{createUserId},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
@@ -69,23 +68,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <update id="deleteTagById" parameterType="Integer">
-        update tag set is_deleted = 1 where id = #{id}
+    <update id="deleteCategoryById" parameterType="Integer">
+        update category set is_deleted = 1 where id = #{id}
     </update>
 
-    <update id="deleteTagByIds" parameterType="String">
-        update tag set is_deleted = 1 where id in
+    <update id="deleteCategoryByIds" parameterType="String">
+        update category set is_deleted = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
 
-
-    <select id="selectTagByName" resultType="TagDO">
-        <include refid="selectTagVo"/>
+    <select id="selectCategoryByName" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
         where name = #{name}
     </select>
-    <update id="recoverTag">
-        update tag set is_deleted = 0 where id = #{id}
+
+    <update id="recoverCategory" >
+        update category set is_deleted = 0 where id = #{id}
     </update>
+
 </mapper>

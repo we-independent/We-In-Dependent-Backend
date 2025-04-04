@@ -1,11 +1,6 @@
 package com.weindependent.app.controller.dashboard;
 
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
-import com.google.common.net.MediaType;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
 import com.weindependent.app.dto.BlogPdfQry;
@@ -14,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weindependent.app.service.IBlogPdfService;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 
 
@@ -35,12 +27,12 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Tag(name = "博客文章pdf管理")
 @RestController
-@RequestMapping("/dashboard/pdf")
-public class BlogPdfController
+@RequestMapping("api/dashboard/pdf")
+public class DashboardBlogPdfController
 {
     private final IBlogPdfService blogPdfService;
 
-    public BlogPdfController(IBlogPdfService blogPdfService) {
+    public DashboardBlogPdfController(IBlogPdfService blogPdfService) {
         this.blogPdfService = blogPdfService;
     }
 
@@ -49,7 +41,7 @@ public class BlogPdfController
      */
     @SignatureAuth
     @Operation(summary = "查询博客文章pdf列表")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public PageInfo<BlogPdfDO> list(@RequestBody BlogPdfQry blogPdfQry)
     {
         return blogPdfService.selectBlogPdfList(blogPdfQry);
@@ -74,6 +66,8 @@ public class BlogPdfController
     @PostMapping
     public boolean add(@RequestBody BlogPdfDO blogPdf)
     {
+        blogPdf.setCreateUserId(1);
+        blogPdf.setUpdateUserId(1);
         return blogPdfService.insertBlogPdf(blogPdf) > 0;
     }
 
@@ -85,6 +79,7 @@ public class BlogPdfController
     @PutMapping
     public boolean edit(@RequestBody BlogPdfDO blogPdf)
     {
+
         return blogPdfService.updateBlogPdf(blogPdf) > 0;
     }
 
@@ -98,26 +93,4 @@ public class BlogPdfController
     {
         return blogPdfService.deleteBlogPdfByIds(ids) > 0;
     }
-
-    /**
-     * 导出博客文章pdf
-     * 
-     * @author Hurely
-     * @since 2025-04-2
-     */
-    @SignatureAuth // 测试时暂时注释掉
-    @Operation(summary = "Download_Blog_Pdf")
-    @GetMapping("/export/{id}")
-    // Long blogID 兼容 database里的 int id
-    public ResponseEntity<byte[]> exportPdf(@PathVariable Integer id) {
-        byte[] pdfBytes = blogPdfService.generatePdf(id);
-        // System.out.println("📥 正在导出博客 ID = " + id); // ✅ 测试时打印日志
-        //返回 PDF 文件流
-        return ResponseEntity.ok()
-                             .header("Content-Disposition", "attachment; filename= WeIndependent_blog_" + id + ".pdf")
-                             .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
-                             .body(pdfBytes);
-
-    }
-    
 }
