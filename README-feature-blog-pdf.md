@@ -29,16 +29,29 @@ This merge request adds the capability to export blog articles as PDF documents,
 - PDF content reflects correct HTML rendering
 - Tested edge cases (non-existent blogId, empty content)
 
+## 🧪 Swagger Testing
+
+### ✅ Environment
+- Local MySQL with database
+- Spring Boot app running on
+- Swagger-UI: http://localhost:8080/swagger-ui/index.html
+- GET `/dashboard/pdf/export/{blogId}`
+
+### ✅ Result
+- Endpoint `/dashboard/pdf/export/{blogId}` returns valid pdf file download address, though swagger file name may change.
+- Tested edge cases (empty id)
+
 ### 🛠️ Local Config Changes
 - Updated `application.yaml`:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/
     username: root
-    password: rootroot
+    password: yourpsw
 Commented out @SignatureAuth for local access:
 // @SignatureAuth
-Full local address: http://localhost:8080/dashboard/pdf/export/1
+Full swagger-ui address: http://localhost:8080/swagger-ui/index.html
+
 
 ### 📂 Affected Files
 File Path	Type	Description
