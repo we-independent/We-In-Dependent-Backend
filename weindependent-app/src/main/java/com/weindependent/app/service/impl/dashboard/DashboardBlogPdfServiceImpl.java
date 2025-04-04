@@ -104,4 +104,17 @@ public class DashboardBlogPdfServiceImpl implements IBlogPdfService
     {
         return dashboardBlogPdfMapper.deleteBlogPdfById(id);
     }
+
+
+    /**
+     * 生成pdf，但不返回到dashboard
+     * 
+     * @param id 博客文章pdf主键
+     * @return 异常或null
+     * @Hurly 2025-04-04
+     */
+    @Override
+    public byte[] generatePdf(Integer id) {
+        throw new UnsupportedOperationException("DashboardBlogPdfServiceImpl does not support PDF generation.");
+    }
 }
