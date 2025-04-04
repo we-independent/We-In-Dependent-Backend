@@ -7,17 +7,11 @@ frontend:
 spring:
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher 
+      matching-strategy: ant_path_matcher
   datasource:
     url: jdbc:mysql://mysql.sqlpub.com:3306/weindependent?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: wi_user
     password: P1q7SrJqSRwH87Dn
-
-    # #For Blog-PDF download Test @Hurely
-    # url: jdbc:mysql://localhost:3306/
-    # username: yourusername
-    # password: yourpsw
-    
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
