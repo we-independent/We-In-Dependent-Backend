@@ -4,6 +4,13 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * 获取文章Category的list,Json文件返回
+ * 
+ * @author Hurely
+ *    2025-04-5
+ */
 @Data
 public class BlogArticleListQry {
     /** 文章ID */

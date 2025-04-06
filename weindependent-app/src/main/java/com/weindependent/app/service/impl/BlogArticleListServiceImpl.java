@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.CategoryDO;
+import com.weindependent.app.database.dataobject.BlogCategoryDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;

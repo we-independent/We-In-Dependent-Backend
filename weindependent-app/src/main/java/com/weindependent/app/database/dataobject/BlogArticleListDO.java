@@ -6,10 +6,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 博客文章对象 blog_article
+ * 博客文章数据库blog_article
  * 
- * @author 
- *    2025-03-23
+ * @author Hurely
+ *    2025-04-5
  */
 
 @Data
