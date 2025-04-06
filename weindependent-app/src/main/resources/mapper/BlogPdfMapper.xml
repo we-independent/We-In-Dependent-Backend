@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.BlogPdfMapper">
+    
+    <resultMap type="BlogPdfDO" id="BlogPdfResult">
+        <result property="id"    column="id"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="filePath"    column="file_path"    />
+        <result property="downloadUrl"    column="download_url"    />
+        <result property="pdfFileGenerationTime"    column="pdf_file_generation_time"    />
+        <result property="articleId"    column="article_id"    />
+        <result property="isDeleted"    column="is_deleted"    />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateUserId"    column="update_user_id"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBlogPdfVo">
+        select id, file_name, file_path, download_url, pdf_file_generation_time, article_id, is_deleted, create_user_id, create_time, update_user_id, update_time from blog_pdf
+    </sql>
+
+    <select id="selectBlogPdfList" parameterType="BlogPdfDO" resultMap="BlogPdfResult">
+        <include refid="selectBlogPdfVo"/>
+        <where>  
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="filePath != null  and filePath != ''"> and file_path = #{filePath}</if>
+            <if test="downloadUrl != null  and downloadUrl != ''"> and download_url = #{downloadUrl}</if>
+            <if test="pdfFileGenerationTime != null "> and pdf_file_generation_time = #{pdfFileGenerationTime}</if>
+            <if test="articleId != null "> and article_id = #{articleId}</if>
+            <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+            <if test="createUserId != null "> and create_user_id = #{createUserId}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateUserId != null "> and update_user_id = #{updateUserId}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectBlogPdfById" parameterType="Integer" resultMap="BlogPdfResult">
+        <include refid="selectBlogPdfVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBlogPdf" parameterType="BlogPdfDO" useGeneratedKeys="true" keyProperty="id">
+        insert into blog_pdf
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileName != null">file_name,</if>
+            <if test="filePath != null">file_path,</if>
+            <if test="downloadUrl != null">download_url,</if>
+            <if test="pdfFileGenerationTime != null">pdf_file_generation_time,</if>
+            <if test="articleId != null">article_id,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="createUserId != null">create_user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateUserId != null">update_user_id,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileName != null">#{fileName},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="downloadUrl != null">#{downloadUrl},</if>
+            <if test="pdfFileGenerationTime != null">#{pdfFileGenerationTime},</if>
+            <if test="articleId != null">#{articleId},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBlogPdf" parameterType="BlogPdfDO">
+        update blog_pdf
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="downloadUrl != null">download_url = #{downloadUrl},</if>
+            <if test="pdfFileGenerationTime != null">pdf_file_generation_time = #{pdfFileGenerationTime},</if>
+            <if test="articleId != null">article_id = #{articleId},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="createUserId != null">create_user_id = #{createUserId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteBlogPdfById"  parameterType="Integer">
+        update blog_pdf set is_deleted = 1 where id = #{id}
+    </update>
+
+    <update id="deleteBlogPdfByIds" parameterType="String">
+        update blog_pdf set is_deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>
