@@ -1,16 +1,15 @@
 package com.weindependent.app.controller;
+import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.IBlogArticleService;
 import com.weindependent.app.service.IBlogPdfExportService;
-import com.weindependent.app.service.IBlogPdfListService;
 import com.weindependent.app.service.IBlogPdfService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
-import com.weindependent.app.database.dataobject.BlogArticleDO;
-import com.weindependent.app.database.dataobject.BlogArticlePdfListDO;
-import com.weindependent.app.dto.BlogArticlePdfListQry;
+import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleQry;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +23,18 @@ import org.springframework.web.bind.annotation.*;
 public class GetBlogList {
 
     @Autowired  // ✅ 确保加上这个注解
-    private IBlogPdfListService blogPdfListService;
+    private IBlogArticleListService blogArticleListService;
     /**
      * 查询博客文章列表 Hurely
      */
     // @SignatureAuth
     @Operation(summary = "查询博客文章列表")
-    @PostMapping("/pdflist")
-    public PageInfo<BlogArticlePdfListDO> listPdf(
+    @PostMapping("/articlelist")
+    public PageInfo<BlogArticleListDO> listPdf(
         @RequestHeader(name = "version", required = true) String version,
-        @RequestBody BlogArticlePdfListQry query
+        @RequestBody BlogArticleListQry query
     ) {
-        return blogPdfListService.selectBlogPdfList(query);
+        return blogArticleListService.selectBlogArticleList(query);
     }
+
 }

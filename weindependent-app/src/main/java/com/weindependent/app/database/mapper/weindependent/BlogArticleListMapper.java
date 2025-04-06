@@ -1,4 +1,4 @@
-package com.weindependent.app.database.mapper.dashboard;
+package com.weindependent.app.database.mapper.weindependent;
 
 import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  *    2025-03-23
  */
 @Mapper
-public interface BlogArticleMapper 
+public interface BlogArticleListMapper 
 {
     /**
      * 查询博客文章
