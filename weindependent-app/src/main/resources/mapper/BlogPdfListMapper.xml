@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogPdfListMapper">
+
+    <select id="selectBlogPdfList"
+        parameterType="com.weindependent.app.dto.BlogArticlePdfListQry"
+        resultType="com.weindependent.app.database.dataobject.BlogArticlePdfListDO">
+    SELECT *
+    FROM blog_pdf
+    WHERE 1 = 1
+
+    <if test="query.fileName != null and query.fileName != ''">
+        AND file_name LIKE CONCAT('%', #{query.fileName}, '%')
+    </if>
+
+    <if test="query.pdfStartDate != null">
+        AND pdf_file_generation_time &gt;= #{query.pdfStartDate}
+    </if>
+    <if test="query.pdfEndDate != null">
+        AND pdf_file_generation_time &lt;= #{query.pdfEndDate}
+    </if>
+
+    <if test="query.createStartDate != null">
+        AND create_time &gt;= #{query.createStartDate}
+    </if>
+    <if test="query.createEndDate != null">
+        AND create_time &lt;= #{query.createEndDate}
+    </if>
+
+    <if test="query.updateStartDate != null">
+        AND update_time &gt;= #{query.updateStartDate}
+    </if>
+    <if test="query.updateEndDate != null">
+        AND update_time &lt;= #{query.updateEndDate}
+    </if>
+
+    <if test="query.isDeleted != null">
+        AND is_deleted = #{query.isDeleted}
+    </if>
+
+    <if test="query.createUserId != null and query.createUserId != -1">
+        AND create_user_id = #{query.createUserId}
+    </if>
+
+    <if test="query.articleId != null and query.articleId != 0">
+        AND article_id = #{query.articleId}
+    </if>
+
+    ORDER BY create_time DESC
+    </select>
+
+
+</mapper>

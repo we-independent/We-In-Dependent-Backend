@@ -1,0 +1,12 @@
+/.idea/
+/weindependent-app/weindependent-app.iml
+/sso-oauth2-client/sso-oauth2-client.iml
+/sso-oauth2-server/sso-oauth2-server.iml
+/target/
+/*/target/
+/weindependent-app/app.iml
+/web.iml
+.DS_Store
+/weindependent-app/we-in-dependent.iml
+/.vscode/
+/README-feature-blog-list.md
