@@ -6,7 +6,7 @@
 /*/target/
 /weindependent-app/app.iml
 /web.iml
-.DS_Store
+*/.DS_Store
 /weindependent-app/we-in-dependent.iml
 /.vscode/
 /README-feature-blog-list.md
