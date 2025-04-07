@@ -12,8 +12,8 @@ import com.weindependent.app.dto.BlogArticleQry;
 /**
  * 博客文章Service接口
  * 
- * @author christina
- *    2025-03-23
+ * @author Hurely
+ *    2025-04-5
  */
 public interface IBlogArticleListService 
 {

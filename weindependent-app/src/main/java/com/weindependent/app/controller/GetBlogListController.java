@@ -1,9 +1,6 @@
 package com.weindependent.app.controller;
 import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.IBlogArticleService;
-import com.weindependent.app.service.IBlogPdfExportService;
 import com.weindependent.app.service.IBlogArticleCategoryService;
-import com.weindependent.app.service.IBlogPdfService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -31,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "博客文章Article List获取")
 @RestController
 @RequestMapping("/")
-public class GetBlogList {
+public class GetBlogListController {
 
     @Autowired  // ✅ 确保加上这个注解
     private IBlogArticleListService blogArticleListService;
@@ -41,7 +38,7 @@ public class GetBlogList {
      * 查询博客文章列表 Hurely
      */
     // @SignatureAuth
-    @Operation(summary = "通过Category_id获得所有相关Article")
+    @Operation(summary = "通过Category_id获得所有相关Article并默认按update_time desc排序")
     @PostMapping("/articles/by-category")
     public PageInfo<BlogArticleListDO> listPdf(
         @RequestHeader(name = "version", required = true) String version,

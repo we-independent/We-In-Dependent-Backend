@@ -1,6 +1,7 @@
 package com.weindependent.app.database.dataobject;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -60,6 +61,9 @@ public class BlogArticleListDO
     /** 最后更新时间 */
     private LocalDateTime  updateTime;
 
+    /** 排序 */
+    @Schema(description = "order by, support:update_time desc, update_time asc, title asc, title desc")
+    private String orderBy;
 
 
 }

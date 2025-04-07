@@ -54,4 +54,7 @@ public class BlogArticleListQry {
     private  Integer pageNum;
 
     private  Integer pageSize;
+    
+    /** 排序 */
+    private String orderBy;
 }
