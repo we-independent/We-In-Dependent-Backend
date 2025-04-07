@@ -37,7 +37,7 @@ public class GetBlogListController {
     /**
      * 查询博客文章列表 Hurely
      */
-    // @SignatureAuth
+    @SignatureAuth
     @Operation(summary = "通过Category_id获得所有相关Article并默认按update_time desc排序")
     @PostMapping("/articles/by-category")
     public PageInfo<BlogArticleListDO> listPdf(
