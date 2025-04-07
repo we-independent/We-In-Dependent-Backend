@@ -1,6 +1,5 @@
 package com.weindependent.app.database.mapper.dashboard;
 
-import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogImageDO;
 import org.apache.ibatis.annotations.Mapper;
 

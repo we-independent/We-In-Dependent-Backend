@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -63,7 +64,15 @@ public class FileServiceImpl implements FileService {
                     .build();
 
             // 3.指定上传文件的路径
-//            java.io.File filePath = new java.io.File("/Users/libo/Downloads/音符.png");
+            java.io.File tmpDirectory = new java.io.File(tmpFolder);
+            if (!tmpDirectory.exists()) {
+                if (tmpDirectory.mkdir()) {
+                    log.info("文件夹{}已创建", tmpFolder);
+                } else {
+                    log.error("文件夹{}创建失败", tmpFolder);
+                }
+            }
+
             java.io.File filePath = new java.io.File(tmpFolder+"/"+file.getOriginalFilename());
             FileCopyUtils.copy(file.getBytes(), filePath);
             String suffix = FileUtil.getSuffix(filePath);
@@ -74,10 +83,8 @@ public class FileServiceImpl implements FileService {
             fileMetadata.setName(filename.replace(suffix, "")+Base64.getEncoder().encodeToString(String.valueOf(System.currentTimeMillis()).getBytes("UTF-8")) + "." + suffix);
             String targetFolderId = getFolderId(category);
             fileMetadata.setParents(Collections.singletonList(targetFolderId));
-//            fileMetadata.setParents(Collections.singletonList(parentFolderId));
             String mineType = findMineTypeBySuffix(suffix);
             FileContent mediaContent = new FileContent(mineType, filePath);
-
 
             // 5.上传文件
             File uploadedFile = drive.files().create(fileMetadata, mediaContent)
@@ -93,7 +100,7 @@ public class FileServiceImpl implements FileService {
             uploadedFileVO.setFilePath(uploadedfilePath);
 
             //@TODO 删除源文件
-
+            filePath.delete();
 
             return uploadedFileVO;
         } catch (IOException | GeneralSecurityException e) {
