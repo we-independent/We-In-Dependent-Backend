@@ -72,8 +72,8 @@ public class DashboardBlogArticleController
      */
     @SignatureAuth
     @Operation(summary = "新增博客banner图片")
-    @PostMapping("/banner/upload")
-    public UploadedFileVO addBlogBanner(@RequestBody FileUploadQry fileUploadQry)
+    @PostMapping("/banner/upload", consumes= "multipart/form-data")
+    public UploadedFileVO addBlogBanner(FileUploadQry fileUploadQry)
     {
         return blogArticleService.insertBlogBanner(fileUploadQry);
     }
