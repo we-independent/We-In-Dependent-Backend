@@ -5,14 +5,21 @@ import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.BlogImageDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper;
 import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.dto.FileUploadQry;
+import com.weindependent.app.service.FileService;
 import com.weindependent.app.utils.PageInfoUtil;
+import com.weindependent.app.vo.UploadedFileVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogArticleService;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -26,6 +33,11 @@ import com.weindependent.app.service.IBlogArticleService;
 public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 {
     private final DashboardBlogArticleMapper blogArticleMapper;
+    @Resource
+    private DashboardBlogImageMapper blogImageMapper;
+
+    @Resource
+    private FileService fileService;
 
     public DashboardBlogArticleServiceImpl(DashboardBlogArticleMapper dashboardBlogArticleMapper) {
         this.blogArticleMapper = dashboardBlogArticleMapper;
@@ -72,6 +84,20 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     {
         blogArticle.setCreateTime(LocalDateTime.now());
         return blogArticleMapper.insertBlogArticle(blogArticle);
+    }
+
+    @Override
+    public UploadedFileVO insertBlogBanner(FileUploadQry fileUploadQry)
+    {
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(fileUploadQry.getFile(), fileUploadQry.getCategory());
+        BlogImageDO blogImageDO = new BlogImageDO();
+        blogImageDO.setCategory(fileUploadQry.getCategory());
+        blogImageDO.setFileName(uploadedFileVO.getFileName());
+        blogImageDO.setFileType(uploadedFileVO.getFileType());
+        blogImageDO.setFilePath(uploadedFileVO.getFilePath());
+        int blogImageId = blogImageMapper.insert(blogImageDO);
+        uploadedFileVO.setFileId(blogImageId);
+        return uploadedFileVO;
     }
 
     /**

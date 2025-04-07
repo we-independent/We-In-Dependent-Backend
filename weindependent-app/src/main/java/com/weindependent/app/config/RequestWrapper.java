@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 
 /**
  * 解决request流只读取一次的问题
+ * @desc 此类覆写影响multipart/form-data的请求
  */
 @Slf4j
 public class RequestWrapper extends HttpServletRequestWrapper {
@@ -20,12 +21,22 @@ public class RequestWrapper extends HttpServletRequestWrapper {
      * 存储body数据的容器
      */
     private final byte[] body;
+    private final boolean isMultipart;
 
     public RequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
 
         // 将body数据存储起来
-        body = getBodyString(request).getBytes(Charset.defaultCharset());
+        String contentType = request.getContentType();
+        isMultipart = contentType != null && contentType.startsWith("multipart/form-data");
+
+        if (isMultipart) {
+            // 对于multipart请求，不读取body
+            body = new byte[0];
+        } else {
+            // 非multipart请求，读取body内容
+            body = getBodyString(request).getBytes(Charset.defaultCharset());
+        }
     }
 
     /**
@@ -88,33 +99,41 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public BufferedReader getReader() throws IOException {
-        return new BufferedReader(new InputStreamReader(getInputStream()));
+        if (isMultipart) {
+            return super.getReader(); // 返回原始Reader
+        } else {
+            return new BufferedReader(new InputStreamReader(getInputStream()));
+        }
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        if (isMultipart) {
+            // 返回原始InputStream
+            return super.getInputStream();
+        } else {
+            final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
 
-        final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
+            return new ServletInputStream() {
+                @Override
+                public int read() throws IOException {
+                    return inputStream.read();
+                }
 
-        return new ServletInputStream() {
-            @Override
-            public int read() throws IOException {
-                return inputStream.read();
-            }
+                @Override
+                public boolean isFinished() {
+                    return false;
+                }
 
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
+                @Override
+                public boolean isReady() {
+                    return false;
+                }
 
-            @Override
-            public boolean isReady() {
-                return false;
-            }
-
-            @Override
-            public void setReadListener(ReadListener readListener) {
-            }
-        };
+                @Override
+                public void setReadListener(ReadListener readListener) {
+                }
+            };
+        }
     }
 }

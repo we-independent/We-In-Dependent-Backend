@@ -5,6 +5,8 @@ import java.util.List;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.dto.FileUploadQry;
+import com.weindependent.app.vo.UploadedFileVO;
 
 
 /**
@@ -38,6 +40,14 @@ public interface IBlogArticleService
      * @return 结果
      */
     public int insertBlogArticle(BlogArticleDO blogArticle);
+
+    /**
+     * 新增博客图片
+     *
+     * @param fileUploadQry 博客图片
+     * @return 结果
+     */
+    UploadedFileVO insertBlogBanner(FileUploadQry fileUploadQry);
 
     /**
      * 修改博客文章
