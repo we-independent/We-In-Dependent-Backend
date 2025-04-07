@@ -2,6 +2,9 @@ package com.weindependent.app.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -27,13 +30,31 @@ public class EditorPickServiceImpl implements EditorPickService {
 
     @Override
     public List<EditorPickVO> getEditorPickArticles(Integer limit) {
-        List<Integer> articleIds = editorPickMapper.findEditorPickArticleIds(limit);
+        List<EditorPickDO> picks = editorPickMapper.findEditorPickList(limit); 
 
-        if (articleIds == null || articleIds.isEmpty()){
+        if (picks == null || picks.isEmpty()) {
             return new ArrayList<>();
         }
+
+        // 提取所有 articleId，去文章表查详情
+        List<Integer> articleIds = picks.stream()
+            .map(EditorPickDO::getArticleId)
+            .toList();
+
         List<BlogArticleDO> articles = blogArticleMapper.findByIds(articleIds);
-        return EditorPickConvertor.toVOList(articles);
+        Map<Integer, BlogArticleDO> articleMap = articles.stream()
+            .collect(Collectors.toMap(BlogArticleDO::getId, a -> a));
+
+        // 组合成 VO 列表
+        List<EditorPickVO> result = new ArrayList<>();
+        for (EditorPickDO pick : picks) {
+            BlogArticleDO article = articleMap.get(pick.getArticleId());
+            if (article != null) {
+                result.add(EditorPickConvertor.toVO(pick, article));
+            }
+        }
+
+        return result;
         
     }
 

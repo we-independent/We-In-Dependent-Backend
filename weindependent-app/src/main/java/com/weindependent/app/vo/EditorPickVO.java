@@ -6,14 +6,13 @@ import lombok.Data;
 
 @Data
 public class EditorPickVO {
-    private Integer id;
-    private String articleSourceType;
-    private String sourceUrl;
-    private Integer authorId;
-    private Integer bannerImgId;
-    private String summary;
-    private String title;
-    private Integer categoryId;
+    private String heroType;        
+    private Integer articleId;      
+    private String title;          
+    private Integer isDeleted;
+    private Date updateTime;
+    private Integer updateUserId;
     private Date createTime;
+    private Integer createUserId;
 
 }

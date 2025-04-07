@@ -12,26 +12,36 @@
         )
     </insert>
 
+    <select id="findEditorPickList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
+        SELECT *
+        FROM editor_picks
+        WHERE status = 1
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
     <delete id="deleteByArticleId">
         DELETE FROM editor_picks WHERE article_id = #{articleId}
     </delete>
 
     <select id="findEditorPickArticleIds" resultType="java.lang.Integer">
         SELECT article_id
-        FROM editor_pick
+        FROM editor_picks
         WHERE status = 1
         ORDER BY create_time DESC
         LIMIT #{limit}
     </select>
 
+
+
     <select id="isEditorPick" resultType="boolean">
         SELECT COUNT(1) > 0
-        FROM editor_pick
+        FROM editor_picks
         WHERE article_id = #{articleId} AND status = 1
     </select>
 
     <update id="updateStatusByArticleId">
-        UPDATE editor_pick
+        UPDATE editor_picks
         SET status = #{status}
         WHERE article_id = #{articleId}
     </update>

@@ -16,4 +16,6 @@ public interface EditorPickMapper {
     boolean isEditorPick(@Param("articleId") Integer articleId);
 
     int updateStatusByArticleId(@Param("articleId") Integer articleId, @Param("status") Integer status);
+
+    List<EditorPickDO> findEditorPickList(@Param("limit") Integer limit);
 }
