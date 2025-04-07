@@ -91,7 +91,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     {
         UploadedFileVO uploadedFileVO = fileService.uploadFile(fileUploadQry.getFile(), fileUploadQry.getCategory());
         BlogImageDO blogImageDO = new BlogImageDO();
-        blogImageDO.setCategory(fileUploadQry.getCategory());
+        blogImageDO.setCategory("banner");
         blogImageDO.setFileName(uploadedFileVO.getFileName());
         blogImageDO.setFileType(uploadedFileVO.getFileType());
         blogImageDO.setFilePath(uploadedFileVO.getFilePath());

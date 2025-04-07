@@ -71,7 +71,7 @@ public class FileServiceImpl implements FileService {
 
             // 4.构建文件元数据：文件名，父目录，文件的mineType
             File fileMetadata = new File();
-            fileMetadata.setName(filename+Base64.getEncoder().encodeToString(String.valueOf(System.currentTimeMillis()).getBytes("UTF-8")) + suffix);
+            fileMetadata.setName(filename.replace(suffix, "")+Base64.getEncoder().encodeToString(String.valueOf(System.currentTimeMillis()).getBytes("UTF-8")) + "." + suffix);
             String targetFolderId = getFolderId(category);
             fileMetadata.setParents(Collections.singletonList(targetFolderId));
 //            fileMetadata.setParents(Collections.singletonList(parentFolderId));
@@ -81,7 +81,7 @@ public class FileServiceImpl implements FileService {
 
             // 5.上传文件
             File uploadedFile = drive.files().create(fileMetadata, mediaContent)
-                    .setFields("id,name")
+                    .setFields("id,name,webViewLink")
                     .execute();
 
             log.info("upload FolderId: {} FileId: {}, FileName: ", targetFolderId, uploadedFile.getId(), uploadedFile.getName());

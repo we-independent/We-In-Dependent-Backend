@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogImageMapper">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper">
     <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.BlogImageDO">
         SELECT * FROM blog_image
       <where>
@@ -33,7 +33,7 @@
         SELECT * FROM blog_image
     </select>
 
-    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.BlogImageDO" useGeneratedKeys="true" keyProperty="id">>
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.BlogImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO blog_image (category, file_name, file_type, file_path)
         VALUES (#{category}, #{fileName}, #{fileType}, #{filePath})
     </insert>
