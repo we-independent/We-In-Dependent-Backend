@@ -2,6 +2,7 @@ package com.weindependent.app.service.impl.dashboard;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,6 +14,7 @@ import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.FileUploadQry;
 import com.weindependent.app.service.FileService;
 import com.weindependent.app.utils.PageInfoUtil;
+import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.vo.UploadedFileVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -115,7 +117,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 
     /**
      * 批量删除博客文章
-     * 
+     *
      * @param ids 需要删除的博客文章主键
      * @return 结果
      */
@@ -135,5 +137,53 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     public int deleteBlogArticleById(Integer id)
     {
         return blogArticleMapper.deleteBlogArticleById(id);
+    }
+
+    /**
+     * 全文搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    @Override
+    public List<BlogArticleVO> searchByContent(String keyword){
+        List<BlogArticleDO> blogArticleDOS = blogArticleMapper.searchByContent(keyword);
+
+        return blogArticleDOS.stream().map(this::toBlogVO).collect(Collectors.toList());
+    }
+
+    /**
+     * 关键词搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    @Override
+    public List<BlogArticleVO> searchByExactKeywords(String keyword){
+        List<BlogArticleDO> blogArticleDOS = blogArticleMapper.searchByExactKeywords(keyword);
+
+        return blogArticleDOS.stream().map(this::toBlogVO).collect(Collectors.toList());
+    }
+
+    private BlogArticleVO toBlogVO(BlogArticleDO blogDO) {
+        if (blogDO == null) return null;
+
+        BlogArticleVO blogVO = new BlogArticleVO();
+        blogVO.setId(blogDO.getId());
+        blogVO.setArticleSourceType(blogDO.getArticleSourceType());
+        blogVO.setSourceUrl(blogDO.getSourceUrl());
+        blogVO.setAuthorId(blogDO.getAuthorId());
+        blogVO.setBannerImgId(blogDO.getBannerImgId());
+        blogVO.setSummary(blogDO.getSummary());
+        blogVO.setTitle(blogDO.getTitle());
+        blogVO.setContent(blogDO.getContent());
+        blogVO.setArticleStatus(blogDO.getArticleStatus());
+        blogVO.setCategoryId(blogDO.getCategoryId());
+        blogVO.setIsDeleted(blogDO.getIsDeleted());
+        blogVO.setCreateUserId(blogDO.getCreateUserId());
+        blogVO.setCreateTime(blogDO.getCreateTime());
+        blogVO.setUpdateUserId(blogDO.getUpdateUserId());
+        blogVO.setUpdateTime(blogDO.getUpdateTime());
+        return blogVO;
     }
 }

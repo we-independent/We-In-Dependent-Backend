@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.FileUploadQry;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -72,4 +73,20 @@ public interface IBlogArticleService
      * @return 结果
      */
     public int deleteBlogArticleById(Integer id);
+
+    /**
+     * 全文搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    public List<BlogArticleVO> searchByContent(String keyword);
+
+    /**
+     * 标题关键词搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    public List<BlogArticleVO> searchByExactKeywords(String keyword);
 }
