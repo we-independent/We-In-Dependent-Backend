@@ -114,6 +114,10 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public int updateBlogArticle(BlogArticleDO blogArticle)
     {
+        BlogArticleDO oldBlog=blogArticleMapper.selectBlogArticleById(blogArticle.getId());
+        if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
+            deleteImgById(oldBlog.getBannerImgId());
+        }
         blogArticle.setUpdateTime(LocalDateTime.now());
         return blogArticleMapper.updateBlogArticle(blogArticle);
     }
@@ -127,6 +131,10 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public int deleteBlogArticleByIds(Integer[] ids)
     {
+        for(Integer id:ids){
+            BlogArticleDO blog=blogArticleMapper.selectBlogArticleById(id);
+            deleteImgById(blog.getBannerImgId());
+        }
         return blogArticleMapper.deleteBlogArticleByIds(ids);
     }
 
@@ -139,6 +147,8 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public int deleteBlogArticleById(Integer id)
     {
+        BlogArticleDO blog=blogArticleMapper.selectBlogArticleById(id);
+        deleteImgById(blog.getBannerImgId());
         return blogArticleMapper.deleteBlogArticleById(id);
     }
 
@@ -188,5 +198,12 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         blogVO.setUpdateUserId(blogDO.getUpdateUserId());
         blogVO.setUpdateTime(blogDO.getUpdateTime());
         return blogVO;
+    }
+
+    private void deleteImgById(Integer imgId){
+        BlogImageDO image= blogImageMapper.findById(imgId);
+        image.setIsDeleted(1);
+        blogImageMapper.update(image);
+        fileService.deleteFile(image.getFilePath());
     }
 }

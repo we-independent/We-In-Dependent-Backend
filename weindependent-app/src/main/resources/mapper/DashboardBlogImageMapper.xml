@@ -25,7 +25,7 @@
 
     </select>
 
-    <select id="findById" parameterType="string" resultType="com.weindependent.app.database.dataobject.BlogImageDO">
+    <select id="findById" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogImageDO">
         SELECT * FROM blog_image WHERE id = #{id}
     </select>
 
@@ -38,44 +38,16 @@
         VALUES (#{category}, #{fileName}, #{fileType}, #{filePath})
     </insert>
 
-    <update id="update" parameterType="map">
+    <update id="update" parameterType="com.weindependent.app.database.dataobject.BlogImageDO">
         UPDATE blog_image
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="category!=null and category!=''">
-                category = #{category}
-            </if>
-            <if test="fileName!=null and fileName!=''">
-                file_name = #{fileName}
-            </if>
-            <if test="fileType!=null and fileType!=''">
-                file_type = #{fileType}
-            </if>
-            <if test="filePath!=null and filePath!=''">
-                file_path = #{filePath}
-            </if>
-            <if test="isDeleted!=null">
-                is_deleted = #{isDeleted}
-            </if>
-            <if test="updateTime!=null">
-                update_time = #{updateTime}
-            </if>
-        </trim>
-        <where>
-            <if test="category!=null and category!=''">
-                AND category = #{category}
-            </if>
-            <if test="fileName!=null and fileName!=''">
-                AND file_name = #{fileName}
-            </if>
-            <if test="fileType!=null and fileType!=''">
-                AND file_type = #{fileType}
-            </if>
-            <if test="filePath!=null and filePath!=''">
-                AND file_path = #{filePath}
-            </if>
-            <if test="isDeleted!=null">
-                AND is_deleted = #{isDeleted}
-            </if>
-        </where>
+        <set>
+            <if test="category != null">category = #{category},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
     </update>
 </mapper>
