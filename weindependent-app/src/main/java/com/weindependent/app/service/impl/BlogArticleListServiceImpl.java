@@ -1,24 +1,17 @@
 package com.weindependent.app.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.BlogCategoryDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
-import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.dto.BlogArticleListQry;
-import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.utils.PageInfoUtil;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.IBlogArticleService;
 
 
 /**
@@ -45,6 +38,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService
     @Override
     public PageInfo<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry blogArticleQry)
     {
+        System.out.println("接收到的 categoryId: " + blogArticleQry.getCategoryId());
+
         BlogArticleListDO blogArticleDO = new BlogArticleListDO();
         // BeanUtils.copyProperties(source, target)，Copy properties from blogArticleQry to blogArticleDO @Hurely
         BeanUtils.copyProperties(blogArticleQry,blogArticleDO);
@@ -66,6 +61,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService
 
         List<BlogArticleListDO> BlogArticleDOList = blogArticleMapper.selectBlogArticleList(blogArticleDO);
 
+        // ✅ 打印查到的结果数量
+        System.out.println("查到的文章数量：" + BlogArticleDOList.size());
         // 直接返回 PageHelper 提供的分页对象
         return new PageInfo<>(BlogArticleDOList);
         // PageInfo<BlogArticleListDO> PageInfo = new PageInfo<>(BlogArticleDOList);

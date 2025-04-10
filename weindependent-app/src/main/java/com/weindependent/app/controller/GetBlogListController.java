@@ -11,7 +11,10 @@ import com.weindependent.app.database.dataobject.BlogCategoryDO;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.database.dataobject.CategoryInfoDO;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +43,25 @@ public class GetBlogListController {
     @SignatureAuth
     @Operation(summary = "通过Category_id获得所有相关Article并默认按update_time desc排序")
     @PostMapping("/articles/by-category")
-    public PageInfo<BlogArticleListDO> listPdf(
+    public ResponseEntity<Map<String, Object>> articleList(
         @RequestHeader(name = "version", required = true) String version,
         @RequestBody BlogArticleListQry query
     ) {
-        return blogArticleListService.selectBlogArticleList(query);
+        PageInfo<BlogArticleListDO> result = blogArticleListService.selectBlogArticleList(query);
+        Map<String, Object> response = new HashMap<>();
+
+        if (result.getList() == null || result.getList().isEmpty()) {
+            response.put("code", 1001);
+            response.put("msg", "No articles found under this condition");
+            response.put("data", Collections.emptyList()); // 你也可以返回 result 或 null
+        } else {
+            response.put("code", 0);
+            response.put("msg", "success");
+            response.put("data", result);
+        }
+
+        return ResponseEntity.ok(response);
+    
     }
 
     @Operation(summary = "获取所有Blog Category列表")
