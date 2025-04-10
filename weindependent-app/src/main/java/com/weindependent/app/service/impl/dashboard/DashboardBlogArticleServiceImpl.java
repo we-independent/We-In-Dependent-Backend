@@ -97,8 +97,11 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         blogImageDO.setFileName(uploadedFileVO.getFileName());
         blogImageDO.setFileType(uploadedFileVO.getFileType());
         blogImageDO.setFilePath(uploadedFileVO.getFilePath());
-        int blogImageId = blogImageMapper.insert(blogImageDO);
-        uploadedFileVO.setFileId(blogImageId);
+        int affectedRows = blogImageMapper.insert(blogImageDO);
+        if (affectedRows != 1) {
+            throw new RuntimeException("Failed to add image to database");
+        }
+        uploadedFileVO.setFileId(blogImageDO.getId());
         return uploadedFileVO;
     }
 
