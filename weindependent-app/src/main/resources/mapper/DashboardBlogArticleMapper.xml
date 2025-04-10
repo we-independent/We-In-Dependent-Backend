@@ -143,4 +143,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY create_time DESC
     </select>
 
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(*) &gt; 0 FROM blog_article WHERE id = #{id}
+    </select>
+
 </mapper>

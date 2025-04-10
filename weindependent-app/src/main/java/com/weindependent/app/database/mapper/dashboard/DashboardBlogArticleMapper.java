@@ -79,4 +79,6 @@ public interface DashboardBlogArticleMapper
      * @return 结果
      */
     public List<BlogArticleDO> searchByExactKeywords(String keyword);
+
+    public boolean existsById(int id);
 }

@@ -40,4 +40,8 @@
     <update id="updatePassword" parameterType="map">
         UPDATE t_system_user SET password = #{password} WHERE id = #{id}
     </update>
+
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(*) &gt; 0 FROM t_system_user WHERE id = #{id}
+    </select>
 </mapper>

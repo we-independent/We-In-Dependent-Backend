@@ -15,4 +15,5 @@ public interface UserMapper {
     int insert(UserDO user);
     UserDO findById(String id);
     int updatePassword(@Param("id") int id, @Param("password") String password);
+    boolean existsById(int id);
 }
