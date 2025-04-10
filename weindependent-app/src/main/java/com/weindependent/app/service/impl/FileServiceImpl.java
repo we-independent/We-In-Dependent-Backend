@@ -23,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
@@ -107,6 +105,28 @@ public class FileServiceImpl implements FileService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public boolean deleteFile(String filePath) {
+        try {
+            NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            InputStream configFileStream = FileServiceImpl.class.getClassLoader()
+                    .getResourceAsStream("secret/google-drive-config.json");
+
+            Drive drive = new Drive.Builder(httpTransport, new GsonFactory(), fromServiceAccount(configFileStream))
+                    .setApplicationName(appName)
+                    .build();
+
+            // Extract file ID from URL
+            String fileId = filePath.split("/d/")[1].split("/")[0];
+            drive.files().delete(fileId).execute();
+            log.info("Deleted file from Google Drive: {}", fileId);
+            return true;
+        } catch (IOException | GeneralSecurityException e) {
+            log.error("Failed to delete file from Google Drive", e);
+            return false;
+        }
     }
 
     /**
