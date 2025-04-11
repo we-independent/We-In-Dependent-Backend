@@ -65,8 +65,20 @@ public class EditorPickServiceImpl implements EditorPickService {
             return true;
         }
         BlogArticleDO article = blogArticleMapper.findById(articleId);
-        if (article == null || !"published".equals(article.getArticleStatus()) || (article.getIsDeleted() != null && article.getIsDeleted())){
-            return false;
+
+        // 判断文章是否存在
+        if (article == null) {
+            throw new RuntimeException("文章不存在，无法添加");
+        }
+    
+        // 判断是否为已删除文章
+        if (Boolean.TRUE.equals(article.getIsDeleted())) {
+            throw new RuntimeException("该文章已被删除，无法添加");
+        }
+    
+        // 判断是否为已发布状态
+        if (!"published".equals(article.getArticleStatus())) {
+            throw new RuntimeException("该文章未发布，不能添加为编辑精选");
         }
 
         EditorPickDO editorPick = new EditorPickDO();
