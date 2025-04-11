@@ -3,7 +3,6 @@ package com.weindependent.app.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -39,7 +38,7 @@ public class EditorPickServiceImpl implements EditorPickService {
         // 提取所有 articleId，去文章表查详情
         List<Integer> articleIds = picks.stream()
             .map(EditorPickDO::getArticleId)
-            .toList();
+            .collect(Collectors.toList());
 
         List<BlogArticleDO> articles = blogArticleMapper.findByIds(articleIds);
         Map<Integer, BlogArticleDO> articleMap = articles.stream()
