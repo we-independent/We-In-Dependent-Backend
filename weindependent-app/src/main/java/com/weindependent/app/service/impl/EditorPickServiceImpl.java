@@ -65,7 +65,7 @@ public class EditorPickServiceImpl implements EditorPickService {
             return true;
         }
         BlogArticleDO article = blogArticleMapper.findById(articleId);
-        if (article == null || !"published".equals(article.getArticleStatus()) || article.getIsDeleted() == 1){
+        if (article == null || !"published".equals(article.getArticleStatus()) || (article.getIsDeleted() != null && article.getIsDeleted())){
             return false;
         }
 

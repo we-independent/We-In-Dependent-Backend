@@ -81,7 +81,7 @@ public class EditorPickServiceTest {
         article.setId(123);
         article.setTitle("Test Article");
         article.setArticleStatus("published");
-        article.setIsDeleted(0);
+        article.setIsDeleted(false); 
         
         // Mock editorPickMapper检查文章是否已经是编辑精选，返回false表示不是
         when(editorPickMapper.isEditorPick(123)).thenReturn(false);
@@ -121,7 +121,7 @@ public class EditorPickServiceTest {
         article.setId(123);
         article.setTitle("Test Article");
         article.setArticleStatus("draft"); // 非published状态
-        article.setIsDeleted(0);
+        article.setIsDeleted(false);
         
         // Mock editorPickMapper检查文章是否已经是编辑精选
         when(editorPickMapper.isEditorPick(123)).thenReturn(false);
@@ -140,7 +140,7 @@ public class EditorPickServiceTest {
         article.setId(123);
         article.setTitle("Test Article");
         article.setArticleStatus("published");
-        article.setIsDeleted(1); 
+        article.setIsDeleted(true);
         
         // Mock editorPickMapper检查文章是否已经是编辑精选
         when(editorPickMapper.isEditorPick(123)).thenReturn(false);

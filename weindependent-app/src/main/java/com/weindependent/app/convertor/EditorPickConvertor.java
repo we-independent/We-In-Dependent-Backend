@@ -1,52 +1,46 @@
 package com.weindependent.app.convertor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
+import java.util.Date;
+import java.time.ZoneId;
 
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.EditorPickDO;
 import com.weindependent.app.vo.EditorPickVO;
 
 public class EditorPickConvertor {
-    /**
-     * 将BlogAriticleDO转换为EditorPickVO
-     * @param blogArticleDO
-     * @return EditorPickVO
-     */
 
-     public static EditorPickVO toVO(EditorPickDO editorPick, BlogArticleDO article){
+    /**
+     * 将 BlogArticleDO + EditorPickDO 转换为 EditorPickVO
+     */
+    public static EditorPickVO toVO(EditorPickDO editorPick, BlogArticleDO article) {
         if (editorPick == null || article == null) {
             return null;
         }
+    
         EditorPickVO vo = new EditorPickVO();
-
+    
         vo.setArticleId(editorPick.getArticleId());
         vo.setHeroType("Editor's Pick");
         vo.setCreateUserId(editorPick.getCreateUserId());
-        vo.setCreateTime(editorPick.getCreateTime());
-
+    
+        // Date → Date 直接赋值
+        if (editorPick.getCreateTime() != null) {
+            vo.setCreateTime(editorPick.getCreateTime());
+        }
+    
         vo.setTitle(article.getTitle());
-        vo.setIsDeleted(article.getIsDeleted());
-        vo.setUpdateTime(article.getUpdateTime());
+    
+        // Boolean → Integer（0/1）
+        vo.setIsDeleted(article.getIsDeleted() != null && article.getIsDeleted() ? 1 : 0);
+    
+        // LocalDateTime → Date 转换
+        if (article.getUpdateTime() != null) {
+            vo.setUpdateTime(Date.from(article.getUpdateTime()
+                    .atZone(ZoneId.systemDefault()).toInstant()));
+        }
+    
         vo.setUpdateUserId(article.getUpdateUserId());
-        
+    
         return vo;
-     }
-
-     /**
-      * 批量转换文章列表
-      
-      public static List<EditorPickVO> toVOList(List<BlogArticleDO> articles){
-          if (articles == null || articles.isEmpty()) {
-              return new ArrayList<>();
-          }
-          List<EditorPickVO> voList = new ArrayList<>(articles.size());
-          for (BlogArticleDO article : articles) {
-            voList.add(toVO(article));
-          }
-          return voList;
-      }
-    */
+    }
 }
