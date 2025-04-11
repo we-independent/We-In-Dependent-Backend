@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.SaveBlogService;
 /**
  * @author Elly
@@ -28,15 +30,35 @@ public class SaveBlogController {
     private SaveBlogService saveBlogService;
 
     @PostMapping("/{blogId}")
-    public ResponseEntity<?> saveBlog(@PathVariable int blogId, @RequestParam int userId) {
-        saveBlogService.saveBlog(userId, blogId);
-        return ResponseEntity.ok("Saved");
+    public void saveBlog(@PathVariable int blogId, @RequestParam int userId) throws Exception{
+        int success;
+        success = saveBlogService.saveBlog(userId, blogId);
+        if (success >=0) return;
+        else if (success == ErrorCode.USER_NOT_EXIST.getCode()){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
+        }
+        else if (success == ErrorCode.BLOG_NOT_EXIST.getCode()){
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), ErrorCode.BLOG_NOT_EXIST.getTitle());
+        }
+        else if (success == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), ErrorCode.UPDATE_DB_FAILED.getTitle());
+        }
     }
 
     @DeleteMapping("/{blogId}")
-    public ResponseEntity<?> unsaveBlog(@PathVariable int blogId, @RequestParam int userId) {
-        saveBlogService.unsaveBlog(userId, blogId);
-        return ResponseEntity.ok("Un-saved");
+    public void unsaveBlog(@PathVariable int blogId, @RequestParam int userId) {
+        int success;
+        success = saveBlogService.unsaveBlog(userId, blogId);
+        if (success >=0) return;
+        else if (success == ErrorCode.USER_NOT_EXIST.getCode()){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
+        }
+        else if (success == ErrorCode.BLOG_NOT_EXIST.getCode()){
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), ErrorCode.BLOG_NOT_EXIST.getTitle());
+        }
+        else if (success == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), ErrorCode.UPDATE_DB_FAILED.getTitle());
+        }
     }
 
     @GetMapping

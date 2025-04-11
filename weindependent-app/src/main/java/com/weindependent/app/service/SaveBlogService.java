@@ -7,10 +7,10 @@ import com.weindependent.app.database.dataobject.BlogArticleDO;
  * @author Elly
  * 2025-04-13
  */
-@Service
+
 public interface SaveBlogService {
-    void saveBlog(int userId, int blogId);
-    void unsaveBlog(int userId, int blogId);
+    int saveBlog(int userId, int blogId);
+    int unsaveBlog(int userId, int blogId);
     List<BlogArticleDO> getSavedBlogs(int userId);
 
 } 

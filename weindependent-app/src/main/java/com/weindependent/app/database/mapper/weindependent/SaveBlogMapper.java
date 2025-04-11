@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Param;
  */
 @Mapper
 public interface SaveBlogMapper {
-    void saveBlog(@Param("userId") int userId, @Param("blogId") int blogId);
+    int saveBlog(@Param("userId") int userId, @Param("blogId") int blogId);
 
-    void unsaveBlog(@Param("userId") int userId, @Param("blogId") int blogId);
+    int unsaveBlog(@Param("userId") int userId, @Param("blogId") int blogId);
 
     List<BlogArticleDO> getSavedBlogs(@Param("userId") int userId);
 }
