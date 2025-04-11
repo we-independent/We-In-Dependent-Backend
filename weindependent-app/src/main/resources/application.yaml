@@ -1,8 +1,17 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8080
+frontend:
+  url: ${FRONTEND_URL:http://localhost:5173}
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher 
   datasource:
     url: jdbc:mysql://mysql.sqlpub.com:3306/weindependent?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: wi_user
@@ -21,6 +30,14 @@ spring:
       validation-query: SELECT 1 FROM DUAL
       filters: stat,wall,log4j
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  email:
+    host: smtp.zoho.com
+    port: 587
+    username: info@weindependent.org
+    password: V2VpbmRlcGVuZGVudDIwMjUh
+    senderName: info@weindependent.org
+    protocol: smtp
+    encoding: UTF-8
 
 #下面这些内容是为了让MyBatis映射
 #指定Mybatis的Mapper文件
@@ -69,6 +86,11 @@ sa-token:
 swagger:
   enable: true
 
+springdoc:
+  swagger-ui:
+    enabled: true # 开启swagger界面
+    disable-swagger-default-url: true
+
 service:
   weindependent:
     thread-pool:
@@ -76,6 +98,30 @@ service:
       maximumPoolSize: 32
       keepAliveTime: 10000
 
+file:
+  upload:
+    tmp-folder: files
+
 logging:
   level:
     com.alibaba.druid.sql: DEBUG
+
+google:
+  client:
+    id: 542544138093-qd5117ig05qslhod86vcnoao2ddmv6o3.apps.googleusercontent.com
+    secret: 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
+  redirect:
+    uri: http://localhost:8080/auth/temp/google-login-callback
+  scope: openid profile email
+  token:
+    uri: https://oauth2.googleapis.com/token
+  user:
+    info:
+      uri: https://www.googleapis.com/oauth2/v3/userinfo
+  drive:
+    app-name: weindependent
+    folder:
+      parent: weindependent
+      parent-id: 1By9T_LMsLkAkK2fHXbtPbQw9GqzVBF4i
+      blog: blog
+      blog-id: 1jjKBKhVrxnfg_PlGzTk0bhOp9NhQod01

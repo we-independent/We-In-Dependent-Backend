@@ -3,30 +3,35 @@ package com.weindependent.app.controller;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.temp.SaTempUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
+import com.weindependent.app.dto.RegisterQry;
+import com.weindependent.app.utils.PasswordUtil;
+import com.weindependent.app.dto.SendMailQry;
+import com.weindependent.app.dto.ResetPasswordQry;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.SendEmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
-//import io.swagger.annotations.Api;
-//import io.swagger.annotations.ApiOperation;
 import com.weindependent.app.vo.UserVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-//@Api(tags = "用户管理")
 @Tag(name = "用户管理")
 @Slf4j
 @RestController
@@ -36,32 +41,155 @@ public class UserController {
     @Resource
     private UserService userService;
 
-//    @ApiOperation(value = "登录")
-    @Operation(summary = "登录")
+    @Resource
+    private SendEmailService sendEmailService;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
+
     @SignatureAuth
+    @Operation(summary = "用户注册")
+    @PostMapping("/register")
+    @CrossOrigin(origins = "*")
+    public void register(@Validated @RequestBody RegisterQry registerQry) {
+        userService.registerUser(registerQry);
+        log.info("User registered successfully: {}", registerQry.getAccount());
+    }
+
+    @SignatureAuth
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     @CrossOrigin(origins = "*")
-    public LoginVO login(@Validated @RequestBody LoginQry loginQry){
-        UserDO user = userService.queryByUsernameAndPassword(loginQry.getUsername(), loginQry.getPassword());
-        // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
+    public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
+        UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
+
+        if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(loginQry.getPassword(), user.getPassword())) {
+            log.error("Login failed for user: {}", loginQry.getEmail());
+            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
+        }
+
         SaLoginModel loginModel = new SaLoginModel();
-        loginModel.setExtra("username", user.getAccount());
+        loginModel.setExtra("username", user.getRealName());
+        loginModel.setIsLastingCookie(loginQry.getRemember());
         StpUtil.login(user.getId(), loginModel);
 
         SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
         LoginVO loginVO = new LoginVO();
         loginVO.setSaTokenInfo(saTokenInfo);
+        loginVO.setEmail(user.getAccount());
+        loginVO.setUsername(user.getRealName());
+        loginVO.setLanguage(user.getLanguage());
+        loginVO.setVisaType(user.getVisaType());
+        loginVO.setSubscription(user.isSubscription());
+
+        log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
+    }
+    @SignatureAuth
+    @Operation(summary = "重置密码")
+    @PostMapping("/reset/password")
+    @CrossOrigin(origins = "*")
+    public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry)throws Exception{
+        String token = resetPasswordQry.getToken();
+        int success = userService.resetPassword(token, resetPasswordQry.getPassword());
+        if (success == 0) {
+            return;
+        } else if (success == ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode()){
+            throw new ResponseException(ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode(), ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getTitle());
+        } else if (success == ErrorCode.USER_NOT_EXIST.getCode()){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
+        } else if (success == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), ErrorCode.UPDATE_DB_FAILED.getTitle());
+        }
+    }
+
+//    @Operation(summary = "登录")
+//    @SignatureAuth
+//    @PostMapping("/login")
+//    @CrossOrigin(origins = "*")
+//    public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
+//        UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
+//        if (ObjectUtils.isEmpty(user)) {
+//            log.error("Login failed for user: {}", loginQry.getEmail());
+//            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), ErrorCode.USERNAME_PASSWORD_ERROR.getTitle());
+//        }
+//
+//        // Token挂载的扩展参数 （此方法只有在集成jwt插件时才会生效）
+//        SaLoginModel loginModel = new SaLoginModel();
+//        loginModel.setExtra("username", user.getAccount());
+//        StpUtil.login(user.getId(), loginModel);
+//
+//        SaTokenInfo saTokenInfo = StpUtil.getTokenInfo();
+//        LoginVO loginVO = new LoginVO();
+//        loginVO.setSaTokenInfo(saTokenInfo);
+//        loginVO.setEmail(loginQry.getEmail());
+//        loginVO.setUsername(user.getAccount());
+//
+//        log.info("Login successful for user: {}", loginQry.getEmail());
+//        return loginVO;
+//    }
+
+    @SignatureAuth
+    @Operation(summary = "登出")
+    @GetMapping("/logout")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> logout() {
+        StpUtil.logout();
+
+        Map<String, Object> result = new HashMap<>();
+        return result;
     }
 
     @SignatureAuth
-    @PostMapping("/demo")
+    @Operation(summary = "查询登录状态")
+    @GetMapping("/isLogin")
     @CrossOrigin(origins = "*")
-    public String demo() {
-        return "This is just for demo";
+    public Map<String, Object> isLogin() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("isLogin", StpUtil.isLogin());
+
+        log.info("Login status checked: isLogin={}", StpUtil.isLogin());
+        return result;
     }
 
 //    @SignatureAuth
+//    @Operation(summary = "用户注册")
+//    @GetMapping("/register")
+//    @CrossOrigin(origins = "*")
+//    public Map<String, Object> register(@Validated @RequestBody ) {
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("code", ErrorCode.SUCCESS.getCode());
+//        result.put("msg", ErrorCode.SUCCESS.getTitle());
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("isLogin", StpUtil.isLogin());
+//        result.put("data", data);
+//
+//        log.info("Login status checked: isLogin={}", StpUtil.isLogin());
+//        return result;
+//    }
+
+//    @SignatureAuth
+    @Operation(summary = "发送邮件")
+    @PostMapping("/send/email")
+    @CrossOrigin(origins = "*")
+    public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
+        Map<String, String> sendMailParams = new HashMap<>();
+        String email= sendMailQry.getEmail();;
+        UserDO user= userService.findUserByAccount(email);
+        if(user == null) {
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle()); // no such user return true directly
+        }
+        sendMailParams.put("name", user.getRealName());
+        String token = SaTempUtil.createToken(user.getId(), 900);
+        sendMailParams.put("link", frontendUrl + "/?reset-password=true&token="+token);
+        return sendEmailService.send(sendMailQry.getTemplateId(), sendMailQry.getEmail(), sendMailParams);
+    }
+
+
+
+    @SignatureAuth
+    @Operation(summary = "用户列表")
     @PostMapping("/list")
     @CrossOrigin(origins = "*")
     public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {

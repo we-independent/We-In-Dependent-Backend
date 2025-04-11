@@ -21,7 +21,7 @@ import java.util.*;
 @Aspect
 @Component
 public class SignatureAuthAspect {
-    private final static String SECRET_KEY = "cin2cn1nvma3nlo7m973h3176m891iep";
+    private final static String SECRET_KEY = "Xw5SkQM6a4YR3bzVBKt68CsrM84WxUmH";
     public final static String[] SIGN_HEADERS = new String[]{
             "version",
             "timestamp",
