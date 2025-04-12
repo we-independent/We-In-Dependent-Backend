@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 
 
 @RestController
-@RequestMapping("/editor-picks")
+@RequestMapping("/api/editor-picks")
 public class EditorPickController {
     
     @Resource
