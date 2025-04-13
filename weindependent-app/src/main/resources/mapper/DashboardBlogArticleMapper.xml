@@ -118,4 +118,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+    <!-- Natural Language Mode -->
+    <select id="searchByContent"
+            parameterType="String"
+            resultMap="BlogArticleResult">
+        SELECT id, title, summary, create_time
+        FROM blog_article
+        WHERE is_deleted = 0
+                  AND article_status = 'published'
+                  AND MATCH(title, content) AGAINST(#{keyword} IN NATURAL LANGUAGE MODE)
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- Boolean Mode -->
+    <select id="searchByExactKeywords"
+            parameterType="String"
+            resultMap="BlogArticleResult">
+        SELECT id, title, summary, create_time
+        FROM blog_article
+        WHERE is_deleted = 0
+                  AND article_status = 'published'
+                  AND MATCH(title) AGAINST(#{keyword} IN BOOLEAN MODE)
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(*) &gt; 0 FROM blog_article WHERE id = #{id}
+    </select>
+
 </mapper>

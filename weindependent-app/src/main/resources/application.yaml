@@ -5,6 +5,10 @@ frontend:
   url: ${FRONTEND_URL:http://localhost:5173}
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher 
@@ -94,10 +98,13 @@ service:
       maximumPoolSize: 32
       keepAliveTime: 10000
 
+file:
+  upload:
+    tmp-folder: files
+
 logging:
   level:
     com.alibaba.druid.sql: DEBUG
-
 
 google:
   client:
@@ -111,3 +118,10 @@ google:
   user:
     info:
       uri: https://www.googleapis.com/oauth2/v3/userinfo
+  drive:
+    app-name: weindependent
+    folder:
+      parent: weindependent
+      parent-id: 1By9T_LMsLkAkK2fHXbtPbQw9GqzVBF4i
+      blog: blog
+      blog-id: 1jjKBKhVrxnfg_PlGzTk0bhOp9NhQod01

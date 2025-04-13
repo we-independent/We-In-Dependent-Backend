@@ -61,4 +61,24 @@ public interface DashboardBlogArticleMapper
      * @return 结果
      */
     public int deleteBlogArticleByIds(Integer[] ids);
+
+
+    /**
+     * 全文搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    public List<BlogArticleDO> searchByContent(String keyword);
+
+
+    /**
+     * 标题关键词搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    public List<BlogArticleDO> searchByExactKeywords(String keyword);
+
+    public boolean existsById(int id);
 }

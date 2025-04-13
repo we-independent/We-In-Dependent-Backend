@@ -12,6 +12,7 @@ public enum ErrorCode {
     TOKEN_NOT_EXIST_OR_EXPIRED(-1, "Token does not exist or expired"),
     USER_NOT_EXIST(-2, "User does not exist"),
     UPDATE_DB_FAILED(-3, "Update db failed"),
+    BLOG_NOT_EXIST(-4, "Blog does not exist"),
     USERNAME_PASSWORD_ERROR(401, "Invalid username or password");
 
     private int code;

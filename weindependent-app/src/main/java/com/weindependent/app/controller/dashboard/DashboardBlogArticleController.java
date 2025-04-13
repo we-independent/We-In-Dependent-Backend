@@ -4,6 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.dto.FileUploadQry;
+import com.weindependent.app.vo.UploadedFileVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -63,6 +65,17 @@ public class DashboardBlogArticleController
         blogArticle.setCreateUserId(1);
         blogArticle.setUpdateUserId(1);
         return blogArticleService.insertBlogArticle(blogArticle) > 0;
+    }
+
+    /**
+     * 新增博客图片
+     */
+    @SignatureAuth
+    @Operation(summary = "新增博客banner图片")
+    @PostMapping(value="/banner/upload", consumes= "multipart/form-data")
+    public UploadedFileVO addBlogBanner(FileUploadQry fileUploadQry)
+    {
+        return blogArticleService.insertBlogBanner(fileUploadQry);
     }
 
     /**
