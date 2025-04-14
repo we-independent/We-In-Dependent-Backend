@@ -1,10 +1,8 @@
 package com.weindependent.app.service;
-
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.vo.UserVO;
 import com.weindependent.app.dto.RegisterQry;
-
 public interface UserService {
 //    UserDO queryByUsernameAndPassword(String username, String password);
     UserDO queryByEmailAndPassword(String email, String password);
