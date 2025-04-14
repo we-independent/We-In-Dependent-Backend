@@ -44,7 +44,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateUserId != null "> and update_user_id = #{updateUserId}</if>
             <if test="updateTime != null "> and update_time = #{updateTime}</if>
         </where>
-        <!-- 排序 -->
+        <!-- 排序 latest or most_saved -->
+        <!-- <choose>
+            <when test="orderBy == 'most saved'">
+                order by (SELECT COUNT(1)
+                          FROM most_saved ms
+                          WHERE ms.article_id = blog_article.id 
+                            AND ms.status = 1) DESC
+            </when>
+            <otherwise>
+                order by update_time DESC
+            </otherwise>
+        </choose> -->
         <choose>
             <when test="orderBy != null and orderBy != ''">
                 order by ${orderBy}
@@ -53,6 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 order by update_time desc
             </otherwise>
         </choose>
+
     </select>
     
     <select id="selectBlogArticleListById" parameterType="Integer" resultMap="BlogArticleListResult">

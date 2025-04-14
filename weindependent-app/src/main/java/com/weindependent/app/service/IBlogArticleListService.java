@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.dto.BlogAllArticleQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleQry;
 
@@ -21,9 +22,9 @@ public interface IBlogArticleListService
     /**
      * 查询博客文章列表
      * 
-     * @param blogArticleQry 博客文章查询模板
+     * @param query 博客文章查询模板
      * @return 博客文章集合
      */
-    public PageInfo<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry blogArticleQry);
+    public PageInfo<BlogArticleListDO> selectBlogArticleList(BlogAllArticleQry query);
 
 }

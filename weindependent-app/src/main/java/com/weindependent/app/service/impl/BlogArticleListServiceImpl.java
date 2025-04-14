@@ -7,6 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.dto.BlogAllArticleQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService
      * @return 博客文章列表
      */
     @Override
-    public PageInfo<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry blogArticleQry)
+    public PageInfo<BlogArticleListDO> selectBlogArticleList(BlogAllArticleQry blogArticleQry)
     {
         System.out.println("接收到的 categoryId: " + blogArticleQry.getCategoryId());
 
@@ -78,12 +79,12 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService
 
     private static final List<String> ALLOWED_DIRECTIONS = Arrays.asList("asc", "desc");
 
-    private void sanitizeOrderBy(BlogArticleListQry query) {
-        String orderBy = query.getOrderBy();
+    private void sanitizeOrderBy(BlogAllArticleQry blogArticleQry) {
+        String orderBy = blogArticleQry.getOrderBy();
 
         // 1. 没传，默认值
         if (orderBy == null || orderBy.trim().isEmpty()) {
-            query.setOrderBy("update_time desc");
+            blogArticleQry.setOrderBy("update_time desc");
             return;
         }
 
@@ -95,11 +96,11 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService
 
         // 3. 校验字段是否合法
         if (!ALLOWED_ORDER_FIELDS.contains(field) || !ALLOWED_DIRECTIONS.contains(direction)) {
-            query.setOrderBy("update_time desc");
+            blogArticleQry.setOrderBy("update_time desc");
             return;
         }
 
         // 4. 设置安全值
-        query.setOrderBy(field + " " + direction);
+        blogArticleQry.setOrderBy(field + " " + direction);
     }
 }

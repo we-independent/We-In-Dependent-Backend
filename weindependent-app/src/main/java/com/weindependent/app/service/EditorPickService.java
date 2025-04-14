@@ -1,6 +1,7 @@
 package com.weindependent.app.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.weindependent.app.vo.EditorPickVO;
 
@@ -16,4 +17,7 @@ public interface EditorPickService {
 
     //检查文章是否为编辑精选
     boolean isEditorPickArticle(Integer articleId);
+
+    // Hurely 新增：批量查询多个文章是否为编辑精选，返回 Map<articleId, Boolean>
+    Map<Integer, Boolean> getEditorsPickMapByArticleIds(List<Integer> articleIds);
 }
