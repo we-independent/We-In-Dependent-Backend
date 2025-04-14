@@ -1,82 +1,39 @@
+
 package com.weindependent.app.controller;
+
 import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.IBlogArticleCategoryService;
+import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.dto.BlogArticleListQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
-import com.weindependent.app.database.dataobject.BlogArticleListDO;
-import com.weindependent.app.database.dataobject.BlogCategoryDO;
-import com.weindependent.app.dto.BlogArticleListQry;
-import com.weindependent.app.database.dataobject.CategoryInfoDO;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 获取文章List
- * 
- * @author Hurely
- *    2025-04-5
- */
+import java.util.List;
 
 @Tag(name = "博客文章Article List获取")
 @RestController
 @RequestMapping("/")
 public class GetBlogListController {
 
-    @Autowired  // ✅ 确保加上这个注解
-    private IBlogArticleListService blogArticleListService;
     @Autowired
-    private IBlogArticleCategoryService blogCategoryService;
-    /**
-     * 查询博客文章列表 Hurely
-     */
-    @SignatureAuth
+    private IBlogArticleListService blogArticleListService;
+
     @Operation(summary = "通过Category_id获得所有相关Article并默认按update_time desc排序")
     @PostMapping("/articles/by-category")
-    public ResponseEntity<Map<String, Object>> articleList(
-        @RequestHeader(name = "version", required = true) String version,
-        @RequestBody BlogArticleListQry query
+    public PageInfo<BlogArticleListDO> listPdf(
+            @RequestHeader(name = "version", required = true) String version,
+            @RequestBody BlogArticleListQry query
     ) {
-        PageInfo<BlogArticleListDO> result = blogArticleListService.selectBlogArticleList(query);
-        Map<String, Object> response = new HashMap<>();
-
-        if (result.getList() == null || result.getList().isEmpty()) {
-            response.put("code", 1001);
-            response.put("msg", "No articles found under this condition");
-            response.put("data", Collections.emptyList()); // 你也可以返回 result 或 null
-        } else {
-            response.put("code", 0);
-            response.put("msg", "success");
-            response.put("data", result);
-        }
-
-        return ResponseEntity.ok(response);
-    
+        return blogArticleListService.selectBlogArticleList(query);
     }
 
-    @Operation(summary = "获取所有Blog Category列表")
-    @GetMapping("/category-names")
-    public ResponseEntity<List<CategoryInfoDO>> getCategoryNames() {
-        List<BlogCategoryDO> allCategories = blogCategoryService.selectAllCategories();
-        List<CategoryInfoDO> result = allCategories.stream()
-            .map(cat -> new CategoryInfoDO(cat.getName(), cat.getId()))  // 👈 传入 name 和 id
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(result);
+    @Operation(summary = "冷启动推荐博客文章")
+    @GetMapping("/articles/coldstart")
+    public ResponseEntity<List<BlogArticleListDO>> getColdStartArticles() {
+        List<BlogArticleListDO> coldStartArticles = blogArticleListService.selectColdStartArticles();
+        return ResponseEntity.ok(coldStartArticles);
     }
-
-    // @GetMapping("/article-categories")
-    // public ResponseEntity<List<BlogCategoryDO>> getCategories() {
-    //         return ResponseEntity.ok(blogCategoryService.selectAllCategories());
-    //     }
 }
-    
