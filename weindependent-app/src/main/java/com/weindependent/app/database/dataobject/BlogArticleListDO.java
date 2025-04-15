@@ -61,10 +61,6 @@ public class BlogArticleListDO
     /** 最后更新时间 */
     private LocalDateTime  updateTime;
 
-    /** 排序 */
-    @Schema(description = "order by, support:update_time desc, update_time asc, title asc, title desc")
-    private String orderBy;
-
 
 }
 

@@ -2,17 +2,20 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.weindependent.app.mapper.MostSavedMapper">
-    
-    <select id="getSavedCountsByArticleIds" parameterType="list" resultType="com.weindependent.app.database.dataobject.SavedCountDO">
-        SELECT 
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.MostSavedMapper">
+
+    <select id="getSavedCountsByArticleIds"
+            parameterType="list"
+            resultType="com.weindependent.app.database.dataobject.SavedCountDO">
+        SELECT
             article_id AS articleId,
-            saved_count AS savedCount
-        FROM most_saved
+            COUNT(*) AS savedCount
+        FROM saved_article
         WHERE article_id IN
         <foreach item="id" collection="articleIds" open="(" separator="," close=")">
             #{id}
         </foreach>
+        GROUP BY article_id
     </select>
-    
+
 </mapper>
