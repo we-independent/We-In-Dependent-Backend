@@ -18,4 +18,19 @@
         GROUP BY article_id
     </select>
 
+    <select id="findCurrentMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
+        SELECT *
+        FROM most_saved
+        WHERE status = 1
+        ORDER BY create_time DESC
+
+    </select>
+    <select id="findPreviousMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
+        SELECT *
+        FROM most_saved
+        WHERE status = 0
+        ORDER BY create_time DESC
+    </select>
+
+
 </mapper>
