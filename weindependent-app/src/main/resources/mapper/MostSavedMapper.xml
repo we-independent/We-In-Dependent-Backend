@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.MostSavedMapper">
+
+    <select id="getSavedCountsByArticleIds"
+            parameterType="list"
+            resultType="com.weindependent.app.database.dataobject.SavedCountDO">
+        SELECT
+            article_id AS articleId,
+            COUNT(*) AS savedCount
+        FROM saved_article
+        WHERE article_id IN
+        <foreach item="id" collection="articleIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY article_id
+    </select>
+
+    <select id="findCurrentMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
+        SELECT *
+        FROM most_saved
+        WHERE status = 1
+        ORDER BY create_time DESC
+
+    </select>
+    <select id="findPreviousMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
+        SELECT *
+        FROM most_saved
+        WHERE status = 0
+        ORDER BY create_time DESC
+    </select>
+
+
+</mapper>

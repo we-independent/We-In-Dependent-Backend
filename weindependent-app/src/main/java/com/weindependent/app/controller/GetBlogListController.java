@@ -1,82 +1,108 @@
 package com.weindependent.app.controller;
-import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.IBlogArticleCategoryService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
-import com.weindependent.app.database.dataobject.BlogCategoryDO;
+import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
-import com.weindependent.app.database.dataobject.CategoryInfoDO;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.weindependent.app.service.IBlogArticleListService;
+import com.weindependent.app.service.EditorPickService;
+import com.weindependent.app.service.SavedCountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 获取文章List
- * 
- * @author Hurely
- *    2025-04-5
- */
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Tag(name = "博客文章Article List获取")
+@Tag(name = "博客文章 Article List 获取")
 @RestController
 @RequestMapping("/")
 public class GetBlogListController {
 
-    @Autowired  // ✅ 确保加上这个注解
-    private IBlogArticleListService blogArticleListService;
     @Autowired
-    private IBlogArticleCategoryService blogCategoryService;
-    /**
-     * 查询博客文章列表 Hurely
-     */
-    @SignatureAuth
-    @Operation(summary = "通过Category_id获得所有相关Article并默认按update_time desc排序")
-    @PostMapping("/articles/by-category")
-    public ResponseEntity<Map<String, Object>> articleList(
-        @RequestHeader(name = "version", required = true) String version,
-        @RequestBody BlogArticleListQry query
-    ) {
-        PageInfo<BlogArticleListDO> result = blogArticleListService.selectBlogArticleList(query);
-        Map<String, Object> response = new HashMap<>();
+    private IBlogArticleListService blogArticleListService;
+    
+    @Autowired
+    private EditorPickService editorsPickService;
+    
+    @Autowired
+    private SavedCountService savedCountService;
 
-        if (result.getList() == null || result.getList().isEmpty()) {
+    /**
+     * 获取文章列表接口：
+     * - 如果传入 categoryId 则按分类筛选，否则返回所有文章
+     * - 支持分页与排序（orderBy: "latest" 或 "most_saved"）
+     * - 返回数据格式按照 BlogArticleCardDTO 封装，front-end 用于 BlogCard 显示
+     */
+    @Operation(summary = "获取文章列表，支持分页、排序及分类筛选")
+    @PostMapping("/articles")
+    public ResponseEntity<Map<String, Object>> getArticles(@RequestBody BlogArticleListQry query) {
+        PageInfo<BlogArticleListDO> pageInfo = blogArticleListService.selectBlogArticleList(query);
+        
+        if (pageInfo.getList() == null || pageInfo.getList().isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
             response.put("code", 1001);
             response.put("msg", "No articles found under this condition");
-            response.put("data", Collections.emptyList()); // 你也可以返回 result 或 null
-        } else {
-            response.put("code", 0);
-            response.put("msg", "success");
-            response.put("data", result);
+            response.put("data", Collections.emptyList());
+            return ResponseEntity.ok(response);
         }
 
+        // 获取所有文章ID，批量查询编辑推荐状态和收藏次数
+        List<Integer> articleIds = pageInfo.getList().stream()
+                .map(BlogArticleListDO::getId)
+                .collect(Collectors.toList());
+
+        Map<Integer, Boolean> editorsPickMap = editorsPickService.getEditorsPickMapByArticleIds(articleIds);
+        Map<Integer, Integer> tempMap;
+        try {
+            tempMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
+        } catch (Exception e) {
+            tempMap = new HashMap<>();
+            for (Integer id : articleIds) {
+                tempMap.put(id, 0);
+            }
+        }
+        final Map<Integer, Integer> finalSavedCountMap = tempMap;
+        System.out.println("当前页面文章 ID: " + articleIds);
+        System.out.println("收藏数 map: " + tempMap);
+        
+        // 将 DO 转换为前端 BlogCard DTO
+        List<BlogArticleCardQry> resultList = pageInfo.getList().stream().map(article -> {
+            BlogArticleCardQry dto = new BlogArticleCardQry();
+            dto.setId(article.getId());
+            dto.setTitle(article.getTitle());
+            // update_time 作为 eventime 返回前端
+            dto.setTime(article.getUpdateTime());
+            
+            // 计算阅读时长：假设每分钟 200 字（常见阅读速度）
+            int wordCount = article.getContent() != null ? article.getContent().length() : 0;
+            dto.setReadingTime((int)Math.ceil(wordCount / 200.0) + " min");
+
+            // 图片 URL 和链接可根据实际情况替换，目前为固定值
+            dto.setImageUrl("BlogArticleImage1");
+            dto.setUrl("/blogs/visa-policy/policy-changes-2025");
+            
+            // category 直接使用 db 中存储的值，这里转换为字符串；前端可以进一步处理
+            dto.setCategory(String.valueOf(article.getCategoryId()));
+            dto.setEditorsPick(editorsPickMap.getOrDefault(article.getId(), false));
+            dto.setSavedCount(finalSavedCountMap.getOrDefault(article.getId(), 0));
+            return dto;
+        }).collect(Collectors.toList());
+
+        // 构造分页返回数据
+        Map<String, Object> dataWrapper = new HashMap<>();
+        dataWrapper.put("list", resultList);
+        dataWrapper.put("pageNum", pageInfo.getPageNum());
+        dataWrapper.put("pageSize", pageInfo.getPageSize());
+        dataWrapper.put("total", pageInfo.getTotal());
+        dataWrapper.put("pages", pageInfo.getPages());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", 0);
+        response.put("msg", "success");
+        response.put("data", dataWrapper);
         return ResponseEntity.ok(response);
-    
     }
-
-    @Operation(summary = "获取所有Blog Category列表")
-    @GetMapping("/category-names")
-    public ResponseEntity<List<CategoryInfoDO>> getCategoryNames() {
-        List<BlogCategoryDO> allCategories = blogCategoryService.selectAllCategories();
-        List<CategoryInfoDO> result = allCategories.stream()
-            .map(cat -> new CategoryInfoDO(cat.getName(), cat.getId()))  // 👈 传入 name 和 id
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(result);
-    }
-
-    // @GetMapping("/article-categories")
-    // public ResponseEntity<List<BlogCategoryDO>> getCategories() {
-    //         return ResponseEntity.ok(blogCategoryService.selectAllCategories());
-    //     }
 }
-    
