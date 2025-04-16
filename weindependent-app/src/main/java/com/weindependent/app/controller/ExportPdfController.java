@@ -54,7 +54,7 @@ public class ExportPdfController {
      * @author Hurely
      * 
      */
-    @SignatureAuth // 测试时可以注释掉
+    // @SignatureAuth // 测试时可以注释掉
     @Operation(summary = "Download_Blog_Pdf")
     @GetMapping("/export/{blogId}")
     public ResponseEntity<byte[]> exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
