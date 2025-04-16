@@ -10,4 +10,5 @@ public interface UserService {
     boolean registerUser(RegisterQry dto);
     UserDO findUserByAccount(String account);
     int resetPassword(String email, String newPassword);
+    UserDO findUserById(Long userId); //Hurely added for pdf download
 }

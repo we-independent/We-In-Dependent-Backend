@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
+import cn.dev33.satoken.stp.StpUtil;
+
 
 @Tag(name = "博客文章PDF下载")
 @RestController
@@ -54,39 +56,29 @@ public class ExportPdfController {
      * @author Hurely
      * 
      */
-    // @SignatureAuth // 测试时可以注释掉
+
     @Operation(summary = "Download_Blog_Pdf")
     @GetMapping("/export/{blogId}")
     public ResponseEntity<byte[]> exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
 
         //Step 1 Check if user log in already, if yes, next move, otherwise login first
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        // Step 1.1: 如果用户没有登录，跳转到登录页面
-        if(auth == null || auth instanceof AnonymousAuthenticationToken){
+        if (!StpUtil.isLogin()) {
             String targetUrl = request.getRequestURI();
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "/user/login?targetUrl=" + targetUrl);
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }
-        
-        // Step 1.2: 已登录，拿到用户名（account），查询数据库
-        String userAccount = auth.getName();
-        UserDO user = null; // ✅ 提前初始化，避免编译器报错
-        try {
-            user = userService.findUserByAccount(userAccount);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // Step 2: 获取登录的 userId（loginId 是 string 类型）
+        Long userId = StpUtil.getLoginIdAsLong();
 
-        // Step 1.3: 如果数据库中找不到该用户，跳转注册页面
+        // Step 2.1: 查询数据库中是否存在该用户
+        UserDO user = userService.findUserById(userId);
         if (user == null) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", "/user/register?account=" + userAccount);
+            headers.add("Location", "/user/register?account=" + userId);
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }
-        Long userId = user.getId();
+
         LocalDateTime now = LocalDateTime.now(); // 当前时间
 
         // //测试时可使用写死的userid
