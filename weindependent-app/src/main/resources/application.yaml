@@ -105,6 +105,9 @@ file:
 logging:
   level:
     com.alibaba.druid.sql: DEBUG
+    # # Hurely debug order sort
+    # org.mybatis: DEBUG
+    # level.com.weindependent: DEBUG
 
 google:
   client:

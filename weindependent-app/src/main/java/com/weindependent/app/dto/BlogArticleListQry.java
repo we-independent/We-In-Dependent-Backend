@@ -2,7 +2,8 @@ package com.weindependent.app.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
@@ -13,48 +14,26 @@ import java.time.LocalDateTime;
  */
 @Data
 public class BlogArticleListQry {
-    /** 文章ID */
-    private Integer id;
+    // 当前页码，默认第一页
+    private Integer pageNum = 1;
 
-    /** 文章来源类型 */
-    private String articleSourceType;
-
-    /** 原始文章链接 */
-    private String sourceUrl;
-
-    /** 作者ID */
-    private Integer authorId;
-
-
-    /** 文章标题 */
-    private String title;
-
-
-    /** 文章状态 */
-    private String articleStatus;
-
-    /** 文章分类 */
-    private Integer categoryId;
-
-    /** 0-未删除, 1-已删除 */
-    private Boolean isDeleted;
-
-    /** 创建人 */
-    private Integer createUserId;
-
-    /** 创建时间 */
-    private LocalDateTime createTime;
-
-    /** 最后更新人 */
-    private Integer updateUserId;
-
-    /** 最后更新时间 */
-    private LocalDateTime  updateTime;
-
-    private  Integer pageNum;
-
-    private  Integer pageSize;
+    // 每页显示文章数（Figma 设计要求 9 个）
+    private Integer pageSize = 9;
     
-    /** 排序 */
-    private String orderBy;
+    // 按分类筛选：传入 category_id 时进行分类查询，否则查询所有文章
+    private Integer categoryId;
+    
+    /**
+     * 排序规则，前端传入，比如 "most_saved" 或 "latest"
+     * 默认 "latest"
+     */
+    private String orderBy = "latest";
+    
+    /**
+     * 完整的排序子句，由 Service 层构造。
+     * 当 orderBy 为 "most_saved" 时，orderClause 会设置为子查询表达式；
+     * 否则设置为 "update_time DESC"。
+     */
+    @JsonIgnore // ✅ 不允许从前端传入
+    private String orderClause;
 }
