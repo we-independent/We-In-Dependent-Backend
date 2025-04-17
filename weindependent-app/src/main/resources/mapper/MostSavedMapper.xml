@@ -18,13 +18,27 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
     </resultMap>
 
+    <select id="getSavedCountsByArticleIds"
+            parameterType="list"
+            resultType="com.weindependent.app.database.dataobject.SavedCountDO">
+        SELECT
+        article_id AS articleId,
+        COUNT(*) AS savedCount
+        FROM saved_article
+        WHERE article_id IN
+        <foreach item="id" collection="articleIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY article_id
+    </select>
+
     <select id="findCurrentMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
         SELECT *
         FROM most_saved
         WHERE status = 1
         ORDER BY create_time DESC
-
     </select>
+
     <select id="findPreviousMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
         SELECT *
         FROM most_saved
@@ -42,12 +56,11 @@
         LEFT JOIN category on blog_article.category_id = category.id
         LEFT JOIN blog_image on blog_article.banner_img_id = blog_image.Id
         WHERE blog_article.id IN
-        <foreach collection="ids" item="id" open="(" separator="," close=")">
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
         AND blog_article.is_deleted = 0
     </select>
-
 
     <select id="selectTagVOList" resultMap="TagVOResult">
         SELECT tag.id,
@@ -57,6 +70,4 @@
           AND tag.is_deleted = 0
           AND tag_article_relation.is_deleted = 0
     </select>
-
-
 </mapper>
