@@ -31,7 +31,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         if (orderBy == null || orderBy.trim().isEmpty() || "latest".equalsIgnoreCase(orderBy)) {
             query.setOrderClause("update_time DESC");
         } else if ("most_saved".equalsIgnoreCase(orderBy)) {
-            query.setOrderClause("(SELECT COUNT(1) FROM saved_article sa WHERE sa.article_id = blog_article.id) DESC, update_time DESC");
+            query.setOrderClause("(SELECT COUNT(1) FROM save_list_article sa WHERE sa.article_id = blog_article.id) DESC, update_time DESC");
         } else {
             // 默认回退
             query.setOrderClause("update_time DESC");
