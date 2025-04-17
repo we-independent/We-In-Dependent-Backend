@@ -12,6 +12,8 @@ public interface SaveBlogService {
     int saveBlog(int userId, int blogId);
     int unsaveBlog(int userId, int blogId);
     List<BlogArticleDO> getSavedBlogs(int userId);
+    int createList(int userId, String listName);
+    boolean existList(int userId, String listName);
 
 } 
  

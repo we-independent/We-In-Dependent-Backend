@@ -5,19 +5,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.SaveBlogMapper">
     
     <insert id="saveBlog">
-        INSERT INTO saved_article (user_id, article_id)
+        INSERT INTO save_list_article (user_id, article_id)
         VALUES (#{userId}, #{blogId})
     </insert>
 
     <delete id="unsaveBlog">
-        DELETE FROM saved_article
+        DELETE FROM save_list_article
         WHERE user_id = #{userId} AND article_id = #{blogId}
     </delete>
 
     <select id="getSavedBlogs" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
         SELECT ba.*
         FROM blog_article ba
-        INNER JOIN saved_article sa ON ba.id = sa.article_id
+        INNER JOIN save_list_article sa ON ba.id = sa.article_id
         WHERE sa.user_id = #{userId}
     </select>
 </mapper>

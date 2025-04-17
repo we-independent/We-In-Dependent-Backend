@@ -56,4 +56,12 @@ public class SaveBlogServiceImpl implements SaveBlogService{
         }
         return saveBlogMapper.getSavedBlogs(userId);
     }   
+    
+    public int createList(int userId, String listName){
+        return 0;
+    }
+
+    public boolean existList(int userId, String listName){
+        return true;
+    }
 }
