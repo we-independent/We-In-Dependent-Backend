@@ -1,4 +1,7 @@
 package com.weindependent.app.service.impl;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import net.coobird.thumbnailator.Thumbnails;
 
 import cn.hutool.core.io.FileUtil;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -44,6 +47,10 @@ public class FileServiceImpl implements FileService {
     @Value("${file.upload.tmp-folder}")
     private String tmpFolder;
 
+    private final int resizeWidth=1729;
+
+    private final int resizeHeight=438;
+
     // 一些scope权限
     private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE_APPDATA,DriveScopes.DRIVE,DriveScopes.DRIVE_METADATA,DriveScopes.DRIVE_READONLY,DriveScopes.DRIVE_METADATA_READONLY,DriveScopes.DRIVE_SCRIPTS);
 
@@ -76,7 +83,15 @@ public class FileServiceImpl implements FileService {
             String suffix = FileUtil.getSuffix(filePath);
             String filename = FileUtil.getName(filePath);
 
-            // 4.构建文件元数据：文件名，父目录，文件的mineType
+            //4 縮小圖片到指定大小
+            BufferedImage originalImage = ImageIO.read(filePath);
+            BufferedImage resizedImage = Thumbnails.of(originalImage)
+                    .size(resizeWidth, resizeHeight)
+                    .keepAspectRatio(false)
+                    .asBufferedImage();
+            ImageIO.write(resizedImage, suffix, filePath);
+
+            // 5.构建文件元数据：文件名，父目录，文件的mineType
             File fileMetadata = new File();
             fileMetadata.setName(filename.replace(suffix, "")+Base64.getEncoder().encodeToString(String.valueOf(System.currentTimeMillis()).getBytes("UTF-8")) + "." + suffix);
             String targetFolderId = getFolderId(category);
@@ -84,7 +99,7 @@ public class FileServiceImpl implements FileService {
             String mineType = findMineTypeBySuffix(suffix);
             FileContent mediaContent = new FileContent(mineType, filePath);
 
-            // 5.上传文件
+            // 6.上传文件
             File uploadedFile = drive.files().create(fileMetadata, mediaContent)
                     .setFields("id,name,webViewLink")
                     .execute();
@@ -97,7 +112,6 @@ public class FileServiceImpl implements FileService {
             uploadedFileVO.setFileType(suffix);
             uploadedFileVO.setFilePath(uploadedfilePath);
 
-            //@TODO 删除源文件
             filePath.delete();
 
             return uploadedFileVO;
