@@ -1,9 +1,8 @@
 package com.weindependent.app.service.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.weindependent.app.database.dataobject.SaveListDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper;
@@ -31,6 +30,7 @@ public class SaveServiceImpl implements SaveService{
     private SaveListService saveListService;
 
     /*收藏文章 */
+    @Transactional
     public int saveBlog(int userId, Integer listId, int blogId){
         if (!blogArticleMapper.existsById(blogId)) {
             return ErrorCode.BLOG_NOT_EXIST.getCode();
@@ -47,6 +47,7 @@ public class SaveServiceImpl implements SaveService{
     }
     
     /*取消收藏*/
+    @Transactional
     public int unsaveBlog(int userId, Integer listId, int blogId){
         if (!blogArticleMapper.existsById(blogId)) {
             return ErrorCode.BLOG_NOT_EXIST.getCode();

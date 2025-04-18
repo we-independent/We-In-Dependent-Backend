@@ -3,14 +3,17 @@ package com.weindependent.app.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.SaveListDO;
 import com.weindependent.app.database.mapper.weindependent.SaveListMapper;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.SaveListService;
 
-public class SaveListServiceImpl {
+@Service
+public class SaveListServiceImpl implements SaveListService{
     @Autowired 
     private SaveListMapper saveListMapper;
 
