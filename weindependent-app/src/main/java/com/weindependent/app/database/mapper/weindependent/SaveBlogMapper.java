@@ -2,17 +2,35 @@ package com.weindependent.app.database.mapper.weindependent;
 
 import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.database.dataobject.SaveListDO;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 /**
  * @author Elly
- * 2025-04-13
+ * 2025-04-17
  */
 @Mapper
 public interface SaveBlogMapper {
-    int saveBlog(@Param("userId") int userId, @Param("blogId") int blogId);
 
-    int unsaveBlog(@Param("userId") int userId, @Param("blogId") int blogId);
+    /*收藏 */
+    int saveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
 
-    List<BlogArticleDO> getSavedBlogs(@Param("userId") int userId);
+    /*取消收藏 */
+    int unsaveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
+
+    List<BlogArticleDO> getSavedBlogsFromList(@Param("listId") int listId);
+
+    SaveListDO findDefaultListByUserId(@Param("userId") int userId);
+
+    int createList(SaveListDO saveListDO);
+
+    /*TODO: 删除之后 所属文章处理未知 */
+    int deleteList(@Param("userId") int userId, @Param("listId") int listId);
+
+    List<SaveListDO> getSavedList(@Param("userId") int userId);
+
+    /*检查user是否拥有某收藏夹 */
+    int checkListOwnership(@Param("userId")int userId, @Param("listId")int listId);
+
 }

@@ -1,19 +1,24 @@
 package com.weindependent.app.service;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.database.dataobject.SaveListDO;
 /**
  * @author Elly
- * 2025-04-13
+ * 2025-04-17
  */
 
 public interface SaveBlogService {
-    int saveBlog(int userId, int blogId);
-    int unsaveBlog(int userId, int blogId);
-    List<BlogArticleDO> getSavedBlogs(int userId);
+    /*收藏 */
+    int saveBlog(int userId, Integer listId, int blogId);
+    /*取消收藏 */
+    int unsaveBlog(int userId, Integer listId, int blogId);
+    /*获取某收藏夹中所有文章 */
+    List<BlogArticleDO> getSavedBlogs(int userId, int listId);
+    /*获取所有收藏夹 */
+    List<SaveListDO>getSavingList(int userId);
+    /*创建收藏夹*/
     int createList(int userId, String listName);
-    boolean existList(int userId, String listName);
 
 } 
  
