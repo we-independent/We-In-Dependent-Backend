@@ -4,12 +4,15 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
+import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.SavedCountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,4 +108,20 @@ public class GetBlogListController {
         response.put("data", dataWrapper);
         return ResponseEntity.ok(response);
     }
+
+
+    @Operation(summary = "获取单独博客文章, by id from blogcard when click title")
+    @GetMapping("/article/{id}")
+    public ResponseEntity<?> getSingleArticle(    @PathVariable("id") Integer id,
+    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize){
+        // 获取文章详细信息
+        BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
+        if (articleQry == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+        }
+        return ResponseEntity.ok(articleQry);
+    }
+
+
 }
