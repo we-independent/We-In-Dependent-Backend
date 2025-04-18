@@ -86,7 +86,9 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setSummary(article.getSummary());
         qry.setContent(article.getContent());
         qry.setAuthorId(article.getAuthorId());
+        qry.setAuthorName("We Independent");
         qry.setBannerImgId(article.getBannerImgId());
+        qry.setBannerImageUrl(blogArticleMapper.selectBannerImageUrlById(article.getBannerImgId()));
         qry.setCategoryId(article.getCategoryId());
         qry.setArticleStatus(article.getArticleStatus());
         qry.setArticleSourceType(article.getArticleSourceType());
@@ -95,7 +97,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setCreateTime(article.getCreateTime());
         qry.setUpdateUserId(article.getUpdateUserId());
         qry.setUpdateTime(article.getUpdateTime());
-
+        List<String> tags = blogArticleMapper.selectTagsByArticleId(id);
+        qry.setTags(tags);
         PageHelper.startPage(pageNum, pageSize);
         List<BlogCommentDO> commentDOs = blogArticleMapper.selectCommentsByArticleId(id);
         List<BlogCommentQry> commentVOs = commentDOs.stream().map(c -> {
@@ -109,6 +112,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             return commentVO;
             }).collect(Collectors.toList());
         qry.setComments(commentVOs);
+        qry.setDisclaimer("The information in this article is for general purposes only. We make no warranties about the accuracy or completeness of the content. Views expressed are those of the author(s) and do not reflect the views of We Independent. We are not responsible for any actions taken based on this information. Please seek professional advice if needed.");
+
         return qry;
 
     }

@@ -10,7 +10,9 @@ public class BlogArticleSinglePageQry {
     private String articleSourceType;
     private String sourceUrl;
     private Integer authorId;
+    private String authorName;
     private Integer bannerImgId;
+    private String bannerImageUrl;
     private String summary;
     private String title;
     private String content;
@@ -20,7 +22,9 @@ public class BlogArticleSinglePageQry {
     private LocalDateTime createTime;
     private Integer updateUserId;
     private LocalDateTime updateTime;
+    private List<String> tags;
 
     private List<BlogCommentQry> comments;
+    private String disclaimer;
 
 }
