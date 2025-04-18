@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.weindependent.app.database.mapper.weindependent.SaveBlogMapper">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.SaveMapper">
     
     <insert id="saveBlog">
         INSERT IGNORE INTO save_list_article (list_id, article_id)

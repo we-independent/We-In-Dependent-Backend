@@ -8,7 +8,7 @@ import lombok.Data;
  */
 
 @Data
-public class SaveBlogQry {
+public class SaveListQry {
     private String listName;
     private Integer listId; //optional when save/unsave blog
 }
