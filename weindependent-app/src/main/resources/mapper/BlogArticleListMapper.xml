@@ -40,9 +40,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY ${orderClause}
     </select>
     
-    <select id="selectBlogArticleListById" parameterType="Integer" resultMap="BlogArticleListResult">
-        <include refid="selectBlogArticleVo"/>
-        where id = #{id}
+    <select id="selectBlogArticleById" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogArticleListDO">
+        SELECT * FROM blog_article WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectCommentsByArticleId" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogCommentDO">
+        SELECT id, comment_author_user_id AS user_id, article_id, content, create_time, parent_comment_id
+        FROM blog_comment
+        WHERE article_id = #{articleId} AND is_deleted = 0
+        ORDER BY create_time ASC
     </select>
 
 </mapper>

@@ -119,4 +119,11 @@ public class UserServiceImpl implements UserService {
         log.info("Reset password successful for userId: {}.", userId);
         return 0; //success
     }
+
+    //Hurely add for pdf download
+    @Override
+    public UserDO findUserById(Long userId) {
+        return userMapper.findById(userId); 
+    }
 }
+
