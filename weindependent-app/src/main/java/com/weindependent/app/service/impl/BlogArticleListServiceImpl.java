@@ -1,18 +1,36 @@
 package com.weindependent.app.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
+import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
+import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
+import com.weindependent.app.service.SavedCountService;
+import com.weindependent.app.vo.BlogArticleVO;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class BlogArticleListServiceImpl implements IBlogArticleListService {
-
+    @Autowired
     private final BlogArticleListMapper blogArticleMapper;
+    @Autowired
+    private EditorPickService editorsPickService;
+    @Autowired
+    private SavedCountService savedCountService;
+    
 
     public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleMapper) {
         this.blogArticleMapper = blogArticleMapper;
@@ -47,5 +65,38 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         System.out.println("查到的文章数量：" + list.size());
 
         return new PageInfo<>(list);
+    }
+
+    @Override
+    public BlogArticleCardQry getArticleDetailById(Integer id){
+
+        BlogArticleListDO article = blogArticleMapper.selectBlogArticleById(id);
+        if (article == null) {
+            log.warn("未找到文章，ID: {}", id);
+            throw new RuntimeException("文章不存在");
+        }
+        BlogArticleCardQry qry = new BlogArticleCardQry();
+        qry.setId(article.getId());
+        qry.setTitle(article.getTitle());
+        // update_time 作为 eventime 返回前端
+        qry.setTime(article.getUpdateTime());
+        
+        // 计算阅读时长：假设每分钟 200 字（常见阅读速度）
+        int wordCount = article.getContent() != null ? article.getContent().length() : 0;
+        qry.setReadingTime((int)Math.ceil(wordCount / 200.0) + " min");
+
+        // 图片 URL 和链接可根据实际情况替换，目前为固定值
+        qry.setImageUrl("BlogArticleImage1");
+        qry.setUrl("/articles/" + article.getId()); // 推荐设置跳转路径
+        qry.setCategory(String.valueOf(article.getCategoryId()));
+        
+        // category 直接使用 db 中存储的值，这里转换为字符串；前端可以进一步处理
+        List<Integer> articleIds = Arrays.asList(article.getId());
+        Map<Integer, Boolean> editorsPickMap = editorsPickService.getEditorsPickMapByArticleIds(articleIds);
+        Map<Integer, Integer> savedCountMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
+        qry.setEditorsPick(editorsPickMap.getOrDefault(article.getId(), false));
+        qry.setSavedCount(savedCountMap.getOrDefault(article.getId(), 0));
+        return qry;
+
     }
 }

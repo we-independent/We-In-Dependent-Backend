@@ -40,9 +40,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY ${orderClause}
     </select>
     
-    <select id="selectBlogArticleListById" parameterType="Integer" resultMap="BlogArticleListResult">
-        <include refid="selectBlogArticleVo"/>
-        where id = #{id}
+    <select id="selectBlogArticleById" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogArticleListDO">
+        SELECT * FROM blog_article WHERE id = #{id}
     </select>
 
 </mapper>

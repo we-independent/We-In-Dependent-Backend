@@ -10,6 +10,7 @@ import com.weindependent.app.service.SavedCountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,4 +106,18 @@ public class GetBlogListController {
         response.put("data", dataWrapper);
         return ResponseEntity.ok(response);
     }
+
+
+    @Operation(summary = "获取单独博客文章, by id from blogcard when click title")
+    @GetMapping("/article/{id}")
+    public ResponseEntity<?> getSingleArticle(@PathVariable("id") Integer id){
+        // 获取文章详细信息
+        BlogArticleCardQry articleQry = blogArticleListService.getArticleDetailById(id);
+        if (articleQry == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+        }
+        return ResponseEntity.ok(articleQry);
+    }
+
+
 }
