@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.weindependent.app.database.dataobject.SaveListDO;
-import com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper;
 import com.weindependent.app.database.mapper.weindependent.SaveListMapper;
 import com.weindependent.app.database.mapper.weindependent.SaveMapper;
-import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.service.SaveListService;
 import com.weindependent.app.service.SaveService;
@@ -20,10 +18,6 @@ import com.weindependent.app.service.SaveService;
 public class SaveServiceImpl implements SaveService{
     @Autowired
     private SaveMapper saveMapper;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private DashboardBlogArticleMapper blogArticleMapper;
     @Autowired 
     private SaveListMapper saveListMapper;
     @Autowired
@@ -32,34 +26,30 @@ public class SaveServiceImpl implements SaveService{
     /*收藏文章 */
     @Transactional
     public int saveBlog(int userId, Integer listId, int blogId){
-        if (!blogArticleMapper.existsById(blogId)) {
+        if (!saveMapper.existBlogId(blogId)) {
             return ErrorCode.BLOG_NOT_EXIST.getCode();
         }
-        if (!userMapper.existsById(userId)) {
-            return ErrorCode.USER_NOT_EXIST.getCode();
+        if (listId == null) {
+            return saveBlogToDefault(userId, blogId);
         }
-        if (listId == null) return saveBlogToDefault(userId, blogId);
         else {
             if(!checkListOwnership(userId, listId)) 
                 return ErrorCode.UNAUTHORIZED_ACCESS.getCode();
-            else return saveBlogToList(userId, blogId);
+            else return saveBlogToList(listId, blogId);
         }
     }
     
     /*取消收藏*/
     @Transactional
     public int unsaveBlog(int userId, Integer listId, int blogId){
-        if (!blogArticleMapper.existsById(blogId)) {
+        if (!saveMapper.existBlogId(blogId)) {
             return ErrorCode.BLOG_NOT_EXIST.getCode();
-        }
-        if (!userMapper.existsById(userId)) {
-            return ErrorCode.USER_NOT_EXIST.getCode();
         }
         if (listId == null) return unsaveBlogFromDefault(userId, blogId);
         else {
             if (!checkListOwnership(userId, listId))
                 return ErrorCode.UNAUTHORIZED_ACCESS.getCode();
-            else return unsaveBlogFromList(userId, blogId);
+            else return unsaveBlogFromList(listId, blogId);
         }
     }
 
@@ -94,7 +84,7 @@ public class SaveServiceImpl implements SaveService{
     }
 
     /* helper 从指定收藏夹删除 */
-    private int unsaveBlogFromList(int listId, int blogId){
+    protected int unsaveBlogFromList(int listId, int blogId){
         if (saveMapper.unsaveBlog(listId, blogId)<=0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
         }

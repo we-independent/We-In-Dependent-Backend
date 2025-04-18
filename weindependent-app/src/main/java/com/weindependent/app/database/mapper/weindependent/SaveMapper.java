@@ -1,9 +1,5 @@
 package com.weindependent.app.database.mapper.weindependent;
 
-import java.util.List;
-import com.weindependent.app.database.dataobject.BlogArticleDO;
-import com.weindependent.app.database.dataobject.SaveListDO;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 /**
@@ -18,4 +14,6 @@ public interface SaveMapper {
 
     /*取消收藏 */
     int unsaveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
+
+    boolean existBlogId(@Param("blogId") int blogId);
 }
