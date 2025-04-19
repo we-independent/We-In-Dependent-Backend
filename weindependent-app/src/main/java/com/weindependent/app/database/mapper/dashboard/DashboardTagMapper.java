@@ -44,7 +44,7 @@ public interface DashboardTagMapper {
      * @param tag 标签
      * @return 结果
      */
-    public int updateTag(TagDO tag);
+    int updateTag(TagDO tag);
 
     /**
      * 删除标签, 软删除
