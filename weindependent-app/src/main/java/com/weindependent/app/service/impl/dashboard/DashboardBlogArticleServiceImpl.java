@@ -68,7 +68,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleQry blogArticleQry)
     {
         BlogArticleDO blogArticleDO = new BlogArticleDO();
-        BeanUtils.copyProperties(blogArticleDO,blogArticleDO);
+        BeanUtils.copyProperties(blogArticleQry,blogArticleDO);
         PageHelper.startPage(blogArticleQry.getPageNum(), blogArticleQry.getPageSize());
         List<BlogArticleDO> BlogArticleDOList = blogArticleMapper.selectBlogArticleList(blogArticleDO);
         PageInfo<BlogArticleDO> PageInfo = new PageInfo<>(BlogArticleDOList);
