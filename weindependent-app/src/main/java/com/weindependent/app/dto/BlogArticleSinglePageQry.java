@@ -11,6 +11,7 @@ public class BlogArticleSinglePageQry {
     private String sourceUrl;
     private Integer authorId;
     private String authorName;
+    private String readingtime;
     private Integer bannerImgId;
     private String bannerImageUrl;
     private String summary;
