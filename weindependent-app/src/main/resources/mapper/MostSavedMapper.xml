@@ -22,9 +22,9 @@
             parameterType="list"
             resultType="com.weindependent.app.database.dataobject.SavedCountDO">
         SELECT
-        article_id AS articleId,
-        COUNT(*) AS savedCount
-        FROM saved_article
+            article_id AS articleId,
+            COUNT(*) AS savedCount
+        FROM save_list_article
         WHERE article_id IN
         <foreach item="id" collection="articleIds" open="(" separator="," close=")">
             #{id}
