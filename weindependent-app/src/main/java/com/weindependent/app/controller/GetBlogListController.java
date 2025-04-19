@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Tag(name = "博客文章 Article List 获取")
 @RestController
-@RequestMapping("/")
+@RequestMapping("api/")
 public class GetBlogListController {
 
     @Autowired

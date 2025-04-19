@@ -76,7 +76,7 @@ public class DashboardBlogPdfServiceImpl implements IBlogPdfService
      */
     @Override
     public int updateBlogPdf(BlogPdfDO blogPdf)
-    {
+    {   System.out.println("Service 层收到的 blogPdf:" + blogPdf);
         blogPdf.setUpdateTime(LocalDateTime.now());
         return dashboardBlogPdfMapper.updateBlogPdf(blogPdf);
     }

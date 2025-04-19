@@ -51,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="downloadUrl != null">download_url,</if>
             <if test="pdfFileGenerationTime != null">pdf_file_generation_time,</if>
             <if test="articleId != null">article_id,</if>
+            <if test="articleId == null">article_id,</if>
             <if test="isDeleted != null">is_deleted,</if>
             <if test="createUserId != null">create_user_id,</if>
             <if test="createTime != null">create_time,</if>
