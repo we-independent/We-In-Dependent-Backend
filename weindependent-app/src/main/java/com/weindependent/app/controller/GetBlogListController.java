@@ -2,10 +2,11 @@ package com.weindependent.app.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
 import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
-import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
+import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.SavedCountService;
@@ -28,6 +29,11 @@ public class GetBlogListController {
     private IBlogArticleListService blogArticleListService;
     
     @Autowired
+    private final BlogArticleListMapper blogArticleMapper;
+    public GetBlogListController(BlogArticleListMapper blogArticleMapper) {
+        this.blogArticleMapper = blogArticleMapper;
+    }
+    @Autowired
     private EditorPickService editorsPickService;
     
     @Autowired
@@ -43,7 +49,7 @@ public class GetBlogListController {
     @PostMapping("/articles")
     public ResponseEntity<Map<String, Object>> getArticles(@RequestBody BlogArticleListQry query) {
         PageInfo<BlogArticleListDO> pageInfo = blogArticleListService.selectBlogArticleList(query);
-        
+
         if (pageInfo.getList() == null || pageInfo.getList().isEmpty()) {
             Map<String, Object> response = new HashMap<>();
             response.put("code", 1001);
@@ -70,7 +76,6 @@ public class GetBlogListController {
         final Map<Integer, Integer> finalSavedCountMap = tempMap;
         System.out.println("当前页面文章 ID: " + articleIds);
         System.out.println("收藏数 map: " + tempMap);
-        
         // 将 DO 转换为前端 BlogCard DTO
         List<BlogArticleCardQry> resultList = pageInfo.getList().stream().map(article -> {
             BlogArticleCardQry dto = new BlogArticleCardQry();
@@ -84,11 +89,10 @@ public class GetBlogListController {
             dto.setReadingTime((int)Math.ceil(wordCount / 200.0) + " min");
 
             // 图片 URL 和链接可根据实际情况替换，目前为固定值
-            dto.setImageUrl("BlogArticleImage1");
-            dto.setUrl("/blogs/visa-policy/policy-changes-2025");
-            
+            dto.setImageUrl(blogArticleMapper.selectBannerImageUrlById(article.getBannerImgId()));
             // category 直接使用 db 中存储的值，这里转换为字符串；前端可以进一步处理
             dto.setCategory(String.valueOf(article.getCategoryId()));
+            dto.setCategoryName(CategoryEnum.getNameByCode(dto.getCategory()));
             dto.setEditorsPick(editorsPickMap.getOrDefault(article.getId(), false));
             dto.setSavedCount(finalSavedCountMap.getOrDefault(article.getId(), 0));
             return dto;

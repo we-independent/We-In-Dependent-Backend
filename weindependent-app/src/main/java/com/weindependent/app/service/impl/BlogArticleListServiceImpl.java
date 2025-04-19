@@ -1,26 +1,17 @@
 package com.weindependent.app.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
-import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
-import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
-import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.dto.BlogCommentQry;
-import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.SavedCountService;
-import com.weindependent.app.vo.BlogArticleVO;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +22,10 @@ import org.springframework.stereotype.Service;
 public class BlogArticleListServiceImpl implements IBlogArticleListService {
     @Autowired
     private final BlogArticleListMapper blogArticleMapper;
-    @Autowired
-    private EditorPickService editorsPickService;
-    @Autowired
-    private SavedCountService savedCountService;
+    // @Autowired
+    // private EditorPickService editorsPickService;
+    // @Autowired
+    // private SavedCountService savedCountService;
     
 
     public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleMapper) {
