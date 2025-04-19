@@ -13,35 +13,34 @@ import org.apache.ibatis.annotations.Mapper;
  *    2025-03-23
  */
 @Mapper
-public interface DashboardTagMapper
-{
+public interface DashboardTagMapper {
     /**
      * 查询标签
-     * 
+     *
      * @param id 标签主键
      * @return 标签
      */
-    public TagDO selectTagById(Integer id);
+    TagDO selectTagById(Integer id);
 
     /**
      * 查询标签列表
-     * 
+     *
      * @param tag 标签
      * @return 标签集合
      */
-    public List<TagDO> selectTagList(TagDO tag);
+    List<TagDO> selectTagList(TagDO tag);
 
     /**
      * 新增标签
-     * 
+     *
      * @param tag 标签
      * @return 结果
      */
-    public int insertTag(TagDO tag);
+    int insertTag(TagDO tag);
 
     /**
      * 修改标签
-     * 
+     *
      * @param tag 标签
      * @return 结果
      */
@@ -49,19 +48,19 @@ public interface DashboardTagMapper
 
     /**
      * 删除标签, 软删除
-     * 
+     *
      * @param id 标签主键
      * @return 结果
      */
-    public int deleteTagById(Integer id);
+    int deleteTagById(Integer id);
 
     /**
      * 批量删除标签, 软删除
-     * 
+     *
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteTagByIds(Integer[] ids);
+    int deleteTagByIds(Integer[] ids, int updateUserId);
 
     TagDO selectTagByName(String name);
 

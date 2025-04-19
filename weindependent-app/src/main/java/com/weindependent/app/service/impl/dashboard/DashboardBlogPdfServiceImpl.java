@@ -22,93 +22,86 @@ import com.weindependent.app.service.IBlogPdfService;
  *    2025-03-23
  */
 @Service
-public class DashboardBlogPdfServiceImpl implements IBlogPdfService
-{
+public class DashboardBlogPdfServiceImpl implements IBlogPdfService {
     @Autowired
     private DashboardBlogPdfMapper dashboardBlogPdfMapper;
 
     /**
      * 查询博客文章pdf
-     * 
+     *
      * @param id 博客文章pdf主键
      * @return 博客文章pdf
      */
     @Override
-    public BlogPdfDO selectBlogPdfById(Integer id)
-    {
+    public BlogPdfDO selectBlogPdfById(Integer id) {
         return dashboardBlogPdfMapper.selectBlogPdfById(id);
     }
 
     /**
      * 查询博客文章pdf列表
-     * 
+     *
      * @param blogPdfQry 博客文章pdf查询模板
      * @return 博客文章pdf
      */
     @Override
-    public PageInfo<BlogPdfDO> selectBlogPdfList(BlogPdfQry blogPdfQry)
-    {
+    public PageInfo<BlogPdfDO> selectBlogPdfList(BlogPdfQry blogPdfQry) {
         BlogPdfDO blogPdfDO = new BlogPdfDO();
         BeanUtils.copyProperties(blogPdfQry, blogPdfDO);
         List<BlogPdfDO> list = dashboardBlogPdfMapper.selectBlogPdfList(blogPdfDO);
         PageInfo<BlogPdfDO> pageInfo = new PageInfo<>(list);
-        return PageInfoUtil.pageInfo2DTO(pageInfo,BlogPdfDO.class);
+        return PageInfoUtil.pageInfo2DTO(pageInfo, BlogPdfDO.class);
     }
 
     /**
      * 新增博客文章pdf
-     * 
+     *
      * @param blogPdf 博客文章pdf
      * @return 结果
      */
     @Override
-    public int insertBlogPdf(BlogPdfDO blogPdf)
-    {
+    public int insertBlogPdf(BlogPdfDO blogPdf) {
         blogPdf.setCreateTime(LocalDateTime.now());
         return dashboardBlogPdfMapper.insertBlogPdf(blogPdf);
     }
 
     /**
      * 修改博客文章pdf
-     * 
+     *
      * @param blogPdf 博客文章pdf
      * @return 结果
      */
     @Override
-    public int updateBlogPdf(BlogPdfDO blogPdf)
-    {
+    public int updateBlogPdf(BlogPdfDO blogPdf) {
         blogPdf.setUpdateTime(LocalDateTime.now());
         return dashboardBlogPdfMapper.updateBlogPdf(blogPdf);
     }
 
     /**
      * 批量删除博客文章pdf
-     * 
+     *
      * @param ids 需要删除的博客文章pdf主键
      * @return 结果
      */
     @Override
-    public int deleteBlogPdfByIds(Integer[] ids)
-    {
-        return dashboardBlogPdfMapper.deleteBlogPdfByIds(ids);
+    public int deleteBlogPdfByIds(Integer[] ids, int updateUserId) {
+        return dashboardBlogPdfMapper.deleteBlogPdfByIds(ids, updateUserId);
     }
 
     /**
      * 删除博客文章pdf信息
-     * 
+     *
      * @param id 博客文章pdf主键
      * @return 结果
      */
     @Override
-    public int deleteBlogPdfById(Integer id)
-    {
+    public int deleteBlogPdfById(Integer id) {
         return dashboardBlogPdfMapper.deleteBlogPdfById(id);
     }
 
 
     /**
      * 生成pdf，但不返回到dashboard
-     * 
+     *
      * @param id 博客文章pdf主键
      * @return 异常或null
      * @Hurly 2025-04-04

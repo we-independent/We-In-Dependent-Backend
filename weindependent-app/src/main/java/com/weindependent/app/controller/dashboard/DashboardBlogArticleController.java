@@ -1,5 +1,7 @@
 package com.weindependent.app.controller.dashboard;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
@@ -24,22 +26,21 @@ import com.weindependent.app.service.IBlogArticleService;
 @Tag(name = "博客文章管理")
 @RestController
 @RequestMapping("api/dashboard/blog")
-public class DashboardBlogArticleController
-{
+public class DashboardBlogArticleController {
     private final IBlogArticleService blogArticleService;
 
-    public DashboardBlogArticleController(IBlogArticleService blogArticleService){
-        this.blogArticleService=blogArticleService;
+    public DashboardBlogArticleController(IBlogArticleService blogArticleService) {
+        this.blogArticleService = blogArticleService;
     }
 
     /**
      * 查询博客文章列表
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "查询博客文章列表")
     @PostMapping("/list")
-    public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry)
-    {
+    public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry) {
         return blogArticleService.selectBlogArticleList(blogArticleQry);
     }
 
@@ -47,10 +48,10 @@ public class DashboardBlogArticleController
      * 查询博客文章详细信息
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "查询博客文章详细信息")
     @GetMapping(value = "/{id}")
-    public BlogArticleDO getInfo(@PathVariable("id") Integer id)
-    {
+    public BlogArticleDO getInfo(@PathVariable("id") Integer id) {
         return blogArticleService.selectBlogArticleById(id);
     }
 
@@ -58,12 +59,13 @@ public class DashboardBlogArticleController
      * 新增博客文章
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "新增博客文章")
     @PostMapping
-    public boolean add(@RequestBody BlogArticleDO blogArticle)
-    {
-        blogArticle.setCreateUserId(1);
-        blogArticle.setUpdateUserId(1);
+    public boolean add(@RequestBody BlogArticleDO blogArticle) {
+        int userId = StpUtil.getLoginIdAsInt();
+        blogArticle.setCreateUserId(userId);
+        blogArticle.setUpdateUserId(userId);
         return blogArticleService.insertBlogArticle(blogArticle) > 0;
     }
 
@@ -71,10 +73,10 @@ public class DashboardBlogArticleController
      * 新增博客图片
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "新增博客banner图片")
-    @PostMapping(value="/banner/upload", consumes= "multipart/form-data")
-    public UploadedFileVO addBlogBanner(FileUploadQry fileUploadQry)
-    {
+    @PostMapping(value = "/banner/upload", consumes = "multipart/form-data")
+    public UploadedFileVO addBlogBanner(FileUploadQry fileUploadQry) {
         return blogArticleService.insertBlogBanner(fileUploadQry);
     }
 
@@ -82,10 +84,12 @@ public class DashboardBlogArticleController
      * 修改博客文章
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "修改博客文章")
     @PutMapping
-    public boolean edit(@RequestBody BlogArticleDO blogArticle)
-    {
+    public boolean edit(@RequestBody BlogArticleDO blogArticle) {
+        int userId = StpUtil.getLoginIdAsInt();
+        blogArticle.setUpdateUserId(userId);
         return blogArticleService.updateBlogArticle(blogArticle) > 0;
     }
 
@@ -93,10 +97,11 @@ public class DashboardBlogArticleController
      * 删除博客文章
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "删除博客文章")
-	@DeleteMapping("/{ids}")
-    public boolean remove(@PathVariable Integer[] ids)
-    {
-        return blogArticleService.deleteBlogArticleByIds(ids) > 0;
+    @DeleteMapping("/{ids}")
+    public boolean remove(@PathVariable Integer[] ids) {
+        int updateUserId = StpUtil.getLoginIdAsInt();
+        return blogArticleService.deleteBlogArticleByIds(ids, updateUserId) > 0;
     }
 }

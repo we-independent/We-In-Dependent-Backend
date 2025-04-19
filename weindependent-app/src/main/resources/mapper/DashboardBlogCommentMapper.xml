@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogCommentMapper">
-    
+
     <resultMap type="BlogCommentDO" id="BlogCommentResult">
         <result property="id"    column="id"    />
         <result property="articleId"    column="article_id"    />
@@ -23,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBlogCommentList" parameterType="BlogCommentDO" resultMap="BlogCommentResult">
         <include refid="selectBlogCommentVo"/>
-        <where>  
+        <where>
             <if test="articleId != null "> and article_id = #{articleId}</if>
             <if test="parentCommentId != null "> and parent_comment_id = #{parentCommentId}</if>
             <if test="content != null  and content != ''"> and content = #{content}</if>
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null "> and update_time = #{updateTime}</if>
         </where>
     </select>
-    
+
     <select id="selectBlogCommentById" parameterType="Integer" resultMap="BlogCommentResult">
         <include refid="selectBlogCommentVo"/>
         where id = #{id}
@@ -53,7 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateUserId != null">update_user_id,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="articleId != null">#{articleId},</if>
             <if test="parentCommentId != null">#{parentCommentId},</if>
@@ -64,7 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="updateUserId != null">#{updateUserId},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateBlogComment" parameterType="BlogCommentDO">
@@ -88,7 +88,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <update id="deleteBlogCommentByIds" parameterType="String">
-        update blog_comment set is_deleted = 1 where id in
+        update blog_comment
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

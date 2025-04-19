@@ -1,5 +1,7 @@
 package com.weindependent.app.controller.dashboard;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.CategoryDO;
@@ -21,8 +23,7 @@ import com.weindependent.app.service.ICategoryService;
 @Tag(name = "分类管理")
 @RestController
 @RequestMapping("api/dashboard/category")
-public class DashboardCategoryController
-{
+public class DashboardCategoryController {
     private final ICategoryService categoryService;
 
     public DashboardCategoryController(ICategoryService categoryService) {
@@ -33,10 +34,10 @@ public class DashboardCategoryController
      * 查询分类列表
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "查询分类列表")
     @PostMapping("/list")
-    public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry)
-    {
+    public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry) {
         return categoryService.selectCategoryListPage(categoryQry);
     }
 
@@ -44,10 +45,10 @@ public class DashboardCategoryController
      * 获取分类详细信息
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "查询分类详细信息")
     @GetMapping("/{id}")
-    public  CategoryDO getInfo(@PathVariable("id") Integer id)
-    {
+    public CategoryDO getInfo(@PathVariable("id") Integer id) {
         return categoryService.selectCategoryById(id);
     }
 
@@ -55,12 +56,13 @@ public class DashboardCategoryController
      * 新增分类
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "新增分类")
     @PostMapping
-    public boolean add(@RequestBody CategoryDO category)
-    {
-        category.setCreateUserId(1);
-        category.setUpdateUserId(1);
+    public boolean add(@RequestBody CategoryDO category) {
+        int userId = StpUtil.getLoginIdAsInt();
+        category.setCreateUserId(userId);
+        category.setUpdateUserId(userId);
         return categoryService.insertCategory(category) > 0;
     }
 
@@ -68,11 +70,12 @@ public class DashboardCategoryController
      * 修改分类
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "修改分类")
     @PutMapping
-    public boolean edit(@RequestBody CategoryDO category)
-    {
-        category.setUpdateUserId(1);
+    public boolean edit(@RequestBody CategoryDO category) {
+        int userId = StpUtil.getLoginIdAsInt();
+        category.setUpdateUserId(userId);
         return categoryService.updateCategory(category) > 0;
     }
 
@@ -80,10 +83,11 @@ public class DashboardCategoryController
      * 删除分类
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "删除分类")
-	@DeleteMapping("/{ids}")
-    public boolean remove(@PathVariable Integer[] ids)
-    {
-        return categoryService.deleteCategoryByIds(ids) > 0;
+    @DeleteMapping("/{ids}")
+    public boolean remove(@PathVariable Integer[] ids) {
+        int updateUserId = StpUtil.getLoginIdAsInt();
+        return categoryService.deleteCategoryByIds(ids, updateUserId) > 0;
     }
 }

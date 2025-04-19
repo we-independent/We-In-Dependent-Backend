@@ -23,32 +23,29 @@ import com.weindependent.app.service.ITagService;
  *   2025-03-23
  */
 @Service
-public class DashboardTagServiceImpl implements ITagService
-{
+public class DashboardTagServiceImpl implements ITagService {
     @Autowired
     private DashboardTagMapper dashboardTagMapper;
 
     /**
      * 查询标签
-     * 
+     *
      * @param id 标签主键
      * @return 标签
      */
     @Override
-    public TagDO selectTagById(Integer id)
-    {
+    public TagDO selectTagById(Integer id) {
         return dashboardTagMapper.selectTagById(id);
     }
 
     /**
      * 查询标签列表
-     * 
+     *
      * @param tagQry 标签搜索模板
      * @return 标签
      */
     @Override
-    public PageInfo<TagDO> selectTagList(TagQry tagQry)
-    {
+    public PageInfo<TagDO> selectTagList(TagQry tagQry) {
         TagDO tagDO = new TagDO();
         BeanUtils.copyProperties(tagQry, tagDO);
         PageHelper.startPage(tagQry.getPageNum(), tagQry.getPageSize());
@@ -61,22 +58,21 @@ public class DashboardTagServiceImpl implements ITagService
      * 新增标签,
      * 由于是软删除，首先根据新标签名称搜索数据库，
      * 1. 如果已有标签，
-     *  1.1 如果已有标签，未被删除 return
-     *  1.2 如果已有标签，被删除，恢复标签 return
+     * 1.1 如果已有标签，未被删除 return
+     * 1.2 如果已有标签，被删除，恢复标签 return
      * 2. 没有搜索到标签，则新增标签
-     * 
+     *
      * @param newTag 标签
      * @return 结果
      */
     @Override
-    public int insertTag(TagDO newTag)
-    {
-        TagDO existTag= dashboardTagMapper.selectTagByName(newTag.getName());
-        if(existTag!=null){
-            if(existTag.getIsDeleted()){
+    public int insertTag(TagDO newTag) {
+        TagDO existTag = dashboardTagMapper.selectTagByName(newTag.getName());
+        if (existTag != null) {
+            if (existTag.getIsDeleted()) {
                 dashboardTagMapper.recoverTag(existTag);
                 return 0;
-            }else{
+            } else {
                 return 0;
             }
         }
@@ -86,38 +82,35 @@ public class DashboardTagServiceImpl implements ITagService
 
     /**
      * 修改标签
-     * 
+     *
      * @param tag 标签
      * @return 结果
      */
     @Override
-    public int updateTag(TagDO tag)
-    {
+    public int updateTag(TagDO tag) {
         tag.setUpdateTime(LocalDateTime.now());
         return dashboardTagMapper.updateTag(tag);
     }
 
     /**
      * 批量删除标签
-     * 
+     *
      * @param ids 需要删除的标签主键
      * @return 结果
      */
     @Override
-    public int deleteTagByIds(Integer[] ids)
-    {
-        return dashboardTagMapper.deleteTagByIds(ids);
+    public int deleteTagByIds(Integer[] ids, int updateUserId) {
+        return dashboardTagMapper.deleteTagByIds(ids, updateUserId);
     }
 
     /**
      * 删除标签信息
-     * 
+     *
      * @param id 标签主键
      * @return 结果
      */
     @Override
-    public int deleteTagById(Integer id)
-    {
+    public int deleteTagById(Integer id) {
         return dashboardTagMapper.deleteTagById(id);
     }
 }

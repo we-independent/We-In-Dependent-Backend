@@ -13,53 +13,52 @@ import org.apache.ibatis.annotations.Mapper;
  *    2025-03-23
  */
 @Mapper
-public interface DashboardBlogPdfMapper
-{
+public interface DashboardBlogPdfMapper {
     /**
      * 查询博客文章pdf
-     * 
+     *
      * @param id 博客文章pdf主键
      * @return 博客文章pdf
      */
-    public BlogPdfDO selectBlogPdfById(Integer id);
+    BlogPdfDO selectBlogPdfById(Integer id);
 
     /**
      * 查询博客文章pdf列表
-     * 
+     *
      * @param blogPdf 博客文章pdf
      * @return 博客文章pdf集合
      */
-    public List<BlogPdfDO> selectBlogPdfList(BlogPdfDO blogPdf);
+    List<BlogPdfDO> selectBlogPdfList(BlogPdfDO blogPdf);
 
     /**
      * 新增博客文章pdf
-     * 
+     *
      * @param blogPdf 博客文章pdf
      * @return 结果
      */
-    public int insertBlogPdf(BlogPdfDO blogPdf);
+    int insertBlogPdf(BlogPdfDO blogPdf);
 
     /**
      * 修改博客文章pdf
-     * 
+     *
      * @param blogPdf 博客文章pdf
      * @return 结果
      */
-    public int updateBlogPdf(BlogPdfDO blogPdf);
+    int updateBlogPdf(BlogPdfDO blogPdf);
 
     /**
      * 删除博客文章pdf信息，, 软删除
-     * 
+     *
      * @param id 博客文章pdf主键
      * @return 结果
      */
-    public int deleteBlogPdfById(Integer id);
+    int deleteBlogPdfById(Integer id);
 
     /**
      * 批量删除博客文章pdf信息，, 软删除
-     * 
+     *
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteBlogPdfByIds(Integer[] ids);
+    int deleteBlogPdfByIds(Integer[] ids, int updateUserId);
 }

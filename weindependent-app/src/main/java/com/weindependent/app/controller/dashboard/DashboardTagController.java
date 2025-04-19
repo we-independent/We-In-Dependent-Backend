@@ -1,5 +1,7 @@
 package com.weindependent.app.controller.dashboard;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.TagDO;
@@ -28,8 +30,7 @@ import com.weindependent.app.service.ITagService;
 @Tag(name = "标签管理")
 @RestController
 @RequestMapping("api/dashboard/tag")
-public class DashboardTagController
-{
+public class DashboardTagController {
     @Autowired
     private ITagService tagService;
 
@@ -37,21 +38,21 @@ public class DashboardTagController
      * 查询标签列表
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "查询标签列表")
     @PostMapping("/list")
-    public PageInfo<TagDO> list(@RequestBody TagQry tagQry)
-    {
-        return  tagService.selectTagList(tagQry);
+    public PageInfo<TagDO> list(@RequestBody TagQry tagQry) {
+        return tagService.selectTagList(tagQry);
     }
 
     /**
      * 查询标签详细信息
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "查询标签详细信息")
     @GetMapping(value = "/{id}")
-    public TagDO getInfo(@PathVariable("id") Integer id)
-    {
+    public TagDO getInfo(@PathVariable("id") Integer id) {
         return tagService.selectTagById(id);
     }
 
@@ -59,10 +60,13 @@ public class DashboardTagController
      * 新增标签
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "新增标签")
     @PostMapping
-    public boolean add(@RequestBody TagDO tag)
-    {
+    public boolean add(@RequestBody TagDO tag) {
+        int userId = StpUtil.getLoginIdAsInt();
+        tag.setCreateUserId(userId);
+        tag.setUpdateUserId(userId);
         return tagService.insertTag(tag) > 0;
     }
 
@@ -70,10 +74,12 @@ public class DashboardTagController
      * 修改标签
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "修改标签")
     @PutMapping
-    public boolean edit(@RequestBody TagDO tag)
-    {
+    public boolean edit(@RequestBody TagDO tag) {
+        int userId = StpUtil.getLoginIdAsInt();
+        tag.setUpdateUserId(userId);
         return tagService.updateTag(tag) > 0;
     }
 
@@ -81,10 +87,11 @@ public class DashboardTagController
      * 删除标签
      */
     @SignatureAuth
+    @SaCheckRole("test")
     @Operation(summary = "删除标签")
-	@DeleteMapping("/{ids}")
-    public boolean remove(@PathVariable Integer[] ids)
-    {
-        return tagService.deleteTagByIds(ids) > 0;
+    @DeleteMapping("/{ids}")
+    public boolean remove(@PathVariable Integer[] ids) {
+        int updateUserId = StpUtil.getLoginIdAsInt();
+        return tagService.deleteTagByIds(ids, updateUserId) > 0;
     }
 }
