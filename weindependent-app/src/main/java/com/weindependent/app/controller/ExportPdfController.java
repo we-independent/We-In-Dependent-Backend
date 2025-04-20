@@ -29,7 +29,7 @@ import cn.dev33.satoken.stp.StpUtil;
 
 @Tag(name = "博客文章PDF下载")
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 public class ExportPdfController {
 
     //生成PDF（动态生成)
@@ -50,7 +50,7 @@ public class ExportPdfController {
     /**
      * 导出博客文章 PDF
      *
-     * @param id 博客文章ID
+     * @param blogId 博客文章ID
      * @return PDF 文件流
      * 
      * @author Hurely

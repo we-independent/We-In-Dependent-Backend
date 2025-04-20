@@ -3,6 +3,7 @@ package com.weindependent.app.service.impl.dashboard;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,7 +33,9 @@ import javax.annotation.Resource;
  *  2025-03-23
  */
 @Service
-public class DashboardBlogArticleServiceImpl implements IBlogArticleService {
+@Slf4j
+public class DashboardBlogArticleServiceImpl implements IBlogArticleService
+{
     private final DashboardBlogArticleMapper blogArticleMapper;
     @Resource
     private DashboardBlogImageMapper blogImageMapper;
@@ -107,9 +110,15 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService {
      * @return 结果
      */
     @Override
-    public int updateBlogArticle(BlogArticleDO blogArticle) {
-        BlogArticleDO oldBlog = blogArticleMapper.selectBlogArticleById(blogArticle.getId());
-        if (!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())) {
+    public int updateBlogArticle(BlogArticleDO blogArticle)
+    {
+        //Hurely add null exception
+        if (blogArticle.getId() == null) {
+            throw new IllegalArgumentException("Blog ID can not be null!");
+        }
+
+        BlogArticleDO oldBlog=blogArticleMapper.selectBlogArticleById(blogArticle.getId());
+        if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
             deleteImgById(oldBlog.getBannerImgId());
         }
         blogArticle.setUpdateTime(LocalDateTime.now());
@@ -192,10 +201,29 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService {
         return blogVO;
     }
 
-    private void deleteImgById(Integer imgId) {
-        BlogImageDO image = blogImageMapper.findById(imgId);
+    private void deleteImgById(Integer imgId){
+        //Hurely add null exception handling
+        if (imgId == null) {
+            log.warn("deleteImgById 调用时传入的 imgId 为 null, 跳过删除");
+            return;
+        }
+        BlogImageDO image= blogImageMapper.findById(imgId);
+        if (image == null) {
+            log.warn("未找到图片,imgId = {}，跳过删除", imgId);
+            return;
+        }
+
         image.setIsDeleted(1);
         blogImageMapper.update(image);
-        fileService.deleteFile(image.getFilePath());
+
+        if (image.getFilePath() != null) {
+            fileService.deleteFile(image.getFilePath());
+        }
+        else {
+            log.warn("图片文件路径为空,无法执行文件删除操作,imageId={}", imgId);
+        }
+
+        log.info("成功逻辑删除图片：{}", imgId);
+
     }
 }

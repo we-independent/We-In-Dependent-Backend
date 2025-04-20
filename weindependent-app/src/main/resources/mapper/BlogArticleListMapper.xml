@@ -51,4 +51,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY create_time ASC
     </select>
 
+    <select id="selectTagsByArticleId" resultType="string" parameterType="int">
+        SELECT t.name
+        FROM tag_article_relation r
+        LEFT JOIN tag t ON r.tag_id = t.id
+        WHERE r.article_id = #{articleId}    
+    </select>
+
+    <select id="selectBannerImageUrlById" resultType="string" parameterType="int">
+        SELECT file_path FROM blog_image WHERE id = #{imgId}
+    </select>
+
+
+
 </mapper>

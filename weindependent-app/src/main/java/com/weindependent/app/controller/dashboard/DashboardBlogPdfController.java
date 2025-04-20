@@ -81,6 +81,7 @@ public class DashboardBlogPdfController {
     @Operation(summary = "修改博客文章pdf")
     @PutMapping
     public boolean edit(@RequestBody BlogPdfDO blogPdf) {
+        System.out.println("接收到的 pdf 修改数据：" + blogPdf);
         int userId = StpUtil.getLoginIdAsInt();
         blogPdf.setUpdateUserId(userId);
         return blogPdfService.updateBlogPdf(blogPdf) > 0;
