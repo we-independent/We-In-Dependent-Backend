@@ -38,10 +38,11 @@ public class DashboardTagController {
      * 查询标签列表
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询标签列表")
     @PostMapping("/list")
     public PageInfo<TagDO> list(@RequestBody TagQry tagQry) {
+        
         return tagService.selectTagList(tagQry);
     }
 
@@ -49,7 +50,7 @@ public class DashboardTagController {
      * 查询标签详细信息
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询标签详细信息")
     @GetMapping(value = "/{id}")
     public TagDO getInfo(@PathVariable("id") Integer id) {
@@ -60,7 +61,7 @@ public class DashboardTagController {
      * 新增标签
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "新增标签")
     @PostMapping
     public boolean add(@RequestBody TagDO tag) {
@@ -74,7 +75,7 @@ public class DashboardTagController {
      * 修改标签
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "修改标签")
     @PutMapping
     public boolean edit(@RequestBody TagDO tag) {
@@ -87,7 +88,7 @@ public class DashboardTagController {
      * 删除标签
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "删除标签")
     @DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids) {

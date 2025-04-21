@@ -41,7 +41,7 @@ public class DashboardBlogPdfController {
      * 查询博客文章pdf列表
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询博客文章pdf列表")
     @PostMapping("/list")
     public PageInfo<BlogPdfDO> list(@RequestBody BlogPdfQry blogPdfQry) {
@@ -52,7 +52,7 @@ public class DashboardBlogPdfController {
      * 查询博客文章pdf详细信息
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询博客文章pdf详细信息")
     @GetMapping(value = "/{id}")
     public BlogPdfDO getInfo(@PathVariable("id") Integer id) {
@@ -63,7 +63,7 @@ public class DashboardBlogPdfController {
      * 新增博客文章pdf
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "新增博客文章pdf")
     @PostMapping
     public boolean add(@RequestBody BlogPdfDO blogPdf) {
@@ -77,7 +77,7 @@ public class DashboardBlogPdfController {
      * 修改博客文章pdf
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "修改博客文章pdf")
     @PutMapping
     public boolean edit(@RequestBody BlogPdfDO blogPdf) {
@@ -91,7 +91,7 @@ public class DashboardBlogPdfController {
      * 删除博客文章pdf
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "删除博客文章pdf")
     @DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids) {

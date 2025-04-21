@@ -23,14 +23,14 @@ public class DashboardMostSavedController {
     private MostSavedService mostSavedService;
 
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @GetMapping("")
     public List<EditorPickVO> getEditorPickArticles() {
         return mostSavedService.getCurrentMostSavedEditorPickVO();
     }
 
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @GetMapping("/previous")
     public List<EditorPickVO> getPreviousEditorPickArticles() {
         return mostSavedService.getPreviousMostSavedEditorPickVO();

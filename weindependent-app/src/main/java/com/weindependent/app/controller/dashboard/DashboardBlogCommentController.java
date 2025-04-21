@@ -33,7 +33,6 @@ public class DashboardBlogCommentController {
     private final IBlogCommentService blogCommentService;
 
     public DashboardBlogCommentController(IBlogCommentService blogCommentService) {
-
         this.blogCommentService = blogCommentService;
     }
 
@@ -41,7 +40,7 @@ public class DashboardBlogCommentController {
      * 查询博客评论列表
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询博客评论列表")
     @PostMapping("/list")
     public PageInfo<BlogCommentDO> list(@RequestBody BlogCommentQry blogCommentQry) {
@@ -55,7 +54,7 @@ public class DashboardBlogCommentController {
      * 查询博客评论详细信息
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询博客评论详细信息")
     @GetMapping(value = "/{id}")
     public BlogCommentDO getInfo(@PathVariable("id") Integer id) {
@@ -66,7 +65,7 @@ public class DashboardBlogCommentController {
      * 新增博客评论
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "新增博客评论")
     @PostMapping
     public boolean add(@RequestBody BlogCommentDO blogComment) {
@@ -80,7 +79,7 @@ public class DashboardBlogCommentController {
      * 修改博客评论
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "修改博客评论")
     @PutMapping
     public boolean edit(@RequestBody BlogCommentDO blogComment) {
@@ -93,7 +92,7 @@ public class DashboardBlogCommentController {
      * 删除博客评论
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "删除博客评论")
     @DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids) {
