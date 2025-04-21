@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.weindependent.app.service.ICategoryService;
 
+import java.util.List;
+
 
 /**
  * 分类Controller
@@ -34,7 +36,7 @@ public class DashboardCategoryController {
      * 查询分类列表
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询分类列表")
     @PostMapping("/list")
     public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry) {
@@ -42,10 +44,22 @@ public class DashboardCategoryController {
     }
 
     /**
+     * 查询所有分类
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询分类列表")
+    @GetMapping("/all")
+    public List<CategoryDO> list() {
+
+        return categoryService.selectAllCategory();
+    }
+
+    /**
      * 获取分类详细信息
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "查询分类详细信息")
     @GetMapping("/{id}")
     public CategoryDO getInfo(@PathVariable("id") Integer id) {
@@ -56,7 +70,7 @@ public class DashboardCategoryController {
      * 新增分类
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "新增分类")
     @PostMapping
     public boolean add(@RequestBody CategoryDO category) {
@@ -70,7 +84,7 @@ public class DashboardCategoryController {
      * 修改分类
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "修改分类")
     @PutMapping
     public boolean edit(@RequestBody CategoryDO category) {
@@ -83,7 +97,7 @@ public class DashboardCategoryController {
      * 删除分类
      */
     @SignatureAuth
-    @SaCheckRole("test")
+    @SaCheckRole("admin")
     @Operation(summary = "删除分类")
     @DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids) {

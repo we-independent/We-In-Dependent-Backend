@@ -31,6 +31,13 @@ public interface DashboardCategoryMapper {
     List<CategoryDO> selectCategoryList(CategoryDO category);
 
     /**
+     * 查询所有分类列表
+     *
+     * @return 所有分类列表
+     */
+    List<CategoryDO> selectAllCategory();
+
+    /**
      * 新增分类
      *
      * @param category 分类
@@ -65,4 +72,6 @@ public interface DashboardCategoryMapper {
     CategoryDO selectCategoryByName(String name);
 
     int recoverCategory(CategoryDO existCategory);
+
+
 }
