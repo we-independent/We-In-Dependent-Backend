@@ -1,7 +1,6 @@
 package com.weindependent.app.controller;
 import com.weindependent.app.service.IBlogPdfDownloadService;
 import com.weindependent.app.service.IBlogPdfExportService;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
 import com.weindependent.app.database.dataobject.UserDO;
 
@@ -17,9 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
