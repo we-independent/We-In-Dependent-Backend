@@ -58,14 +58,38 @@ public class MostSavedServiceImpl implements MostSavedService {
         List<BlogHomePageHeroVO> editorPickBlogHomePageHeroVO = mostSavedMapper.findBlogHomePageHeroVOByIds(editorPickArticleIdList);
         List<BlogHomePageHeroVO> result = new ArrayList<>();
 
-        for (BlogHomePageHeroVO blogHomePageHeroVO : mostSavedBlogHomePageHeroVO) {
-            blogHomePageHeroVO.setHeroType("Most Saved");
-            result.add(blogHomePageHeroVO);
+        // 拼装 Most Saved 数据，补全字段
+        for (BlogHomePageHeroVO vo : mostSavedBlogHomePageHeroVO) {
+            vo.setHeroType("Most Saved");
+
+            EditorPickDO match = mostSavedList.stream()
+                    .filter(item -> item.getArticleId().equals(vo.getArticleId()))
+                    .findFirst().orElse(null);
+            if (match != null) {
+                vo.setCreateTime(match.getCreateTime());
+                vo.setCreateUserId(match.getCreateUserId());
+            }
+
+            result.add(vo);
+
         }
 
-        for (BlogHomePageHeroVO blogHomePageHeroVO : editorPickBlogHomePageHeroVO) {
-            blogHomePageHeroVO.setHeroType("Editor's Pick");
-            result.add(blogHomePageHeroVO);
+
+        // 拼装 Editor's Pick 数据，补全字段
+        for (BlogHomePageHeroVO vo : editorPickBlogHomePageHeroVO) {
+            vo.setHeroType("Editor's Pick");
+
+            EditorPickDO match = editorPickList.stream()
+                    .filter(item -> item.getArticleId().equals(vo.getArticleId()))
+                    .findFirst().orElse(null);
+            if (match != null) {
+                vo.setCreateTime(match.getCreateTime());
+                vo.setCreateUserId(match.getCreateUserId());
+            }
+
+            result.add(vo);
+
+            System.out.println(">>> articleId=" + vo.getArticleId() + ", isDeleted=" + vo.getIsDeleted());
         }
 
         return result;

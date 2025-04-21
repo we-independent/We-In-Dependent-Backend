@@ -50,7 +50,11 @@ public class EditorPickServiceImpl implements EditorPickService {
         for (EditorPickDO pick : picks) {
             BlogArticleDO article = articleMap.get(pick.getArticleId());
             if (article != null) {
-                result.add(EditorPickConvertor.toVO(pick, article));
+                // 调用已有的 Convertor
+                EditorPickVO vo = EditorPickConvertor.toVO(pick, article);
+                // 明确设置 heroType
+                vo.setHeroType("Editor's Pick");
+                result.add(vo);
             }
         }
 

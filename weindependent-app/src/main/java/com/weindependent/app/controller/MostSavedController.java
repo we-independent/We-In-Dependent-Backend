@@ -19,7 +19,7 @@ public class MostSavedController {
 
     // 获取Blog首页Hero区域列表
     @GetMapping("/current")
-    public List<BlogHomePageHeroVO> getEditorPickArticles(){
+    public List<BlogHomePageHeroVO> getCurrentHeroArticles(){
         return mostSavedService.getCurrentBlogHomePageHeroVO();
     }
 }
