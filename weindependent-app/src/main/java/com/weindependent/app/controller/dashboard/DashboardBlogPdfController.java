@@ -79,8 +79,9 @@ public class DashboardBlogPdfController
     @PutMapping
     public boolean edit(@RequestBody BlogPdfDO blogPdf)
     {
-
+        System.out.println("接收到的 pdf 修改数据：" + blogPdf);
         return blogPdfService.updateBlogPdf(blogPdf) > 0;
+
     }
 
     /**

@@ -35,7 +35,7 @@ public class DashboardBlogArticleController
     /**
      * 查询博客文章列表
      */
-    @SignatureAuth
+    // @SignatureAuth
     @Operation(summary = "查询博客文章列表")
     @PostMapping("/list")
     public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry)
@@ -46,7 +46,7 @@ public class DashboardBlogArticleController
     /**
      * 查询博客文章详细信息
      */
-    @SignatureAuth
+    // @SignatureAuth
     @Operation(summary = "查询博客文章详细信息")
     @GetMapping(value = "/{id}")
     public BlogArticleDO getInfo(@PathVariable("id") Integer id)
@@ -57,7 +57,7 @@ public class DashboardBlogArticleController
     /**
      * 新增博客文章
      */
-    @SignatureAuth
+    // @SignatureAuth
     @Operation(summary = "新增博客文章")
     @PostMapping
     public boolean add(@RequestBody BlogArticleDO blogArticle)
@@ -70,7 +70,7 @@ public class DashboardBlogArticleController
     /**
      * 新增博客图片
      */
-    @SignatureAuth
+    // @SignatureAuth
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value="/banner/upload", consumes= "multipart/form-data")
     public UploadedFileVO addBlogBanner(FileUploadQry fileUploadQry)
@@ -81,7 +81,7 @@ public class DashboardBlogArticleController
     /**
      * 修改博客文章
      */
-    @SignatureAuth
+    // @SignatureAuth
     @Operation(summary = "修改博客文章")
     @PutMapping
     public boolean edit(@RequestBody BlogArticleDO blogArticle)
@@ -92,7 +92,7 @@ public class DashboardBlogArticleController
     /**
      * 删除博客文章
      */
-    @SignatureAuth
+    // @SignatureAuth
     @Operation(summary = "删除博客文章")
 	@DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids)
