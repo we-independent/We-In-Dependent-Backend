@@ -10,6 +10,7 @@ import com.weindependent.app.dto.BlogPdfQry;
 import com.weindependent.app.utils.PageInfoUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogPdfService;
@@ -61,7 +62,11 @@ public class DashboardBlogPdfServiceImpl implements IBlogPdfService {
     @Override
     public int insertBlogPdf(BlogPdfDO blogPdf) {
         blogPdf.setCreateTime(LocalDateTime.now());
-        return dashboardBlogPdfMapper.insertBlogPdf(blogPdf);
+        try {
+            return dashboardBlogPdfMapper.insertBlogPdf(blogPdf);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("该文章的 article_id 已存在，请重新输入");
+        }
     }
 
     /**
