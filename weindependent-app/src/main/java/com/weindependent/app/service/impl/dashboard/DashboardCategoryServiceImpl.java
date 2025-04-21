@@ -25,36 +25,33 @@ import com.weindependent.app.service.ICategoryService;
  *    2025-03-23
  */
 @Service
-public class DashboardCategoryServiceImpl implements ICategoryService
-{
+public class DashboardCategoryServiceImpl implements ICategoryService {
     @Autowired
     private DashboardCategoryMapper dashboardCategoryMapper;
 
     /**
      * 查询分类
-     * 
+     *
      * @param id 分类主键
      * @return 分类
      */
     @Override
-    public CategoryDO selectCategoryById(Integer id)
-    {
+    public CategoryDO selectCategoryById(Integer id) {
         return dashboardCategoryMapper.selectCategoryById(id);
     }
 
     /**
      * 查询分类列表分页
-     * 
+     *
      * @param categoryQry 分类查询模板
      * @return 分类
      */
     @Override
-    public PageInfo<CategoryDO> selectCategoryListPage(CategoryQry categoryQry)
-    {
+    public PageInfo<CategoryDO> selectCategoryListPage(CategoryQry categoryQry) {
         CategoryDO categoryDO = new CategoryDO();
-        BeanUtils.copyProperties(categoryQry,categoryDO);
+        BeanUtils.copyProperties(categoryQry, categoryDO);
         PageHelper.startPage(categoryQry.getPageNum(), categoryQry.getPageSize());
-        List<CategoryDO> CategoryDOList =  dashboardCategoryMapper.selectCategoryList(categoryDO);
+        List<CategoryDO> CategoryDOList = dashboardCategoryMapper.selectCategoryList(categoryDO);
         PageInfo<CategoryDO> CategoryDOPageInfo = new PageInfo<>(CategoryDOList);
         return PageInfoUtil.pageInfo2DTO(CategoryDOPageInfo, CategoryDO.class);
     }
@@ -63,8 +60,8 @@ public class DashboardCategoryServiceImpl implements ICategoryService
      * 新增分类
      * 由于是软删除，首先根据新分类名称搜索数据库，
      * 1. 如果已有分类，
-     *  1.1 如果已有分类，未被删除 return
-     *  1.2 如果已有分类，被删除，恢复分类 return
+     * 1.1 如果已有分类，未被删除 return
+     * 1.2 如果已有分类，被删除，恢复分类 return
      * 2. 没有搜索到分类，则新增分类
      *
      * @param category 分类
@@ -87,38 +84,35 @@ public class DashboardCategoryServiceImpl implements ICategoryService
 
     /**
      * 修改分类
-     * 
+     *
      * @param category 分类
      * @return 结果
      */
     @Override
-    public int updateCategory(CategoryDO category)
-    {
+    public int updateCategory(CategoryDO category) {
         category.setUpdateTime(LocalDateTime.now());
         return dashboardCategoryMapper.updateCategory(category);
     }
 
     /**
      * 批量删除分类
-     * 
+     *
      * @param ids 需要删除的分类主键
      * @return 结果
      */
     @Override
-    public int deleteCategoryByIds(Integer[] ids)
-    {
-        return dashboardCategoryMapper.deleteCategoryByIds(ids);
+    public int deleteCategoryByIds(Integer[] ids, int updateUserId) {
+        return dashboardCategoryMapper.deleteCategoryByIds(ids, updateUserId);
     }
 
     /**
      * 删除分类信息
-     * 
+     *
      * @param id 分类主键
      * @return 结果
      */
     @Override
-    public int deleteCategoryById(Integer id)
-    {
+    public int deleteCategoryById(Integer id) {
         return dashboardCategoryMapper.deleteCategoryById(id);
     }
 }
