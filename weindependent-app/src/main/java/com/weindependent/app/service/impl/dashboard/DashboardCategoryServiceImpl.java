@@ -57,6 +57,16 @@ public class DashboardCategoryServiceImpl implements ICategoryService {
     }
 
     /**
+     * 查询所有分类列表
+     *
+     * @return 所有分类列表
+     */
+    @Override
+    public List<CategoryDO> selectAllCategory() {
+        return   dashboardCategoryMapper.selectAllCategory();
+    }
+
+    /**
      * 新增分类
      * 由于是软删除，首先根据新分类名称搜索数据库，
      * 1. 如果已有分类，

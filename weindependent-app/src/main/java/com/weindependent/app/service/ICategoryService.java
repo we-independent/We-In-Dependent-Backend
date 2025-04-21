@@ -4,6 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.dto.CategoryQry;
 
+import java.util.List;
+
 /**
  * 分类Service接口
  * 
@@ -26,6 +28,13 @@ public interface ICategoryService {
      * @return 分类集合
      */
     PageInfo<CategoryDO> selectCategoryListPage(CategoryQry categoryQry);
+
+    /**
+     * 查询所有分类列表
+     *
+     * @return 所有分类列表
+     */
+    List<CategoryDO> selectAllCategory();
 
     /**
      * 新增分类
@@ -58,4 +67,6 @@ public interface ICategoryService {
      * @return 结果
      */
     int deleteCategoryById(Integer id);
+
+
 }
