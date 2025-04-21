@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.weindependent.app.service.ICategoryService;
 
+import java.util.List;
+
 
 /**
  * 分类Controller
@@ -39,6 +41,18 @@ public class DashboardCategoryController {
     @PostMapping("/list")
     public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry) {
         return categoryService.selectCategoryListPage(categoryQry);
+    }
+
+    /**
+     * 查询所有分类
+     */
+    @SignatureAuth
+    @SaCheckRole("test")
+    @Operation(summary = "查询分类列表")
+    @GetMapping("/all")
+    public List<CategoryDO> list() {
+
+        return categoryService.selectAllCategory();
     }
 
     /**
