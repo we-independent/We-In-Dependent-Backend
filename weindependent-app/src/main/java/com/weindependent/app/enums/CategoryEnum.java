@@ -1,0 +1,26 @@
+package com.weindependent.app.enums;
+
+public enum CategoryEnum {
+    VISA("1", "Visa & Policy"),
+    LIVING("2", "US Living Guide"),
+    HEALTH("3", "Health & Wellness"),
+    CAREER("4", "Career Compass"),
+    COMMUNITY("0", "Community Story");
+
+    private final String code;
+    private final String name;
+
+    CategoryEnum(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
+    public static String getNameByCode(String code) {
+        for (CategoryEnum c : values()) {
+            if (c.code.equals(code)) {
+                return c.name;
+            }
+        }
+        return COMMUNITY.name;
+    }
+}

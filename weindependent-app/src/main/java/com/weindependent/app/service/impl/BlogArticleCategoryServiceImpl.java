@@ -16,7 +16,7 @@ import com.weindependent.app.service.IBlogArticleCategoryService;
  * @author Hurely
  *    2025-04-5
  */
-@Service
+@Service    
 public class BlogArticleCategoryServiceImpl implements IBlogArticleCategoryService {
 
     @Autowired

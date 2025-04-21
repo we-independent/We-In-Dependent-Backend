@@ -34,10 +34,12 @@ public interface BlogArticleListMapper {
      */
     BlogArticleListDO selectBlogArticleById(Integer id);
         /**
-     * 根据主键查询单个博客文章comments
+     * 根据主键查询单个博客文章comments,tag,bannerimage url
      * 
-     * @param id 博客文章主键
+     * @param articleId 博客文章主键
      * @return 单个博客文章评论 DO 对象
      */
     List<BlogCommentDO> selectCommentsByArticleId(@Param("articleId") Integer articleId);
+    List<String> selectTagsByArticleId(@Param("articleId") Integer articleId);
+    String selectBannerImageUrlById(@Param("imgId") Integer imgId);
 }

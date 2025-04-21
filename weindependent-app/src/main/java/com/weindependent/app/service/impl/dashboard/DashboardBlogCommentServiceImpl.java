@@ -23,37 +23,34 @@ import com.weindependent.app.service.IBlogCommentService;
  *    2025-03-23
  */
 @Service
-public class DashboardBlogCommentServiceImpl implements IBlogCommentService
-{
+public class DashboardBlogCommentServiceImpl implements IBlogCommentService {
     @Autowired
     private DashboardBlogCommentMapper dashboardBlogCommentMapper;
 
     /**
      * 查询博客评论
-     * 
+     *
      * @param id 博客评论主键
      * @return 博客评论
      */
     @Override
-    public BlogCommentDO selectBlogCommentById(Integer id)
-    {
+    public BlogCommentDO selectBlogCommentById(Integer id) {
         return dashboardBlogCommentMapper.selectBlogCommentById(id);
     }
 
     /**
      * 查询博客评论列表
-     * 
+     *
      * @param blogCommentQry 博客评论
      * @return 博客评论
      */
     @Override
-    public  PageInfo<BlogCommentDO>  selectBlogCommentList(BlogCommentQry blogCommentQry)
-    {
+    public PageInfo<BlogCommentDO> selectBlogCommentList(BlogCommentQry blogCommentQry) {
 
         BlogCommentDO blogCommentDO = new BlogCommentDO();
-        BeanUtils.copyProperties(blogCommentQry,blogCommentDO);
+        BeanUtils.copyProperties(blogCommentQry, blogCommentDO);
         PageHelper.startPage(blogCommentQry.getPageNum(), blogCommentQry.getPageSize());
-        List<BlogCommentDO>  blogCommentDOList =  dashboardBlogCommentMapper.selectBlogCommentList(blogCommentDO);
+        List<BlogCommentDO> blogCommentDOList = dashboardBlogCommentMapper.selectBlogCommentList(blogCommentDO);
         PageInfo<BlogCommentDO> PageInfo = new PageInfo<>(blogCommentDOList);
         return PageInfoUtil.pageInfo2DTO(PageInfo, BlogCommentDO.class);
 
@@ -62,51 +59,47 @@ public class DashboardBlogCommentServiceImpl implements IBlogCommentService
 
     /**
      * 新增博客评论
-     * 
+     *
      * @param blogComment 博客评论
      * @return 结果
      */
     @Override
-    public int insertBlogComment(BlogCommentDO blogComment)
-    {
+    public int insertBlogComment(BlogCommentDO blogComment) {
         blogComment.setCreateTime(LocalDateTime.now());
         return dashboardBlogCommentMapper.insertBlogComment(blogComment);
     }
 
     /**
      * 修改博客评论
-     * 
+     *
      * @param blogComment 博客评论
      * @return 结果
      */
     @Override
-    public int updateBlogComment(BlogCommentDO blogComment)
-    {
+    public int updateBlogComment(BlogCommentDO blogComment) {
         blogComment.setUpdateTime(LocalDateTime.now());
         return dashboardBlogCommentMapper.updateBlogComment(blogComment);
     }
 
     /**
      * 批量删除博客评论
-     * 
+     *
      * @param ids 需要删除的博客评论主键
      * @return 结果
      */
     @Override
-    public int deleteBlogCommentByIds(Integer[] ids)
-    {
-        return dashboardBlogCommentMapper.deleteBlogCommentByIds(ids);
+    public int deleteBlogCommentByIds(Integer[] ids, int updateUserId) {
+        return dashboardBlogCommentMapper.deleteBlogCommentByIds(ids, updateUserId);
     }
 
     /**
      * 删除博客评论信息
-     * 
+     *
      * @param id 博客评论主键
      * @return 结果
      */
     @Override
-    public int deleteBlogCommentById(Integer id)
-    {
+    public int deleteBlogCommentById(Integer id) {
         return dashboardBlogCommentMapper.deleteBlogCommentById(id);
     }
 }

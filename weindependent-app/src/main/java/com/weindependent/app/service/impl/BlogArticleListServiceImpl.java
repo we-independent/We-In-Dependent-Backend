@@ -1,26 +1,17 @@
 package com.weindependent.app.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
-import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
-import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
-import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.dto.BlogCommentQry;
-import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.SavedCountService;
-import com.weindependent.app.vo.BlogArticleVO;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +22,10 @@ import org.springframework.stereotype.Service;
 public class BlogArticleListServiceImpl implements IBlogArticleListService {
     @Autowired
     private final BlogArticleListMapper blogArticleMapper;
-    @Autowired
-    private EditorPickService editorsPickService;
-    @Autowired
-    private SavedCountService savedCountService;
+    // @Autowired
+    // private EditorPickService editorsPickService;
+    // @Autowired
+    // private SavedCountService savedCountService;
     
 
     public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleMapper) {
@@ -86,7 +77,11 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setSummary(article.getSummary());
         qry.setContent(article.getContent());
         qry.setAuthorId(article.getAuthorId());
+        qry.setAuthorName("We Independent");
+        int wordCount = article.getContent() != null ? article.getContent().length() : 0;
+        qry.setReadingtime((int)Math.ceil(wordCount / 200.0) + " min");
         qry.setBannerImgId(article.getBannerImgId());
+        qry.setBannerImageUrl(blogArticleMapper.selectBannerImageUrlById(article.getBannerImgId()));
         qry.setCategoryId(article.getCategoryId());
         qry.setArticleStatus(article.getArticleStatus());
         qry.setArticleSourceType(article.getArticleSourceType());
@@ -95,7 +90,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setCreateTime(article.getCreateTime());
         qry.setUpdateUserId(article.getUpdateUserId());
         qry.setUpdateTime(article.getUpdateTime());
-
+        List<String> tags = blogArticleMapper.selectTagsByArticleId(id);
+        qry.setTags(tags);
         PageHelper.startPage(pageNum, pageSize);
         List<BlogCommentDO> commentDOs = blogArticleMapper.selectCommentsByArticleId(id);
         List<BlogCommentQry> commentVOs = commentDOs.stream().map(c -> {
@@ -109,6 +105,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             return commentVO;
             }).collect(Collectors.toList());
         qry.setComments(commentVOs);
+        qry.setDisclaimer("The information in this article is for general purposes only. We make no warranties about the accuracy or completeness of the content. Views expressed are those of the author(s) and do not reflect the views of We Independent. We are not responsible for any actions taken based on this information. Please seek professional advice if needed.");
+
         return qry;
 
     }
