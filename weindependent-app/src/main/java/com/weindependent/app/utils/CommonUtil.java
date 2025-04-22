@@ -22,13 +22,16 @@ public class CommonUtil {
 
     public static String convertToImgSrc(String driveUrl, int resolution) {
 
-        String regex = "https://drive.google.com/file/d/([a-zA-Z0-9_-]+)/view";
+        if(driveUrl == null || driveUrl.isEmpty())
+            return driveUrl;
+
+        String regex = "https://drive.google.com/file/d/([a-zA-Z0-9_-]+)(?:/view.*)?";
         String fileId;
 
         if (driveUrl.matches(regex)) {
             fileId = driveUrl.replaceAll(regex, "$1");
         } else {
-            throw new IllegalArgumentException("Invalid Google Drive URL");
+            throw new IllegalArgumentException("Invalid Google Drive URL:" + driveUrl);
         }
 
         return "https://lh3.googleusercontent.com/d/" + fileId + "=s" + resolution;
