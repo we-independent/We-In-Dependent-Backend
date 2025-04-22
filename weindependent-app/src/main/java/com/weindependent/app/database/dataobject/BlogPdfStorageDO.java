@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 博客PDF存储对象，用于存储 PDF 二进制数据及相关元数据
- * 对应数据库中的表，blog_pdf_storage
  * 
  * @author Hurely
  *    2025-03-23
@@ -29,7 +29,7 @@ public class BlogPdfStorageDO {
     
     /** PDF生成时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime pdfGenerationTime;
+    private Date pdfGenerationTime;
     
     /** 0-未删除, 1-已删除 */
     private Integer isDeleted;

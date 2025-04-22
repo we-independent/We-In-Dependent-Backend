@@ -15,5 +15,5 @@ public interface BlogPdfDownloadLogMapper {
      * @param blogId 博客ID
      * @return 下载次数
      */
-    int getDownloadCount(@Param("blogId") Integer blogId);
+    int getDownloadCount(@Param("blogId") Long blogId);
 }

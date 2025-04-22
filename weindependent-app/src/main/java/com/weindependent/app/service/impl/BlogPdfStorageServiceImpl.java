@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Service("blogPdfStorageService")
 public class BlogPdfStorageServiceImpl implements IBlogPdfStorageService {
@@ -26,7 +28,9 @@ public class BlogPdfStorageServiceImpl implements IBlogPdfStorageService {
         storage.setPdfContent(pdfContent);
         // 这里fileName定义在controller里
         storage.setFileName("WeIndependent_blog_" + blogId + ".pdf");
-        storage.setPdfGenerationTime(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        Date date = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+        storage.setPdfGenerationTime(date);
         // 逻辑删除标记：0表示未删除
         storage.setIsDeleted(0);
         storage.setCreateUserId(null);

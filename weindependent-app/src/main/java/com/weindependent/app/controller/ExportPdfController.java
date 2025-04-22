@@ -1,34 +1,39 @@
 package com.weindependent.app.controller;
 import com.weindependent.app.service.IBlogPdfDownloadService;
+import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.service.IBlogPdfExportService;
 import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
 import com.weindependent.app.database.dataobject.UserDO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 import com.weindependent.app.service.IBlogPdfStorageService;
 import com.weindependent.app.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import cn.dev33.satoken.stp.StpUtil;
 
-
+@Slf4j
 @Tag(name = "博客文章PDF下载")
 @RestController
 @RequestMapping("/api")
 public class ExportPdfController {
 
-    //生成PDF（动态生成)
+    //生成PDF（动态生成)    
     @Autowired
     private IBlogPdfExportService blogPdfExportService;
 
@@ -43,6 +48,9 @@ public class ExportPdfController {
     @Autowired
     private UserService userService;    
 
+    @Autowired
+    private IBlogPdfDriveManagerService blogPdfDriveManagerService;
+
     /**
      * 导出博客文章 PDF
      *
@@ -55,7 +63,10 @@ public class ExportPdfController {
 
     @Operation(summary = "Download_Blog_Pdf")
     @GetMapping("/export/{blogId}")
-    public ResponseEntity<byte[]> exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
+    public ResponseEntity<?> exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
+        System.out.println("💡 blogId 类型：" + (blogId != null ? blogId.getClass().getName() : "null"));
+        System.out.println("✅ 正在访问 export 接口，路径 blogId = " + request.getRequestURI());
+        System.out.println("🔥 请求路径：" + request.getRequestURI());
 
         //Step 1 Check if user log in already, if yes, next move, otherwise login first
         if (!StpUtil.isLogin()) {
@@ -77,34 +88,41 @@ public class ExportPdfController {
 
         LocalDateTime now = LocalDateTime.now(); // 当前时间
 
-        // //测试时可使用写死的userid
-        // Long userId = 1;
+        // // 测试时可使用写死的userid
+        // Long userId = 1L;
         // LocalDateTime now = LocalDateTime.now();
 
 
         //Step 2 After user login, now handling pdf download request 
-        byte[] pdfBytes = null;
+        byte[] pdfBytes = blogPdfExportService.generatePdf(blogId);
+        int downloadCount = blogPdfDownloadService.getDownloadCount(blogId.longValue());
+        //Step 2.2 Check if blog already in google drive
+        String existingDriveUrl = blogPdfDriveManagerService.handlePdfDownload(blogId, pdfBytes, userId.intValue(), downloadCount, now);
+        log.info("📂 existingDriveUrl = {}", existingDriveUrl);
 
-        //Step 2.1 Record download activity：update time，userid and blog id. id = blogid
-        blogPdfDownloadService.updateStatistics(blogId, userId, now);
-
-        //Step 2.2 Check if blog already in DB
-        BlogPdfStorageDO pdfRecord = blogPdfStorageService.getPdfByBlogId(blogId);
-        if (pdfRecord != null){
-            // System.out.println("✅ 已命中缓存（数据库PDF存在），blogId = " + blogId);
-            pdfBytes = pdfRecord.getPdfContent();
-        }else{
-            pdfBytes = blogPdfExportService.generatePdf(blogId);
-            // System.out.println("📄 正在动态生成 PDF, blogId = " + blogId);
-            int downloadCount = blogPdfDownloadService.getDownloadCount(blogId);
-            if (downloadCount >= 5) {
-                blogPdfStorageService.savePdf(blogId, pdfBytes);
-            }
+        if (existingDriveUrl != null && isValidDriveUrl(existingDriveUrl)) {
+             Map<String, String> result = new HashMap<>();
+            result.put("downloadUrl", existingDriveUrl);
+            return ResponseEntity.ok(result);
         }
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=WeIndependent_blog_" + blogId + ".pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=WeIndependent_blog_" + blogId + ".pdf")
                 .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleMismatch(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+        log.warn("类型转换错误：访问路径 {}, 错误参数 = {}, 错误信息 = {}",
+                request.getRequestURI(),
+                e.getValue(),
+                e.getMessage());
+        return ResponseEntity.badRequest().body("❌ blogId 必须是整数");
+    }
+
+    private boolean isValidDriveUrl(String driveUrl) {
+        // 非空、非非法链接的简单判断
+        return driveUrl != null && driveUrl.contains("drive.usercontent.google.com") && driveUrl.contains("export=download");
     }
 }
