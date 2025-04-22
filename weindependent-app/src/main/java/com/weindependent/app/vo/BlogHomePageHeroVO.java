@@ -1,6 +1,7 @@
 package com.weindependent.app.vo;
 
 import lombok.Data;
+import java.util.Date;
 
 import java.util.List;
 
@@ -20,4 +21,11 @@ public class BlogHomePageHeroVO {
     private String  bannerImageUrl;
 
     private List<TagVO> tagVOList;
+
+    // hero 区需要以下字段
+    private Integer isDeleted;        
+    private Date updateTime;        
+    private Integer updateUserId;     
+    private Date createTime;        
+    private Integer createUserId;     
 }
