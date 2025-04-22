@@ -86,6 +86,10 @@
         <include refid="selectCategoryVo"/>
         where name = #{name}
     </select>
+    <select id="selectAllCategory" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        limit 100;
+    </select>
 
     <update id="recoverCategory" >
         update category set is_deleted = 0 where id = #{id}
