@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.weindependent.app.utils.CommonUtil;
+
 @Service
 public class MostSavedServiceImpl implements MostSavedService {
     @Resource
@@ -60,11 +62,13 @@ public class MostSavedServiceImpl implements MostSavedService {
 
         for (BlogHomePageHeroVO blogHomePageHeroVO : mostSavedBlogHomePageHeroVO) {
             blogHomePageHeroVO.setHeroType("Most Saved");
+            blogHomePageHeroVO.setBannerImageUrl(CommonUtil.convertToImgSrc(blogHomePageHeroVO.getBannerImageUrl(),400));
             result.add(blogHomePageHeroVO);
         }
 
         for (BlogHomePageHeroVO blogHomePageHeroVO : editorPickBlogHomePageHeroVO) {
             blogHomePageHeroVO.setHeroType("Editor's Pick");
+            blogHomePageHeroVO.setBannerImageUrl(CommonUtil.convertToImgSrc(blogHomePageHeroVO.getBannerImageUrl(),400));
             result.add(blogHomePageHeroVO);
         }
 
