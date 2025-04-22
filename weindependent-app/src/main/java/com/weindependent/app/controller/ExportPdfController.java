@@ -4,6 +4,7 @@ import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.service.IBlogPdfExportService;
 import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.exception.ResponseException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,7 +64,7 @@ public class ExportPdfController {
 
     @Operation(summary = "Download_Blog_Pdf")
     @GetMapping("/export/{blogId}")
-    public ResponseEntity<?> exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
+    public Object exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
         System.out.println("💡 blogId 类型：" + (blogId != null ? blogId.getClass().getName() : "null"));
         System.out.println("✅ 正在访问 export 接口，路径 blogId = " + request.getRequestURI());
         System.out.println("🔥 请求路径：" + request.getRequestURI());
@@ -71,9 +72,7 @@ public class ExportPdfController {
         //Step 1 Check if user log in already, if yes, next move, otherwise login first
         if (!StpUtil.isLogin()) {
             String targetUrl = request.getRequestURI();
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", "/user/login?targetUrl=" + targetUrl);
-            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            throw new ResponseException(401, "请先登录后再下载 PDF");
         }
         // Step 2: 获取登录的 userId（loginId 是 string 类型）
         Long userId = StpUtil.getLoginIdAsLong();
@@ -81,9 +80,7 @@ public class ExportPdfController {
         // Step 2.1: 查询数据库中是否存在该用户
         UserDO user = userService.findUserById(userId);
         if (user == null) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", "/user/register?account=" + userId);
-            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            throw new ResponseException(403, "用户未注册，请先注册");
         }
 
         LocalDateTime now = LocalDateTime.now(); // 当前时间
@@ -101,9 +98,9 @@ public class ExportPdfController {
         log.info("📂 existingDriveUrl = {}", existingDriveUrl);
 
         if (existingDriveUrl != null && isValidDriveUrl(existingDriveUrl)) {
-             Map<String, String> result = new HashMap<>();
+            Map<String, String> result = new HashMap<>();
             result.put("downloadUrl", existingDriveUrl);
-            return ResponseEntity.ok(result);
+            return result;
         }
 
         return ResponseEntity.ok()
