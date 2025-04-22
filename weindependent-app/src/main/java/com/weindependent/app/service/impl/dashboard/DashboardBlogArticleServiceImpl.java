@@ -50,27 +50,25 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 
     /**
      * 查询博客文章
-     * 
+     *
      * @param id 博客文章主键
      * @return 博客文章
      */
     @Override
-    public BlogArticleDO selectBlogArticleById(Integer id)
-    {
+    public BlogArticleDO selectBlogArticleById(Integer id) {
         return blogArticleMapper.selectBlogArticleById(id);
     }
 
     /**
      * 查询博客文章列表
-     * 
+     *
      * @param blogArticleQry 博客文章
      * @return 博客文章
      */
     @Override
-    public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleQry blogArticleQry)
-    {
+    public PageInfo<BlogArticleDO> selectBlogArticleList(BlogArticleQry blogArticleQry) {
         BlogArticleDO blogArticleDO = new BlogArticleDO();
-        BeanUtils.copyProperties(blogArticleDO,blogArticleDO);
+        BeanUtils.copyProperties(blogArticleQry, blogArticleDO);
         PageHelper.startPage(blogArticleQry.getPageNum(), blogArticleQry.getPageSize());
         List<BlogArticleDO> BlogArticleDOList = blogArticleMapper.selectBlogArticleList(blogArticleDO);
         PageInfo<BlogArticleDO> PageInfo = new PageInfo<>(BlogArticleDOList);
@@ -79,20 +77,18 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 
     /**
      * 新增博客文章
-     * 
+     *
      * @param blogArticle 博客文章
      * @return 结果
      */
     @Override
-    public int insertBlogArticle(BlogArticleDO blogArticle)
-    {
+    public int insertBlogArticle(BlogArticleDO blogArticle) {
         blogArticle.setCreateTime(LocalDateTime.now());
         return blogArticleMapper.insertBlogArticle(blogArticle);
     }
 
     @Override
-    public UploadedFileVO insertBlogBanner(FileUploadQry fileUploadQry)
-    {
+    public UploadedFileVO insertBlogBanner(FileUploadQry fileUploadQry) {
         UploadedFileVO uploadedFileVO = fileService.uploadFile(fileUploadQry.getFile(), fileUploadQry.getCategory());
         BlogImageDO blogImageDO = new BlogImageDO();
         blogImageDO.setCategory("banner");
@@ -109,18 +105,18 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 
     /**
      * 修改博客文章
-     * 
+     *
      * @param blogArticle 博客文章
      * @return 结果
      */
     @Override
     public int updateBlogArticle(BlogArticleDO blogArticle)
-    {   
+    {
         //Hurely add null exception
         if (blogArticle.getId() == null) {
             throw new IllegalArgumentException("Blog ID can not be null!");
         }
-    
+
         BlogArticleDO oldBlog=blogArticleMapper.selectBlogArticleById(blogArticle.getId());
         if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
             deleteImgById(oldBlog.getBannerImgId());
@@ -136,25 +132,23 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public int deleteBlogArticleByIds(Integer[] ids)
-    {
-        for(Integer id:ids){
-            BlogArticleDO blog=blogArticleMapper.selectBlogArticleById(id);
+    public int deleteBlogArticleByIds(Integer[] ids, int updateUserId) {
+        for (Integer id : ids) {
+            BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
             deleteImgById(blog.getBannerImgId());
         }
-        return blogArticleMapper.deleteBlogArticleByIds(ids);
+        return blogArticleMapper.deleteBlogArticleByIds(ids, updateUserId);
     }
 
     /**
      * 删除博客文章信息
-     * 
+     *
      * @param id 博客文章主键
      * @return 结果
      */
     @Override
-    public int deleteBlogArticleById(Integer id)
-    {
-        BlogArticleDO blog=blogArticleMapper.selectBlogArticleById(id);
+    public int deleteBlogArticleById(Integer id) {
+        BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
         deleteImgById(blog.getBannerImgId());
         return blogArticleMapper.deleteBlogArticleById(id);
     }
@@ -166,7 +160,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public List<BlogArticleVO> searchByContent(String keyword){
+    public List<BlogArticleVO> searchByContent(String keyword) {
         List<BlogArticleDO> blogArticleDOS = blogArticleMapper.searchByContent(keyword);
 
         return blogArticleDOS.stream().map(this::toBlogVO).collect(Collectors.toList());
@@ -179,7 +173,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public List<BlogArticleVO> searchByExactKeywords(String keyword){
+    public List<BlogArticleVO> searchByExactKeywords(String keyword) {
         List<BlogArticleDO> blogArticleDOS = blogArticleMapper.searchByExactKeywords(keyword);
 
         return blogArticleDOS.stream().map(this::toBlogVO).collect(Collectors.toList());
@@ -228,7 +222,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         else {
             log.warn("图片文件路径为空,无法执行文件删除操作,imageId={}", imgId);
         }
-    
+
         log.info("成功逻辑删除图片：{}", imgId);
 
     }

@@ -19,12 +19,12 @@ public interface IBlogPdfDownloadService {
      * @param downloadTime 下载时间
      * 
      */
-    void updateStatistics(Integer blogId, Long userId, LocalDateTime downloadTime);
+    void updateStatistics(Long blogId, Long userId, LocalDateTime downloadTime);
     /**
      * 获取指定博客的下载次数
      * 
      * @param blogId 博客ID
      * @return 下载次数
      */
-    int getDownloadCount(Integer blogId);
+    int getDownloadCount(Long blogId);
 }

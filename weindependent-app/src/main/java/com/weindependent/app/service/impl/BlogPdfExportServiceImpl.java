@@ -2,30 +2,18 @@ package com.weindependent.app.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
-import com.weindependent.app.database.dataobject.BlogPdfDO;
-import com.weindependent.app.dto.BlogPdfQry;
-import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.HtmlSanitizerUtil;
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
-import io.swagger.v3.oas.models.media.Content;
-
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogPdfExportService;
-import com.weindependent.app.service.IBlogPdfService;
-
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
