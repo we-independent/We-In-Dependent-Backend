@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.weindependent.app.utils.CommonUtil;
+
 @Service
 public class MostSavedServiceImpl implements MostSavedService {
     @Resource
@@ -58,7 +60,7 @@ public class MostSavedServiceImpl implements MostSavedService {
         List<BlogHomePageHeroVO> editorPickBlogHomePageHeroVO = mostSavedMapper.findBlogHomePageHeroVOByIds(editorPickArticleIdList);
         List<BlogHomePageHeroVO> result = new ArrayList<>();
 
-        // 拼装 Most Saved 数据，补全字段
+        // 拼装 Most Saved 数据，补全字段 + 图片地址处理
         for (BlogHomePageHeroVO vo : mostSavedBlogHomePageHeroVO) {
             vo.setHeroType("Most Saved");
 
@@ -70,12 +72,11 @@ public class MostSavedServiceImpl implements MostSavedService {
                 vo.setCreateUserId(match.getCreateUserId());
             }
 
+            vo.setBannerImageUrl(CommonUtil.convertToImgSrc(vo.getBannerImageUrl(), 400));
             result.add(vo);
-
         }
 
-
-        // 拼装 Editor's Pick 数据，补全字段
+        // 拼装 Editor's Pick 数据，补全字段 + 图片地址处理
         for (BlogHomePageHeroVO vo : editorPickBlogHomePageHeroVO) {
             vo.setHeroType("Editor's Pick");
 
@@ -87,6 +88,7 @@ public class MostSavedServiceImpl implements MostSavedService {
                 vo.setCreateUserId(match.getCreateUserId());
             }
 
+            vo.setBannerImageUrl(CommonUtil.convertToImgSrc(vo.getBannerImageUrl(), 400));
             result.add(vo);
 
             System.out.println(">>> articleId=" + vo.getArticleId() + ", isDeleted=" + vo.getIsDeleted());
