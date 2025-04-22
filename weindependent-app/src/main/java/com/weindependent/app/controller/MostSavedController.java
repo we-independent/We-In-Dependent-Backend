@@ -22,4 +22,10 @@ public class MostSavedController {
     public List<BlogHomePageHeroVO> getCurrentHeroArticles(){
         return mostSavedService.getCurrentBlogHomePageHeroVO();
     }
+
+    // 获取历史 Most Saved 推送记录
+    @GetMapping("/previous")
+    public List<EditorPickVO> getPreviousMostSaved() {
+        return mostSavedService.getPreviousMostSavedEditorPickVO();
+    }
 }
