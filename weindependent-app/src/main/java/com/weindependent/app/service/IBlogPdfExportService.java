@@ -9,8 +9,8 @@ import com.weindependent.app.dto.BlogPdfQry;
 /**
  * 博客文章pdfService接口
  * 
- * @author christina
- *    2025-03-23
+ * @author Hurely
+ *    2025-04-2
  */
 public interface IBlogPdfExportService 
 {
@@ -21,8 +21,6 @@ public interface IBlogPdfExportService
      * @param id 博客文章的主键 ID
      * @return 生成的 PDF 文件内容（byte 数组）
      * 
-     * @author Hurely
-     * @since  2025-04-2
      */
     public byte[] generatePdf(Integer id);
 }

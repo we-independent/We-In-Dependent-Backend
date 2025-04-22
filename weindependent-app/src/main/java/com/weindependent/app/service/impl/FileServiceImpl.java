@@ -41,6 +41,9 @@ public class FileServiceImpl implements FileService {
     @Value("${google.drive.folder.blog-id}")
     private String blogFolderId;
 
+    @Value("${google.drive.folder.blog-banner-id}")
+    private String blogBannerFolderId;
+
     @Value("${file.upload.tmp-folder}")
     private String tmpFolder;
 
@@ -97,7 +100,7 @@ public class FileServiceImpl implements FileService {
             uploadedFileVO.setFileType(suffix);
             uploadedFileVO.setFilePath(uploadedfilePath);
 
-            //@TODO 删除源文件
+            //删除源文件
             filePath.delete();
 
             return uploadedFileVO;
@@ -137,6 +140,8 @@ public class FileServiceImpl implements FileService {
     private String getFolderId(String category) {
         if (category.equals("blog")) {
             return blogFolderId;
+        } else if (category.equals("blog-banner")) {
+            return blogBannerFolderId;
         }
         return parentFolderId;
     }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogPdfMapper">
-    
+
     <resultMap type="BlogPdfDO" id="BlogPdfResult">
         <result property="id"    column="id"    />
         <result property="fileName"    column="file_name"    />
@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBlogPdfList" parameterType="BlogPdfDO" resultMap="BlogPdfResult">
         <include refid="selectBlogPdfVo"/>
-        <where>  
+        <where>
             <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
             <if test="filePath != null  and filePath != ''"> and file_path = #{filePath}</if>
             <if test="downloadUrl != null  and downloadUrl != ''"> and download_url = #{downloadUrl}</if>
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null "> and update_time = #{updateTime}</if>
         </where>
     </select>
-    
+
     <select id="selectBlogPdfById" parameterType="Integer" resultMap="BlogPdfResult">
         <include refid="selectBlogPdfVo"/>
         where id = #{id}
@@ -56,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateUserId != null">update_user_id,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="fileName != null">#{fileName},</if>
             <if test="filePath != null">#{filePath},</if>
@@ -68,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="updateUserId != null">#{updateUserId},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateBlogPdf" parameterType="BlogPdfDO">
@@ -93,7 +93,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <update id="deleteBlogPdfByIds" parameterType="String">
-        update blog_pdf set is_deleted = 1 where id in
+        update blog_pdf
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

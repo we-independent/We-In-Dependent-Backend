@@ -2,8 +2,10 @@ package com.weindependent.app.database.mapper.weindependent;
 
 import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.database.dataobject.BlogCommentDO;
 import com.weindependent.app.dto.BlogArticleListQry;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 博客文章List Mapper 接口
@@ -31,4 +33,13 @@ public interface BlogArticleListMapper {
      * @return 单个博客文章 DO 对象
      */
     BlogArticleListDO selectBlogArticleById(Integer id);
+        /**
+     * 根据主键查询单个博客文章comments,tag,bannerimage url
+     * 
+     * @param articleId 博客文章主键
+     * @return 单个博客文章评论 DO 对象
+     */
+    List<BlogCommentDO> selectCommentsByArticleId(@Param("articleId") Integer articleId);
+    List<String> selectTagsByArticleId(@Param("articleId") Integer articleId);
+    String selectBannerImageUrlById(@Param("imgId") Integer imgId);
 }

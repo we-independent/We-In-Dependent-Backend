@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper">
-    
+
     <resultMap type="BlogArticleDO" id="BlogArticleResult">
         <result property="id"    column="id"    />
         <result property="articleSourceType"    column="article_source_type"    />
@@ -28,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBlogArticleList" parameterType="BlogArticleDO" resultMap="BlogArticleResult">
         <include refid="selectBlogArticleVo"/>
-        <where>  
+        <where>
             <if test="articleSourceType != null  and articleSourceType != ''"> and article_source_type = #{articleSourceType}</if>
             <if test="sourceUrl != null  and sourceUrl != ''"> and source_url = #{sourceUrl}</if>
             <if test="authorId != null "> and author_id = #{authorId}</if>
@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null "> and update_time = #{updateTime}</if>
         </where>
     </select>
-    
+
     <select id="selectBlogArticleById" parameterType="Integer" resultMap="BlogArticleResult">
         <include refid="selectBlogArticleVo"/>
         where id = #{id}
@@ -68,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateUserId != null">update_user_id,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="articleSourceType != null and articleSourceType != ''">#{articleSourceType},</if>
             <if test="sourceUrl != null">#{sourceUrl},</if>
@@ -84,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="updateUserId != null">#{updateUserId},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateBlogArticle" parameterType="BlogArticleDO">
@@ -112,8 +112,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update blog_article set is_deleted = 1 where id = #{id}
     </update>
 
-    <update id="deleteBlogArticleByIds" parameterType="String">
-        update blog_article set is_deleted = 1 where id in
+    <update id="deleteBlogArticleByIds" >
+        update blog_article
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -126,8 +129,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT id, title, summary, create_time
         FROM blog_article
         WHERE is_deleted = 0
-                  AND article_status = 'published'
-                  AND MATCH(title, content) AGAINST(#{keyword} IN NATURAL LANGUAGE MODE)
+          AND article_status = 'published'
+          AND MATCH(title, content) AGAINST(#{keyword} IN NATURAL LANGUAGE MODE)
         ORDER BY create_time DESC
     </select>
 
@@ -138,8 +141,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT id, title, summary, create_time
         FROM blog_article
         WHERE is_deleted = 0
-                  AND article_status = 'published'
-                  AND MATCH(title) AGAINST(#{keyword} IN BOOLEAN MODE)
+          AND article_status = 'published'
+        <choose>
+            <!-- F1 (short codes) -->
+            <when test="keyword != null and keyword.length() &lt; 4">
+                AND (
+                title   LIKE CONCAT('%', #{keyword}, '%')
+                OR  content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </when>
+
+            <otherwise>
+                AND MATCH(title, content)
+                AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
+            </otherwise>
+        </choose>
+
         ORDER BY create_time DESC
     </select>
 

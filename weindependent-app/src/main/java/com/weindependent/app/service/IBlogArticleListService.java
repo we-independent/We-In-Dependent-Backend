@@ -2,7 +2,10 @@ package com.weindependent.app.service;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
+import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.dto.BlogArticleSinglePageQry;
 
 /**
  * 博客文章 Service 接口
@@ -21,4 +24,5 @@ public interface IBlogArticleListService {
      * @return 博客文章列表 PageInfo 对象
      */
     PageInfo<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry query);
+    BlogArticleSinglePageQry getArticleDetailById(Integer id, Integer pageNum, Integer pageSize);
 }
