@@ -7,6 +7,7 @@ import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.enums.CategoryEnum;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.SavedCountService;
@@ -116,16 +117,27 @@ public class GetBlogListController {
 
     @Operation(summary = "获取单独博客文章, by id from blogcard when click title")
     @GetMapping("/article/{id}")
-    public ResponseEntity<?> getSingleArticle(    @PathVariable("id") Integer id,
-    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize){
-        // 获取文章详细信息
+    // public ResponseEntity<?> getSingleArticle(    @PathVariable("id") Integer id,
+    // @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+    // @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize){
+    //     // 获取文章详细信息
+    //     BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
+    //     if (articleQry == null){
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+    //     }
+    //     return ResponseEntity.ok(articleQry);
+    // }
+    public BlogArticleSinglePageQry getSingleArticle(
+        @PathVariable("id") Integer id,
+        @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+        @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
+
         BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
         if (articleQry == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+            // 抛出业务异常，让 GlobalExceptionResolver 自动包装
+            throw new ResponseException(1, "文章不存在");
         }
-        return ResponseEntity.ok(articleQry);
+        return articleQry; // ⚠️ 直接返回业务数据，不包装
     }
-
 
 }
