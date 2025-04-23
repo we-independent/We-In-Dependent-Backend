@@ -16,4 +16,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         JOIN category c ON c.id = tcr.category_id
         WHERE c.name = #{category} AND t.is_deleted = 0;
     </select>
+
+    <!-- Hurely add for related article -->
+    <select id = "getTagsByArticleId" parameterType="int" resultType="com.weindependent.app.database.dataobject.TagDO">
+        SELECT t.* FROM tag_article_relation r
+        LEFT JOIN tag t ON r.tag_id = t.id
+        WHERE r.article_id = #{articleId}
+          AND r.is_deleted = 0
+          AND t.is_deleted = 0
+    </select>
+
 </mapper>

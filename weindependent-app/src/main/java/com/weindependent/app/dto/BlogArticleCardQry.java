@@ -37,4 +37,9 @@ public class BlogArticleCardQry {
         this.category = category;
         this.categoryName = CategoryEnum.getNameByCode(category);
     }
+    // Blog作者
+    private String author;
+
+    //Blog page
+    private String articleUrl;
 }

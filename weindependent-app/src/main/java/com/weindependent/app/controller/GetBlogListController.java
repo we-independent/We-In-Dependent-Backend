@@ -1,7 +1,9 @@
 package com.weindependent.app.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
 import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
@@ -10,8 +12,10 @@ import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IBlogArticleListService;
+import com.weindependent.app.service.IBlogArticleService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.SavedCountService;
+import com.weindependent.app.service.TagService;
 import com.weindependent.app.utils.PageInfoUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +47,12 @@ public class GetBlogListController {
     
     @Autowired
     private SavedCountService savedCountService;
+    
+    @Autowired
+    private IBlogArticleService blogarticleService;
+
+    @Autowired
+    private TagService tagService;
 
     /**
      * 获取文章列表接口：
@@ -86,8 +96,8 @@ public class GetBlogListController {
             dto.setTime(article.getUpdateTime());
             
             // 计算阅读时长：假设每分钟 200 字（常见阅读速度）
-            int wordCount = article.getContent() != null ? article.getContent().length() : 0;
-            dto.setReadingTime((int)Math.ceil(wordCount / 200.0) + " min");
+            int wordCount = article.getContent() != null ? article.getContent().trim().split("\\s+").length : 0;
+            dto.setReadingTime(Math.min(30, Math.max(1, (int)Math.ceil(wordCount / 200.0))) + " min");
 
             // 图片 URL 和链接可根据实际情况替换，目前为固定值
             dto.setImageUrl(blogArticleMapper.selectBannerImageUrlById(article.getBannerImgId()));
@@ -129,6 +139,36 @@ public class GetBlogListController {
             throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
         }
         return articleQry; // 直接返回业务数据，不包装
+    }
+
+    @Operation(summary = "获取related文章card")
+    @GetMapping("/article/related")
+    public Object getRelatedArticles(@RequestParam int articleId, @RequestParam(defaultValue = "3") int limit){
+        try {
+            //先获取当前article的Category和taglist
+            BlogArticleDO currentArticle = blogarticleService.selectBlogArticleById(articleId);
+            if(currentArticle == null){
+                throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
+            }
+            Integer categoryId = currentArticle.getCategoryId();
+            List<TagDO> tagList = tagService.getTagsByArticleId(articleId);
+            List<Integer> tagIdList = tagList.stream().map(TagDO::getId).collect(Collectors.toList());
+            log.info("tagIdList = " + tagIdList);
+
+            //找出所有同分类同tag的文章
+            List<BlogArticleCardQry> candidates = blogArticleListService.getArticlesByCategoryOrTagsExcludeSelf(categoryId, tagIdList, articleId);
+            log.info("category: {}, tags: {}, candidates: {}", categoryId, tagIdList, candidates);
+            //从候选文章中随机挑选三篇文章显示
+            if (candidates == null || candidates.isEmpty()) {
+                return Collections.emptyList();
+            }
+            Collections.shuffle(candidates);
+            return candidates.stream().limit(limit).collect(Collectors.toList());
+
+        }catch (Exception e) {
+            log.error("Fail to Get Related Articles", e);
+            throw new ResponseException(ErrorCode.RELATED_ARTICLE_FETCH_FAILED.getCode(), "Fail to Get Related Articles");
+        }
     }
 
 }
