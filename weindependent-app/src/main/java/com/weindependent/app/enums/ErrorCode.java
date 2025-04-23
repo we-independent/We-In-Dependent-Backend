@@ -14,7 +14,9 @@ public enum ErrorCode {
     UPDATE_DB_FAILED(-3, "Update db failed"),
     BLOG_NOT_EXIST(-4, "Blog does not exist"),
     USERNAME_PASSWORD_ERROR(401, "Invalid username or password"),
-    UNAUTHORIZED_ACCESS(403, "You are not allowed to access this resource.");
+    UNAUTHORIZED_ACCESS(403, "You are not allowed to access this resource."),
+    RELATED_ARTICLE_FETCH_FAILED(201, "Fail to Get Related Articles");
+
 
     private int code;
     private final String title;

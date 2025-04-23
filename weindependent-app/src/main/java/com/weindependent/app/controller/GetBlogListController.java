@@ -7,12 +7,15 @@ import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.enums.CategoryEnum;
+import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.SavedCountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Tag(name = "博客文章 Article List 获取")
 @RestController
 @RequestMapping("/api")
@@ -135,7 +139,7 @@ public class GetBlogListController {
         BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
         if (articleQry == null){
             // 抛出业务异常，让 GlobalExceptionResolver 自动包装
-            throw new ResponseException(1, "文章不存在");
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
         }
         return articleQry; // ⚠️ 直接返回业务数据，不包装
     }
