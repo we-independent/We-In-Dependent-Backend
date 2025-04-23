@@ -3,6 +3,7 @@ package com.weindependent.app.database.mapper.weindependent;
 import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
+import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -42,4 +43,9 @@ public interface BlogArticleListMapper {
     List<BlogCommentDO> selectCommentsByArticleId(@Param("articleId") Integer articleId);
     List<String> selectTagsByArticleId(@Param("articleId") Integer articleId);
     String selectBannerImageUrlById(@Param("imgId") Integer imgId);
+    List<BlogArticleCardQry> getArticlesByCategoryOrTagsExcludeSelf(
+        @Param("categoryId") Integer categoryId,
+        @Param("tagIdList") List<Integer> tagIdList,
+        @Param("excludeArticleId") Integer excludeArticleId
+    );
 }

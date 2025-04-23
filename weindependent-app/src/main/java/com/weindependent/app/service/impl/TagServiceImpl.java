@@ -24,4 +24,9 @@ public class TagServiceImpl implements TagService{
     public List<TagDO> getTagsByCategory(String category) {
         return tagMapper.getTagsByCategoryName(category);
     }
+    
+    //Hurely add for related article
+    public List<TagDO> getTagsByArticleId(Integer articleId){
+        return tagMapper.getTagsByArticleId(articleId);
+    }
 }

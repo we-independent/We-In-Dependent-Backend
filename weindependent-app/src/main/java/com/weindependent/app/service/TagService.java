@@ -8,4 +8,7 @@ public interface TagService {
     List<TagDO> getAllTags();
     List<TagDO> getTagsByCategory(String category);
     
+    //Hurely add for related article
+    List<TagDO> getTagsByArticleId(Integer articleId);
+    
 }

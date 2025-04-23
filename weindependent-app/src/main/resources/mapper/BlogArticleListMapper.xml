@@ -62,6 +62,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT file_path FROM blog_image WHERE id = #{imgId}
     </select>
 
-
+    <select id="getArticlesByCategoryOrTagsExcludeSelf"
+            resultType="com.weindependent.app.dto.BlogArticleCardQry"
+            parameterType="map">
+        SELECT 
+            a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            'We Independent' AS author,
+            i.file_path AS imageUrl,
+            NULL AS readingTime,
+            NULL AS editorsPick,
+            (SELECT COUNT(*) FROM save_list_article WHERE article_id = a.id) AS savedCount
+        FROM blog_article a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        WHERE a.is_deleted = 0
+        AND a.article_status = 'published'
+        AND a.id != #{excludeArticleId}
+        AND (
+                a.category_id = #{categoryId}
+                <if test="tagIdList != null and tagIdList.size > 0">
+                OR a.id IN (
+                    SELECT article_id FROM tag_article_relation
+                    WHERE is_deleted = 0
+                        AND tag_id IN
+                        <foreach collection="tagIdList" item="tagId" open="(" separator="," close=")">
+                            #{tagId}
+                        </foreach>
+                )
+                </if>
+        )
+        ORDER BY a.update_time DESC
+        LIMIT 10
+    </select>
 
 </mapper>
