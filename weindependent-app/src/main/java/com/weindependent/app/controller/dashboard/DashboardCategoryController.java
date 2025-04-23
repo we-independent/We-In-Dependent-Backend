@@ -1,5 +1,7 @@
 package com.weindependent.app.controller.dashboard;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.CategoryDO;
@@ -7,15 +9,11 @@ import com.weindependent.app.dto.CategoryQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.weindependent.app.service.ICategoryService;
+
+import java.util.List;
 
 
 /**
@@ -27,8 +25,7 @@ import com.weindependent.app.service.ICategoryService;
 @Tag(name = "分类管理")
 @RestController
 @RequestMapping("api/dashboard/category")
-public class DashboardCategoryController
-{
+public class DashboardCategoryController {
     private final ICategoryService categoryService;
 
     public DashboardCategoryController(ICategoryService categoryService) {
@@ -39,20 +36,33 @@ public class DashboardCategoryController
      * 查询分类列表
      */
     @SignatureAuth
+    @SaCheckRole("admin")
     @Operation(summary = "查询分类列表")
     @PostMapping("/list")
-    public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry)
-    {
+    public PageInfo<CategoryDO> list(@RequestBody CategoryQry categoryQry) {
         return categoryService.selectCategoryListPage(categoryQry);
+    }
+
+    /**
+     * 查询所有分类
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询分类列表")
+    @GetMapping("/all")
+    public List<CategoryDO> list() {
+
+        return categoryService.selectAllCategory();
     }
 
     /**
      * 获取分类详细信息
      */
     @SignatureAuth
+    @SaCheckRole("admin")
     @Operation(summary = "查询分类详细信息")
-    public  CategoryDO getInfo(@PathVariable("id") Integer id)
-    {
+    @GetMapping("/{id}")
+    public CategoryDO getInfo(@PathVariable("id") Integer id) {
         return categoryService.selectCategoryById(id);
     }
 
@@ -60,12 +70,13 @@ public class DashboardCategoryController
      * 新增分类
      */
     @SignatureAuth
+    @SaCheckRole("admin")
     @Operation(summary = "新增分类")
     @PostMapping
-    public boolean add(@RequestBody CategoryDO category)
-    {
-        category.setCreateUserId(1);
-        category.setUpdateUserId(1);
+    public boolean add(@RequestBody CategoryDO category) {
+        int userId = StpUtil.getLoginIdAsInt();
+        category.setCreateUserId(userId);
+        category.setUpdateUserId(userId);
         return categoryService.insertCategory(category) > 0;
     }
 
@@ -73,10 +84,12 @@ public class DashboardCategoryController
      * 修改分类
      */
     @SignatureAuth
+    @SaCheckRole("admin")
     @Operation(summary = "修改分类")
     @PutMapping
-    public boolean edit(@RequestBody CategoryDO category)
-    {
+    public boolean edit(@RequestBody CategoryDO category) {
+        int userId = StpUtil.getLoginIdAsInt();
+        category.setUpdateUserId(userId);
         return categoryService.updateCategory(category) > 0;
     }
 
@@ -84,10 +97,11 @@ public class DashboardCategoryController
      * 删除分类
      */
     @SignatureAuth
+    @SaCheckRole("admin")
     @Operation(summary = "删除分类")
-	@DeleteMapping("/{ids}")
-    public boolean remove(@PathVariable Integer[] ids)
-    {
-        return categoryService.deleteCategoryByIds(ids) > 0;
+    @DeleteMapping("/{ids}")
+    public boolean remove(@PathVariable Integer[] ids) {
+        int updateUserId = StpUtil.getLoginIdAsInt();
+        return categoryService.deleteCategoryByIds(ids, updateUserId) > 0;
     }
 }

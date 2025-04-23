@@ -17,6 +17,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.weindependent.app.enums.MineTypeOnGoogleDriveEnum;
 import com.weindependent.app.service.FileService;
+import com.weindependent.app.vo.UploadPdfVO;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,12 @@ public class FileServiceImpl implements FileService {
 
     @Value("${google.drive.folder.blog-id}")
     private String blogFolderId;
+
+    @Value("${google.drive.folder.blog-banner-id}")
+    private String blogBannerFolderId;
+
+    @Value("${google.drive.folder.blog-pdf}")
+    private String blogPdfFolderId;
 
     @Value("${file.upload.tmp-folder}")
     private String tmpFolder;
@@ -121,6 +128,50 @@ public class FileServiceImpl implements FileService {
 
     }
 
+    // Hurley add for pdf upload to google drive
+    @Override
+    public UploadPdfVO uploadPdfFile(java.io.File tempFile, String fileName) {
+        try {
+            NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            InputStream configFileStream = FileServiceImpl.class.getClassLoader().getResourceAsStream("secret/google-drive-config.json");
+            Drive drive = new Drive.Builder(httpTransport, new GsonFactory(), fromServiceAccount(configFileStream))
+                    .setApplicationName(appName)
+                    .build();
+            
+            String pdffolderId = getFolderId("blog-pdf");
+            File fileMetadata = new File();
+            fileMetadata.setName(fileName);
+            fileMetadata.setParents(Collections.singletonList(pdffolderId));
+
+            FileContent mediaContent = new FileContent("application/pdf", tempFile);
+            File uploadedFile = drive.files().create(fileMetadata, mediaContent)
+                .setFields("id, name")
+                .execute();
+            
+            UploadPdfVO vo = new UploadPdfVO();
+            vo.setFileName(fileName);
+            vo.setFileId(uploadedFile.getId());
+            log.info("🚀 uploadedFile.getId() = {}", uploadedFile.getId());
+            vo.setFilePath("https://drive.usercontent.google.com/uc?id=" + uploadedFile.getId() + "&export=download");
+
+            return vo;
+        } catch (Exception e) {
+            throw new RuntimeException("上传 PDF 到 Google Drive 失败：" + e.getMessage(), e);
+        }
+
+        // try (FileInputStream fis = new FileInputStream(tempFile)) {
+        //     MultipartFile multipartFile = new MockMultipartFile(
+        //             fileName,
+        //             fileName,
+        //             "application/pdf",
+        //             fis
+        //     );
+        //     return this.uploadFile(multipartFile, category);
+        // } catch (IOException e) {
+        //     throw new RuntimeException("PDF文件上传失败:" + e.getMessage(), e);
+        // }
+    }
+
     @Override
     public boolean deleteFile(String filePath) {
         try {
@@ -151,6 +202,10 @@ public class FileServiceImpl implements FileService {
     private String getFolderId(String category) {
         if (category.equals("blog")) {
             return blogFolderId;
+        } else if (category.equals("blog-banner")) {
+            return blogBannerFolderId;
+        }else if (category.equals("blog-pdf")) { //在google drive创建这个文件夹
+            return blogPdfFolderId; 
         }
         return parentFolderId;
     }
