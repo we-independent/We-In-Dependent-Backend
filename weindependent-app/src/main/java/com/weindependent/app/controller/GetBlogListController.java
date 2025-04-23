@@ -7,20 +7,25 @@ import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.enums.CategoryEnum;
+import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.SavedCountService;
+import com.weindependent.app.utils.PageInfoUtil;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Tag(name = "博客文章 Article List 获取")
 @RestController
 @RequestMapping("/api")
@@ -29,7 +34,6 @@ public class GetBlogListController {
     @Autowired
     private IBlogArticleListService blogArticleListService;
     
-    @Autowired
     private final BlogArticleListMapper blogArticleMapper;
     public GetBlogListController(BlogArticleListMapper blogArticleMapper) {
         this.blogArticleMapper = blogArticleMapper;
@@ -52,11 +56,7 @@ public class GetBlogListController {
         PageInfo<BlogArticleListDO> pageInfo = blogArticleListService.selectBlogArticleList(query);
 
         if (pageInfo.getList() == null || pageInfo.getList().isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("code", 1001);
-            response.put("msg", "No articles found under this condition");
-            response.put("data", Collections.emptyList());
-            return ResponseEntity.ok(response);
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "No articles found under this condition");
         }
 
         // 获取所有文章ID，批量查询编辑推荐状态和收藏次数
@@ -65,18 +65,18 @@ public class GetBlogListController {
                 .collect(Collectors.toList());
 
         Map<Integer, Boolean> editorsPickMap = editorsPickService.getEditorsPickMapByArticleIds(articleIds);
-        Map<Integer, Integer> tempMap;
+        Map<Integer, Integer> savedCountMap;
         try {
-            tempMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
+            savedCountMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
         } catch (Exception e) {
-            tempMap = new HashMap<>();
-            for (Integer id : articleIds) {
-                tempMap.put(id, 0);
-            }
+            log.warn("获取收藏数失败，使用默认值 0", e);
+            savedCountMap = articleIds.stream().collect(Collectors.toMap(id -> id, id -> 0));
         }
-        final Map<Integer, Integer> finalSavedCountMap = tempMap;
-        System.out.println("当前页面文章 ID: " + articleIds);
-        System.out.println("收藏数 map: " + tempMap);
+
+        final Map<Integer, Integer> finalSavedCountMap = savedCountMap;
+        log.info("当前页面文章 ID: " + articleIds);
+        log.info("收藏数 map: " + savedCountMap);
+
         // 将 DO 转换为前端 BlogCard DTO
         List<BlogArticleCardQry> resultList = pageInfo.getList().stream().map(article -> {
             BlogArticleCardQry dto = new BlogArticleCardQry();
@@ -100,33 +100,24 @@ public class GetBlogListController {
         }).collect(Collectors.toList());
 
         // 构造分页返回数据
-        Map<String, Object> dataWrapper = new HashMap<>();
-        dataWrapper.put("list", resultList);
-        dataWrapper.put("pageNum", pageInfo.getPageNum());
-        dataWrapper.put("pageSize", pageInfo.getPageSize());
-        dataWrapper.put("total", pageInfo.getTotal());
-        dataWrapper.put("pages", pageInfo.getPages());
+        // Map<String, Object> dataWrapper = new HashMap<>();
+        // dataWrapper.put("list", resultList);
+        // dataWrapper.put("pageNum", pageInfo.getPageNum());
+        // dataWrapper.put("pageSize", pageInfo.getPageSize());
+        // dataWrapper.put("total", pageInfo.getTotal());
+        // dataWrapper.put("pages", pageInfo.getPages());
 
         Map<String, Object> response = new HashMap<>();
         response.put("code", 0);
         response.put("msg", "success");
-        response.put("data", dataWrapper);
+        response.put("data", PageInfoUtil.wrapPageData(resultList, pageInfo));
         return ResponseEntity.ok(response);
     }
 
 
     @Operation(summary = "获取单独博客文章, by id from blogcard when click title")
     @GetMapping("/article/{id}")
-    // public ResponseEntity<?> getSingleArticle(    @PathVariable("id") Integer id,
-    // @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-    // @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize){
-    //     // 获取文章详细信息
-    //     BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
-    //     if (articleQry == null){
-    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
-    //     }
-    //     return ResponseEntity.ok(articleQry);
-    // }
+
     public BlogArticleSinglePageQry getSingleArticle(
         @PathVariable("id") Integer id,
         @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
@@ -135,9 +126,9 @@ public class GetBlogListController {
         BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
         if (articleQry == null){
             // 抛出业务异常，让 GlobalExceptionResolver 自动包装
-            throw new ResponseException(1, "文章不存在");
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
         }
-        return articleQry; // ⚠️ 直接返回业务数据，不包装
+        return articleQry; // 直接返回业务数据，不包装
     }
 
 }
