@@ -1,5 +1,7 @@
 package com.weindependent.app.enums;
 
+import com.weindependent.app.exception.ResponseException;
+
 public enum CategoryEnum {
     VISA("1", "Visa & Policy"),
     LIVING("2", "US Living Guide"),
@@ -29,7 +31,7 @@ public enum CategoryEnum {
                 return c.name;
             }
         }
-        return COMMUNITY.name;
+        return "Unknown Category";
     }
     
     public static String getCodeByName(String name) {
@@ -38,6 +40,6 @@ public enum CategoryEnum {
                 return c.code;
             }
         }
-        return COMMUNITY.code; // 默认返回 COMMUNITY 的 code
+        return "-1";
     }
 }

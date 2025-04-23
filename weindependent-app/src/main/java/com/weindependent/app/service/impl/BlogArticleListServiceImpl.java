@@ -13,6 +13,7 @@ import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.dto.BlogCommentQry;
+import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IBlogArticleListService;
@@ -30,6 +31,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
     // private EditorPickService editorsPickService;
     // @Autowired
     // private SavedCountService savedCountService;
+
     
 
     public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleListMapper) {
@@ -67,6 +69,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         return new PageInfo<>(list);
     }
 
+
     // Related Article card
     @Override
     public List<BlogArticleCardQry> getArticlesByCategoryOrTagsExcludeSelf(Integer categoryId, List<Integer> tagIdList,
@@ -93,12 +96,15 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                 }
                 int readingMinutes = Math.min(30, Math.max(1, (int) Math.ceil(wordCount / 200.0)));
                 item.setReadingTime(readingMinutes + " min read");
-            
+                String categoryName = CategoryEnum.getNameByCode(String.valueOf(article.getCategoryId()));
+                item.setCategoryName(categoryName);
                 item.setArticleUrl("/article/" + item.getId());
             });
             log.info("相关文章 candidates 查询结果：{}", list);
             return list;
         }
+
+
 
 
     // Single Blog Page
