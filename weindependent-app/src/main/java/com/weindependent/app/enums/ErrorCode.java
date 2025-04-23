@@ -15,8 +15,8 @@ public enum ErrorCode {
     BLOG_NOT_EXIST(-4, "Blog does not exist"),
     USERNAME_PASSWORD_ERROR(401, "Invalid username or password"),
     UNAUTHORIZED_ACCESS(403, "You are not allowed to access this resource."),
-    RELATED_ARTICLE_FETCH_FAILED(201, "Fail to Get Related Articles");
-
+    RELATED_ARTICLE_FETCH_FAILED(201, "Fail to Get Related Articles"),
+    FONT_NOT_EXIST(-5, "Font not exist");
 
     private int code;
     private final String title;
