@@ -1,7 +1,6 @@
 package com.weindependent.app.convertor;
 
 import com.weindependent.app.database.dataobject.EventDO;
-import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.vo.EventVO;
 import com.weindependent.app.vo.UserVO;
 import org.springframework.beans.BeanUtils;
@@ -15,15 +14,6 @@ public class EventConverter {
         BeanUtils.copyProperties(eventDO,eventVO);
         eventVO.setSpeaker(speaker);
         return eventVO;
-    }
-
-    public static EventDO toEventDO(EventQry eventQry, Integer id, Integer createUserId, Integer updateUserId) {
-        EventDO eventDO = new EventDO();
-        BeanUtils.copyProperties(eventQry,eventDO);
-        eventDO.setId(id);
-        eventDO.setCreateUserId(createUserId);
-        eventDO.setUpdateUserId(updateUserId);
-        return eventDO;
     }
     
 }

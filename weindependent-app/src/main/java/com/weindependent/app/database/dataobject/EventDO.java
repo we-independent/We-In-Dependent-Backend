@@ -11,10 +11,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDO {
-    private Integer id;
+    private Long id;
     private String title;
     private String summary;
-    private String content;
     private LocalDateTime eventTime;
     private String location;
     private Integer speakerUserId;

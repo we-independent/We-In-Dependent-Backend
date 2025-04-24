@@ -6,10 +6,24 @@
     <resultMap id="RecentEventVOMap" type="com.weindependent.app.vo.RecentEventVO">
         <result property="id" column="id"/>
         <result property="title" column="title"/>
-        <result property="summary" column="summary"/>
+        <result property="description" column="description"/>
         <result property="eventStartTime" column="event_start_time"/>
         <result property="bannerUrl" column="file_path"/>
     </resultMap>
+    <select id="getRecentEvents" resultMap="RecentEventVOMap">
+        SELECT e.id, e.title, e.description, e.event_start_time, f.file_path
+        FROM event e
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE e.is_deleted = 0
+        ORDER BY e.event_start_time DESC
+            LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <insert id="createEvent" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO event (title, description, content, event_start_time, location, speaker_user_id, banner_id)
+        VALUES (#{title}, #{description}, #{content}, #{eventStartTime}, #{location}, #{speakerUserId}, #{bannerId})
+    </insert>
+
     <resultMap id="EventVOMap" type="com.weindependent.app.vo.EventVO">
         <result property="id" column="id"/>
         <result property="title" column="title"/>
@@ -22,16 +36,8 @@
             <result property="realName" column="speaker_name"/>
         </association>
     </resultMap>
-    <select id="getRecent" resultMap="RecentEventVOMap">
-        SELECT e.id, e.title, e.summary, e.event_start_time, f.file_path
-        FROM event e
-                 LEFT JOIN event_image f ON e.banner_id = f.id
-        WHERE e.is_deleted = 0
-        ORDER BY e.event_start_time DESC
-            LIMIT #{size} OFFSET #{offset}
-    </select>
 
-    <select id="getById" parameterType="String" resultMap="EventVOMap">
+    <select id="getEventById" parameterType="String" resultMap="EventVOMap">
         SELECT
             e.id,
             e.title,
@@ -48,4 +54,18 @@
         WHERE e.id = #{id} AND e.is_deleted = 0
     </select>
 
+    <update id="deleteEvent" parameterType="int">
+        UPDATE event SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <update id="updateEvent" parameterType="com.weindependent.app.vo.EventVO">
+        UPDATE event
+        SET title = #{title},
+            description = #{description},
+            event_start_time = #{eventStartTime},
+            location = #{location},
+            speaker_user_id = #{speakerUserId},
+            banner_id = #{bannerId}
+        WHERE id = #{id}
+    </update>
 </mapper>

@@ -6,7 +6,7 @@ import lombok.Data;
 public class RecentEventVO {
     private Long id;
     private String title;
-    private String summary;
+    private String description;
     private String eventStartTime;
     private String bannerUrl;
 }

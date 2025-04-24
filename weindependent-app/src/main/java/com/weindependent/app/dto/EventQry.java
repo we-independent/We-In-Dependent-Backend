@@ -2,30 +2,20 @@ package com.weindependent.app.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
 public class EventQry {
-    @NotBlank(message = "title is mandatory")
+    @NotNull
     private String title;
-
-    @NotBlank(message = "summary is mandatory")
+    @NotNull
     private String summary;
-
-    @NotBlank(message = "content is mandatory")
-    private String content;
-
-    @NotNull(message = "eventTime is mandatory")
+    @NotNull
     private LocalDateTime eventTime;
-
-    @NotBlank(message = "location is mandatory")
+    @NotNull
     private String location;
-
-    @NotNull(message = "speakerUserId is mandatory")
     private Integer speakerUserId;
-
-    @NotNull(message = "bannerId is mandatory")
+    @NotNull
     private Integer bannerId;
 }
