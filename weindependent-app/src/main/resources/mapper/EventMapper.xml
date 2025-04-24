@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.mapper.EventMapper">
+    <resultMap id="RecentEventVOMap" type="com.weindependent.app.vo.RecentEventVO">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="eventStartTime" column="event_start_time"/>
+        <result property="bannerUrl" column="file_path"/>
+    </resultMap>
+    <select id="getRecentEvents" resultMap="RecentEventVOMap">
+        SELECT e.id, e.title, e.description, e.event_start_time, f.file_path
+        FROM event e
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE e.is_deleted = 0
+        ORDER BY e.event_start_time DESC
+            LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <insert id="createEvent" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO event (title, description, content, event_start_time, location, speaker_user_id, banner_id)
+        VALUES (#{title}, #{description}, #{content}, #{eventStartTime}, #{location}, #{speakerUserId}, #{bannerId})
+    </insert>
+
+    <resultMap id="EventVOMap" type="com.weindependent.app.vo.EventVO">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="eventStartTime" column="event_start_time"/>
+        <result property="location" column="location"/>
+        <result property="bannerUrl" column="banner_url"/>
+        <association property="speaker" javaType="com.weindependent.app.vo.UserVO">
+            <result property="account" column="speaker_account"/>
+            <result property="realName" column="speaker_name"/>
+        </association>
+    </resultMap>
+
+    <select id="getEventById" parameterType="String" resultMap="EventVOMap">
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_start_time,
+            e.location,
+            e.banner_id,
+            u.account AS speaker_account,
+            u.real_name AS speaker_name,
+            f.file_path AS banner_url
+        FROM event e
+        LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
+        LEFT JOIN file f ON e.banner_id = f.id
+        WHERE e.id = #{id} AND e.is_deleted = 0
+    </select>
+
+    <update id="deleteEvent" parameterType="int">
+        UPDATE event SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <update id="updateEvent" parameterType="com.weindependent.app.vo.EventVO">
+        UPDATE event
+        SET title = #{title},
+            description = #{description},
+            event_start_time = #{eventStartTime},
+            location = #{location},
+            speaker_user_id = #{speakerUserId},
+            banner_id = #{bannerId}
+        WHERE id = #{id}
+    </update>
+</mapper>
