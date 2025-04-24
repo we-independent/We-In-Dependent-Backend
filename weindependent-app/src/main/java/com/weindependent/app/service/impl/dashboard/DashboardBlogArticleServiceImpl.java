@@ -10,6 +10,8 @@ import com.weindependent.app.database.dataobject.TagArticleRelationDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagArticleRelationMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.utils.CommonUtil;
+import com.weindependent.app.vo.BlogArticleEditVO;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.pagehelper.PageHelper;
@@ -62,7 +64,6 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         this.blogArticleMapper = dashboardBlogArticleMapper;
     }
 
-
     /**
      * 查询博客文章
      *
@@ -72,6 +73,21 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public BlogArticleDO selectBlogArticleById(Integer id) {
         return blogArticleMapper.selectBlogArticleById(id);
+    }
+
+    /**
+     * 为博客编辑页面查询博客文章
+     *
+     * @param id 博客文章主键
+     * @return 博客文章
+     */
+    @Override
+    public BlogArticleEditVO selectBlogArticleByIdForEdit(Integer id){
+        BlogArticleEditVO blogArticleEditVO =  blogArticleMapper.selectBlogArticleEditVOById(id);
+        blogArticleEditVO.setBannerImgUrl(CommonUtil.convertToImgSrc(blogArticleEditVO.getBannerImgUrl(),200));
+        List<Integer> tagIdList = dashboardTagArticleRelationMapper.getTagIdListByArticleId(id);
+        blogArticleEditVO.setTagIdList(tagIdList);
+        return blogArticleEditVO;
     }
 
     /**
