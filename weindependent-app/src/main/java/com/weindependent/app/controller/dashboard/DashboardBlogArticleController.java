@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.dto.BlogArticleAddQry;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.FileUploadQry;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -62,11 +63,9 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客文章")
     @PostMapping
-    public boolean add(@RequestBody BlogArticleDO blogArticle) {
+    public boolean add(@RequestBody BlogArticleAddQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
-        blogArticle.setCreateUserId(userId);
-        blogArticle.setUpdateUserId(userId);
-        return blogArticleService.insertBlogArticle(blogArticle) > 0;
+        return blogArticleService.insertBlogArticle(blogArticle,userId) > 0;
     }
 
     /**
@@ -87,10 +86,10 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章")
     @PutMapping
-    public boolean edit(@RequestBody BlogArticleDO blogArticle) {
+    public boolean edit(@RequestBody BlogArticleAddQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
-        blogArticle.setUpdateUserId(userId);
-        return blogArticleService.updateBlogArticle(blogArticle) > 0;
+
+        return blogArticleService.updateBlogArticle(blogArticle, userId) > 0;
     }
 
     /**
