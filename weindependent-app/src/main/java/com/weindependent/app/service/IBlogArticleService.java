@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.dto.BlogArticleAddQry;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.FileUploadQry;
@@ -41,7 +42,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-    int insertBlogArticle(BlogArticleDO blogArticle);
+    int insertBlogArticle(BlogArticleAddQry blogArticle, Integer userId);
 
     /**
      * 新增博客图片
@@ -57,7 +58,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-    int updateBlogArticle(BlogArticleDO blogArticle);
+     int updateBlogArticle(BlogArticleAddQry blogArticle, Integer userId);
 
     /**
      * 批量删除博客文章

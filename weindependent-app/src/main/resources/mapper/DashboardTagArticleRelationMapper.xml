@@ -22,14 +22,6 @@
           and article_id = #{articleId}
     </select>
 
-    <select id="getTagIdListByArticleId" resultType="java.lang.Integer">
-        SELECT tag.id
-        FROM tag_article_relation left join tag on tag_article_relation.tag_id = tag.id
-        WHERE tag_article_relation.article_id = #{articleId}
-          AND tag.is_deleted = 0
-          AND tag_article_relation.is_deleted = 0
-    </select>
-
     <insert id="insertTagArticleRelation" parameterType="TagArticleRelationDO" useGeneratedKeys="true" keyProperty="id">
         insert into tag_article_relation
         <trim prefix="(" suffix=")" suffixOverrides=",">
