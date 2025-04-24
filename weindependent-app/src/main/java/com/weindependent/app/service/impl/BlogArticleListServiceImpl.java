@@ -86,9 +86,11 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             log.info("Running related article query: categoryId={}, articleId={}, tagIdList={}",
                     categoryId, articleId, tagIdList);
             List<BlogArticleCardQry> list = blogArticleListMapper.getArticlesByCategoryOrTagsExcludeSelf(categoryId, tagIdList, articleId);
-            //跳转single page
+            //获取readingtime，获取Categoryname，获取跳转single page，获取comments
             list.forEach(item -> {
                 BlogArticleListDO article = blogArticleListMapper.selectBlogArticleById(item.getId());
+
+                // 计算阅读时长
                 String content = article != null ? article.getContent() : null;
                 int wordCount = 0;
                 if (content != null && !content.isEmpty()) {
@@ -96,9 +98,27 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                 }
                 int readingMinutes = Math.min(30, Math.max(1, (int) Math.ceil(wordCount / 200.0)));
                 item.setReadingTime(readingMinutes + " min read");
+
+                // 设置分类名称
                 String categoryName = CategoryEnum.getNameByCode(String.valueOf(article.getCategoryId()));
                 item.setCategoryName(categoryName);
+
+                // 设置跳转链接
                 item.setArticleUrl("/article/" + item.getId());
+
+                // 查询并设置评论
+                List<BlogCommentDO> commentDOs = blogArticleListMapper.selectCommentsByArticleId(item.getId());
+                List<BlogCommentQry> commentVOs = commentDOs.stream().map(c -> {
+                    BlogCommentQry commentVO = new BlogCommentQry();
+                    commentVO.setId(c.getId());
+                    commentVO.setCreateUserId(c.getCreateUserId());
+                    commentVO.setParentCommentId(c.getParentCommentId());
+                    commentVO.setCommentAuthorUserId(c.getCommentAuthorUserId());
+                    commentVO.setContent(c.getContent());
+                    commentVO.setCreateTime(c.getCreateTime());
+                    return commentVO;
+                    }).collect(Collectors.toList());
+                item.setComments(commentVOs);
             });
             log.info("相关文章 candidates 查询结果：{}", list);
             return list;
