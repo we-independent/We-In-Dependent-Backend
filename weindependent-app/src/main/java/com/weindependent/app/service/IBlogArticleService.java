@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogImageDO;
 import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.vo.BlogArticleEditVO;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,14 @@ public interface IBlogArticleService {
      * @return 博客文章
      */
     BlogArticleDO selectBlogArticleById(Integer id);
+
+    /**
+     * 查询博客文章
+     *
+     * @param id 博客文章主键
+     * @return 博客文章
+     */
+    BlogArticleEditVO selectBlogArticleByIdForEdit(Integer id);
 
     /**
      * 查询博客文章列表

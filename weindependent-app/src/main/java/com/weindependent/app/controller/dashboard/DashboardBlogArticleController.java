@@ -8,6 +8,7 @@ import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogImageDO;
 import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.vo.BlogArticleEditVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -52,8 +53,8 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章详细信息")
     @GetMapping(value = "/{id}")
-    public BlogArticleDO getInfo(@PathVariable("id") Integer id) {
-        return blogArticleService.selectBlogArticleById(id);
+    public BlogArticleEditVO getInfo(@PathVariable("id") Integer id) {
+        return blogArticleService.selectBlogArticleByIdForEdit(id);
     }
 
     /**
