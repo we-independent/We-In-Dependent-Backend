@@ -134,7 +134,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         BlogArticleListDO article = blogArticleListMapper.selectBlogArticleById(id);
         if (article == null) {
             log.warn("未找到文章，ID: {}", id);
-            throw new RuntimeException("文章不存在");
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(),"文章不存在");
         }
         BlogArticleSinglePageQry qry = new BlogArticleSinglePageQry();
         qry.setId(article.getId());
