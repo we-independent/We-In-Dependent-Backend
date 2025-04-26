@@ -5,6 +5,7 @@ import com.weindependent.app.database.dataobject.BlogPdfDownloadLogDO;
 import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfDownloadLogMapper;
+import com.weindependent.app.dto.FileUploadQry;
 import com.weindependent.app.service.FileService;
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -81,7 +82,6 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
             }
         }
         log.info("是否已存在：{}", existing != null);
-        log.info("📄 pdfBytes 是否为null: {}, 长度为: {}", (pdfBytes == null), (pdfBytes != null ? pdfBytes.length : 0));
 
         //3.当达到阈值，将生成的pdf上传到Google drive中
         if (downloadCount >= 5 && pdfBytes != null && pdfBytes.length > 0) {
@@ -89,6 +89,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 // 生成临时文件
                 String fileName = "WeIndependent_blog_" + blogId + ".pdf";
                 Date generationTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+
                 MultipartFile file = new MockMultipartFile(
                         fileName, // fileName
                         fileName, // originalFilename
@@ -99,21 +100,12 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
 
                 UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, "blog-pdf");
 
-                // log.info("🎯 fileId from UploadPdfVO = {}", uploadedFileVo.getFileKey());
-                // log.info("Google Drive 上传返回链接: {}", uploadedFileVo.getFilePath());
+                log.info("🎯 fileId from UploadPdfVO = {}", uploadedFileVo.getFileId());
+                log.info("Google Drive 上传返回链接: {}", uploadedFileVo.getFilePath());
 
 
-                String viewUrl = uploadedFileVo.getFilePath();
-                log.info("拿到的链接是: {}", viewUrl);
-
-                //上传后，保护 downloadUrl
-                if (viewUrl == null || viewUrl.isEmpty()) {
-                    throw new RuntimeException("Google Drive 上传成功但返回了空链接！");
-                }
-                String fileId = extractDriveFieldId(viewUrl);
-                String downloadUrl = fileId != null ? buildDownloadUrlFromDriveView(fileId) : viewUrl;
-                log.info("🎯 生成最终 downloadUrl: {}", downloadUrl);
-
+                String downloadUrl = uploadedFileVo.getFilePath();
+                log.info("拿到的链接是: {}", downloadUrl);
 
                 // 插入或更新 blog_pdf 表
                 if (existing != null) {
@@ -130,7 +122,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                     newPdf.setUpdateUserId(userId);
                     newPdf.setUpdateTime(now);
                     newPdf.setIsDeleted(0);
-                    blogPdfExportMapper.updateById(newPdf); // 更新而不是插入
+                    blogPdfExportMapper.updateById(newPdf); // ✅更新而不是插入
                 } else {
                     // 执行插入
                     BlogPdfDO newPdf = new BlogPdfDO();
@@ -144,7 +136,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                     newPdf.setUpdateUserId(userId);
                     newPdf.setUpdateTime(now);
                     newPdf.setIsDeleted(0);
-                    blogPdfExportMapper.insertPdf(newPdf); // 插入
+                    blogPdfExportMapper.insertPdf(newPdf); // ✅插入
                 }
                 
                 // 插入或更新 blog_pdf_storage 表
@@ -182,13 +174,14 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
 
     }
 
-    private String buildDownloadUrlFromDriveView(String fileId) {
-        return "https://drive.usercontent.google.com/uc?id=" + fileId + "&export=download";
+    private String buildDownloadUrlFromDriveView(String viewUrl) {
+        String fileId = extractDriveFieldId(viewUrl);
+        return fileId == null ? null : "https://drive.usercontent.google.com/uc?id=" + fileId + "&export=download";
     }
 
     private String extractDriveFieldId(String url){
         // 提取 https://drive.google.com/file/d/FILE_ID/view 的 FILE_ID
-        Pattern pattern = Pattern.compile("file/d/([^/?]+)");
+        Pattern pattern = Pattern.compile("file/d/(.*?)/view");
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
             return matcher.group(1); // group(1) 就是 fileId
@@ -196,4 +189,12 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
         return null;
     }
 
+    // 新增方法：将 PDF 字节写入临时文件
+    private File writePdfToTempFile(byte[] pdfBytes, String fileName) throws IOException {
+        File tempFile = File.createTempFile(fileName, ".pdf");
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(pdfBytes);
+        }
+        return tempFile;
+    }
 }

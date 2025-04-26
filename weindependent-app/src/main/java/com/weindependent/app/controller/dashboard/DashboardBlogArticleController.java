@@ -5,10 +5,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
-import com.weindependent.app.database.dataobject.ImageDO;
-import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.vo.BlogArticleEditVO;
+import com.weindependent.app.dto.FileUploadQry;
+import com.weindependent.app.vo.UploadedFileVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.weindependent.app.service.IBlogArticleService;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 
 /**
@@ -53,8 +54,8 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章详细信息")
     @GetMapping(value = "/{id}")
-    public BlogArticleEditVO getInfo(@PathVariable("id") Integer id) {
-        return blogArticleService.selectBlogArticleByIdForEdit(id);
+    public BlogArticleDO getInfo(@PathVariable("id") Integer id) {
+        return blogArticleService.selectBlogArticleById(id);
     }
 
     /**
@@ -64,9 +65,11 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客文章")
     @PostMapping
-    public boolean add(@RequestBody BlogArticleEditQry blogArticle) {
+    public boolean add(@RequestBody BlogArticleDO blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
-        return blogArticleService.insertBlogArticle(blogArticle,userId) > 0;
+        blogArticle.setCreateUserId(userId);
+        blogArticle.setUpdateUserId(userId);
+        return blogArticleService.insertBlogArticle(blogArticle) > 0;
     }
 
     /**
@@ -76,7 +79,7 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageDO addBlogBanner(@RequestParam("file") MultipartFile file) {
+    public UploadedFileVO addBlogBanner(@RequestParam("file") MultipartFile file) {
         return blogArticleService.insertBlogBanner(file);
     }
 
@@ -87,10 +90,10 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章")
     @PutMapping
-    public boolean edit(@RequestBody BlogArticleEditQry blogArticle) {
+    public boolean edit(@RequestBody BlogArticleDO blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
-
-        return blogArticleService.updateBlogArticle(blogArticle, userId) > 0;
+        blogArticle.setUpdateUserId(userId);
+        return blogArticleService.updateBlogArticle(blogArticle) > 0;
     }
 
     /**

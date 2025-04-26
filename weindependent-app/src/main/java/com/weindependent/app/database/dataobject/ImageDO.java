@@ -5,11 +5,11 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class ImageDO {
+public class BlogImageDO {
     private String id;
     private String category;
     private String fileName;
-    private String fileKey;
+    private String fileId;
     private String fileType;
     private String filePath;
     private Integer isDeleted;
