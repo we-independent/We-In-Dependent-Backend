@@ -125,7 +125,7 @@ public class FileServiceImpl implements FileService {
         log.info("upload FolderId: {} FileId: {}, FileName: {}", parentFolderId, uploadedFile.getId(), uploadedFile.getName());
 
         UploadedFileVO uploadedFileVO = new UploadedFileVO();
-        uploadedFileVO.setFileId(uploadedFile.getId());
+        uploadedFileVO.setFileKey(uploadedFile.getId());
         uploadedFileVO.setFileName(uploadedFile.getName());
         uploadedFileVO.setFilePath(uploadedFile.getWebViewLink());
         fileMetadata.setMimeType(mimeType);
