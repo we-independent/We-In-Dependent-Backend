@@ -8,8 +8,9 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.dto.TagQry;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.utils.PageInfoUtil;
-import com.weindependent.app.vo.TagCategoryVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,14 +57,27 @@ public class DashboardTagServiceImpl implements ITagService {
     }
 
     /**
-     * 新增标签
-     * 标签可以有重复的name字段
+     * 新增标签,
+     * 由于是软删除，首先根据新标签名称搜索数据库，
+     * 1. 如果已有标签，
+     * 1.1 如果已有标签，未被删除 return
+     * 1.2 如果已有标签，被删除，恢复标签 return
+     * 2. 没有搜索到标签，则新增标签
      *
      * @param newTag 标签
      * @return 结果
      */
     @Override
     public int insertTag(TagDO newTag) {
+        TagDO existTag = dashboardTagMapper.selectTagByName(newTag.getName());
+        if (existTag != null) {
+            if (existTag.getIsDeleted()) {
+                dashboardTagMapper.recoverTag(existTag);
+                throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "被删除Tag已经恢复");
+            } else {
+                throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "同名Tag已经存在");
+            }
+        }
         newTag.setCreateTime(LocalDateTime.now());
         return dashboardTagMapper.insertTag(newTag);
     }
@@ -100,14 +114,5 @@ public class DashboardTagServiceImpl implements ITagService {
     @Override
     public int deleteTagById(Integer id) {
         return dashboardTagMapper.deleteTagById(id);
-    }
-
-    /**
-     * 查询所有未删除的标签
-     * @return 返回标签的id、标签的name、标签所属分类的id和标签所属分类的name。如果标签没有所属分类或所属分类已经删除，则TagCategoryVO中的categoryId和categoryName 为 null
-     */
-    @Override
-    public List<TagCategoryVO> selectAllTagList() {
-        return dashboardTagMapper.selectAllTagList();
     }
 }
