@@ -1,10 +1,16 @@
 package com.weindependent.app.service.impl.dashboard;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.weindependent.app.convertor.BlogConverter;
+import com.weindependent.app.database.dataobject.TagArticleRelationDO;
+import com.weindependent.app.database.dataobject.TagDO;
+import com.weindependent.app.database.mapper.dashboard.DashboardTagArticleRelationMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
+import com.weindependent.app.dto.BlogArticleAddQry;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.pagehelper.PageHelper;
@@ -19,6 +25,7 @@ import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.vo.UploadedFileVO;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogArticleService;
@@ -43,9 +50,12 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     private final DashboardBlogArticleMapper blogArticleMapper;
     @Resource
     private DashboardBlogImageMapper blogImageMapper;
-
     @Resource
     private FileService fileService;
+    @Autowired
+    private DashboardTagArticleRelationMapper dashboardTagArticleRelationMapper;
+    @Autowired
+    private DashboardTagMapper dashboardTagMapper;
 
     private final Integer RESIZE_WIDTH = 1729;
     private final Integer RESIZE_HEIGHT = 438;
@@ -89,9 +99,57 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public int insertBlogArticle(BlogArticleDO blogArticle) {
-        blogArticle.setCreateTime(LocalDateTime.now());
-        return blogArticleMapper.insertBlogArticle(blogArticle);
+    public int insertBlogArticle(BlogArticleAddQry blogArticle, Integer userId) {
+        //1. 新增blogArticle信息
+        BlogArticleDO blogArticleDO = new BlogArticleDO();
+        BeanUtils.copyProperties(blogArticle, blogArticleDO);
+        blogArticleDO.setCreateUserId(userId);
+        blogArticleDO.setUpdateUserId(userId);
+        blogArticleDO.setCreateTime(LocalDateTime.now());
+
+        if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
+            throw new RuntimeException("Failed to add Article to database");
+        }
+        int articleId = blogArticleDO.getId();
+
+        // 2 根据tags 新增tag信息:
+        // 2.1 不存在相同tagname，新增
+        // 2.2 存在相同tagname， 如果已经删除，恢复
+        //allTagList，用于创建关系数据
+        List<TagDO> allTagList = new ArrayList<>();
+        for (String s : blogArticle.getTags()) {
+            TagDO tag = dashboardTagMapper.selectTagByName(s);
+            if (tag == null) {
+                tag = new TagDO();
+                tag.setName(s);
+                tag.setCreateUserId(userId);
+                tag.setUpdateUserId(userId);
+                tag.setCreateTime(LocalDateTime.now());
+                if (dashboardTagMapper.insertTag(tag) != 1) {
+                    throw new RuntimeException("Failed to add tag to database, tagName: " + s);
+                }
+            } else if (tag.getIsDeleted()) {
+                tag.setUpdateUserId(userId);
+                if (dashboardTagMapper.recoverTag(tag) != 1) {
+                    throw new RuntimeException("Failed to recover tag in database, tagName: " + s);
+                }
+            }
+            allTagList.add(tag);
+        }
+        // 3 根据allTagList添加 tag article relation：
+        for (TagDO tag : allTagList) {
+            TagArticleRelationDO relation = new TagArticleRelationDO();
+            relation.setArticleId(articleId);
+            relation.setTagId(tag.getId());
+            relation.setCreateUserId(userId);
+            relation.setCreateTime(LocalDateTime.now());
+            relation.setUpdateUserId(userId);
+            if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
+                throw new RuntimeException("Failed to add tag to database, tagName: " + tag.getName());
+            }
+        }
+
+        return 1;
     }
 
     @Override
@@ -128,8 +186,8 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public int updateBlogArticle(BlogArticleDO blogArticle)
-    {
+    public int updateBlogArticle(BlogArticleAddQry blogArticle, Integer userId) {
+
         //Hurely add null exception
         if (blogArticle.getId() == null) {
             throw new IllegalArgumentException("Blog ID can not be null!");
@@ -139,8 +197,64 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
             deleteImgById(oldBlog.getBannerImgId());
         }
-        blogArticle.setUpdateTime(LocalDateTime.now());
-        return blogArticleMapper.updateBlogArticle(blogArticle);
+        BlogArticleDO blogArticleDO = new BlogArticleDO();
+        BeanUtils.copyProperties(blogArticle, blogArticleDO);
+        blogArticleDO.setUpdateUserId(userId);
+        blogArticleDO.setUpdateTime(LocalDateTime.now());
+        blogArticleMapper.updateBlogArticle(blogArticleDO );
+
+        //1. 修改blogArticle信息
+        if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
+            throw new RuntimeException("Failed to add Article to database");
+        }
+
+        // 2 根据tags 新增tag信息:
+        // 2.1 不存在相同tagname，新增
+        // 2.2 存在相同tagname， 如果已经删除，恢复
+        //allTagList，用于创建关系数据
+        List<TagDO> allTagList = new ArrayList<>();
+        for (String s : blogArticle.getTags()) {
+            TagDO tag = dashboardTagMapper.selectTagByName(s);
+            if (tag == null) {
+                tag = new TagDO();
+                tag.setName(s);
+                tag.setCreateUserId(userId);
+                tag.setUpdateUserId(userId);
+                tag.setCreateTime(LocalDateTime.now());
+                if (dashboardTagMapper.insertTag(tag) != 1) {
+                    throw new RuntimeException("Failed to add tag to database, tagName: " + s);
+                }
+            } else if (tag.getIsDeleted()) {
+                tag.setUpdateUserId(userId);
+                if (dashboardTagMapper.recoverTag(tag) != 1) {
+                    throw new RuntimeException("Failed to recover tag in database, tagName: " + s);
+                }
+            }
+            allTagList.add(tag);
+        }
+        // 3. 根据ArticleId删除所有 tag article relation
+        // 4. 根据allTagList重新添加 tag article relation：
+        // 4.1. tag article relation不存在，新增
+        // 4.2. 如果tag article relation已经删除，恢复并且修改updatetime
+        dashboardTagArticleRelationMapper.deleteByArticleId(blogArticle.getId(),userId);
+        for (TagDO tag : allTagList) {
+            TagArticleRelationDO relation = dashboardTagArticleRelationMapper.getRelationByTagIdAndArticleId(tag.getId(), blogArticle.getId());
+            if (relation == null) {
+                relation = new TagArticleRelationDO();
+                relation.setArticleId(blogArticle.getId());
+                relation.setTagId(tag.getId());
+                relation.setCreateUserId(userId);
+                relation.setCreateTime(LocalDateTime.now());
+                relation.setUpdateUserId(userId);
+                if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
+                    throw new RuntimeException("Failed to add tag to database, tagName: " + tag.getName());
+                }
+            } else if (relation.getIsDeleted()) {
+                if (dashboardTagArticleRelationMapper.recoverById(relation.getId(),userId) != 1)
+                    throw new RuntimeException("Failed to recover tag article relation in database, tagName: " + tag.getName());
+            }
+        }
+        return 1;
     }
 
     /**
@@ -154,7 +268,9 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         for (Integer id : ids) {
             BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
             deleteImgById(blog.getBannerImgId());
+            dashboardTagArticleRelationMapper.deleteByArticleId(id, updateUserId);
         }
+
         return blogArticleMapper.deleteBlogArticleByIds(ids, updateUserId);
     }
 
