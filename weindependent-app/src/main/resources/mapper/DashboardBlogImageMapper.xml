@@ -15,6 +15,9 @@
           <if test="fileType!=null and fileType!=''">
               AND file_type = #{fileType}
           </if>
+          <if test="fileId!=null and fileId!=''">
+              AND file_id = #{fileId}
+          </if>
           <if test="filePath!=null and filePath!=''">
               AND file_path = #{filePath}
           </if>
@@ -34,8 +37,8 @@
     </select>
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.BlogImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO blog_image (category, file_name, file_type, file_path)
-        VALUES (#{category}, #{fileName}, #{fileType}, #{filePath})
+        INSERT INTO blog_image (category, file_name,file_id, file_type, file_path)
+        VALUES (#{category}, #{fileName},#{fileId}, #{fileType}, #{filePath})
     </insert>
 
     <update id="update" parameterType="com.weindependent.app.database.dataobject.BlogImageDO">
@@ -44,6 +47,7 @@
             <if test="category != null">category = #{category},</if>
             <if test="fileName != null">file_name = #{fileName},</if>
             <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="fileId != null">file_id = #{fileId},</if>
             <if test="filePath != null">file_path = #{filePath},</if>
             <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>

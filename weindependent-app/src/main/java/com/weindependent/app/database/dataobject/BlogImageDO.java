@@ -6,9 +6,10 @@ import java.time.LocalDateTime;
 
 @Data
 public class BlogImageDO {
-    private Integer id;
+    private String id;
     private String category;
     private String fileName;
+    private String fileId;
     private String fileType;
     private String filePath;
     private Integer isDeleted;
