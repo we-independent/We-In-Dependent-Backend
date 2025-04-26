@@ -8,6 +8,8 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.dto.TagQry;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.utils.PageInfoUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +73,9 @@ public class DashboardTagServiceImpl implements ITagService {
         if (existTag != null) {
             if (existTag.getIsDeleted()) {
                 dashboardTagMapper.recoverTag(existTag);
-                return 0;
+                throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "被删除Tag已经恢复");
             } else {
-                return 0;
+                throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "同名Tag已经存在");
             }
         }
         newTag.setCreateTime(LocalDateTime.now());
