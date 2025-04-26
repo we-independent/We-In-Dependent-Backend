@@ -77,7 +77,7 @@
         set is_deleted = 1,
         update_user_id = #{updateUserId}
         where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
