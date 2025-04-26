@@ -153,7 +153,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     }
 
     @Override
-    public UploadedFileVO insertBlogBanner(MultipartFile file) {
+    public BlogImageDO insertBlogBanner(MultipartFile file) {
         // Resize image first
         MultipartFile resizedFile;
         try {
@@ -169,14 +169,14 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         BlogImageDO blogImageDO = new BlogImageDO();
         blogImageDO.setCategory("blog-banner");
         blogImageDO.setFileName(uploadedFileVO.getFileName());
-        blogImageDO.setFileId(uploadedFileVO.getFileId());
+        blogImageDO.setFileKey(uploadedFileVO.getFileKey());
         blogImageDO.setFileType(resizedFile.getContentType());
         blogImageDO.setFilePath(uploadedFileVO.getFilePath());
         int affectedRows = blogImageMapper.insert(blogImageDO);
         if (affectedRows != 1) {
             throw new RuntimeException("Failed to add image to database");
         }
-        return uploadedFileVO;
+        return blogImageDO;
     }
 
     /**
@@ -331,7 +331,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         blogImageMapper.update(image);
 
         if (image.getFilePath() != null) {
-            fileService.deleteFile(image.getFileId());
+            fileService.deleteFile(image.getFileKey());
         }
         else {
             log.warn("图片文件路径为空,无法执行文件删除操作,imageId={}", imgId);
