@@ -1,29 +1,29 @@
 package com.weindependent.app.service.impl.dashboard;
 
-import cn.dev33.satoken.stp.StpUtil;
-import com.weindependent.app.convertor.EventConverter;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper;
-import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.FileService;
 import com.weindependent.app.service.IDashboardEventService;
+import com.weindependent.app.service.IEventService;
 import com.weindependent.app.utils.ImageResizeUtil;
+import com.weindependent.app.vo.EventVO;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.Resource;
 
 @Service
 @Slf4j
 public class DashboardEventServiceImpl implements IDashboardEventService {
 
+    @Resource
+    private EventMapper eventMapper;
     @Autowired
     private FileService fileService;
 
@@ -31,35 +31,32 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     private final Integer RESIZE_HEIGHT = 438;
     @Autowired
     private DashboardEventImageMapper dashboardEventImageMapper;
-    @Autowired
-    private DashboardEventMapper dashboardEventMapper;
-    @Autowired
-    private EventMapper eventMapper;
 
 
     @Override
-    public EventDO create(EventQry eventQry) {
-        int userId = StpUtil.getLoginIdAsInt();
-        EventDO eventDO = EventConverter.toEventDO(eventQry,null,userId,null);
-        if (dashboardEventMapper.create(eventDO) == 0) {
+    public void createEvent(EventQry eventQry) {
+        if (eventMapper.createEvent(eventQry) == 0) {
             throw new RuntimeException("Failed to create event");
         }
-        return eventDO;
     }
 
     @Override
-    public void delete(List<Integer> ids) {
-         int userId = StpUtil.getLoginIdAsInt();
-         dashboardEventImageMapper.delete(ids);
-         dashboardEventMapper.delete(ids,userId);
+    public void deleteEvent(Integer id) {
+        int rows = eventMapper.deleteEventBanner(id);
+        if (rows == 0) {
+            log.warn("No events banner found");
+        }
+        rows = eventMapper.deleteEvent(id);
+        if (rows == 0) {
+            throw new RuntimeException("Delete failed");
+        }
     }
 
     @Override
-    public void update(Integer id, EventQry event) {
-        int userId = StpUtil.getLoginIdAsInt();
-        EventDO eventDO = EventConverter.toEventDO(event,id,null,userId);
-        dashboardEventMapper.update(eventDO);
-
+    public void updateEvent(EventDO event) {
+        if (eventMapper.updateEvent(event) == 0) {
+            throw new RuntimeException("Failed to update event with id: " + event.getId());
+        }
     }
 
     @Override

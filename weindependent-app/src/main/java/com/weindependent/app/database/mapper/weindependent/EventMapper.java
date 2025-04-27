@@ -13,7 +13,8 @@ import java.util.List;
 public interface EventMapper {
     List<RecentEventVO> getRecentEvents(@Param("size") int size, @Param("offset") int offset);
     int createEvent(EventQry eventQry);
-    EventVO getEventById(@Param("id") String id);
-    int deleteEvent(@Param("id") Integer id);
+    EventVO getEventById(Integer id);
+    int deleteEvent(Integer id);
     int updateEvent(EventDO eventDO);
+    int deleteEventBanner(Integer id);;
 }

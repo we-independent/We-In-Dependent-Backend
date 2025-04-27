@@ -15,6 +15,7 @@ public class EventQry {
     private LocalDateTime eventTime;
     @NotNull
     private String location;
+    @NotNull
     private Integer speakerUserId;
     @NotNull
     private Integer bannerId;
