@@ -136,6 +136,7 @@ public class GetBlogListController {
         BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
         if (articleQry == null){
             // 抛出业务异常，让 GlobalExceptionResolver 自动包装
+            // log.info(String.valueOf(ErrorCode.BLOG_NOT_EXIST.getCode()));
             throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
         }
         return articleQry; // 直接返回业务数据，不包装
