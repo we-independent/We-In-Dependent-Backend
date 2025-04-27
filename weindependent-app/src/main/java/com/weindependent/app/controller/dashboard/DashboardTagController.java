@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.dto.TagQry;
+import com.weindependent.app.vo.TagCategoryVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weindependent.app.service.ITagService;
+
+import java.util.List;
 
 
 /**
@@ -44,6 +47,17 @@ public class DashboardTagController {
     public PageInfo<TagDO> list(@RequestBody TagQry tagQry) {
         
         return tagService.selectTagList(tagQry);
+    }
+    /**
+     * 查询所有未删除的标签
+     * 返回标签的id、标签的name、标签所属分类的id和标签所属分类的name。如果标签没有所属分类或所属分类已经删除，则TagCategoryVO中的categoryId和categoryName 为 null
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询标签列表")
+    @GetMapping("/all")
+    public List<TagCategoryVO> list() {
+        return tagService.selectAllTagList();
     }
 
     /**

@@ -11,6 +11,7 @@ import com.weindependent.app.dto.TagQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.utils.PageInfoUtil;
+import com.weindependent.app.vo.TagCategoryVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -114,5 +115,14 @@ public class DashboardTagServiceImpl implements ITagService {
     @Override
     public int deleteTagById(Integer id) {
         return dashboardTagMapper.deleteTagById(id);
+    }
+
+    /**
+     * 查询所有未删除的标签
+     * @return 返回标签的id、标签的name、标签所属分类的id和标签所属分类的name。如果标签没有所属分类或所属分类已经删除，则TagCategoryVO中的categoryId和categoryName 为 null
+     */
+    @Override
+    public List<TagCategoryVO> selectAllTagList() {
+        return dashboardTagMapper.selectAllTagList();
     }
 }
