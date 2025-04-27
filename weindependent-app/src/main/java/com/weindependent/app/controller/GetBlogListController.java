@@ -155,7 +155,7 @@ public class GetBlogListController {
             if (candidates == null || candidates.isEmpty()) {
                 return Collections.emptyList();
             }
-            Collections.shuffle(candidates);
+            // Collections.shuffle(candidates);
             return candidates.stream().limit(limit).collect(Collectors.toList());
 
         }catch (Exception e) {
