@@ -5,11 +5,9 @@ import java.util.List;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogImageDO;
-import com.weindependent.app.dto.BlogArticleAddQry;
+import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.dto.FileUploadQry;
-import com.weindependent.app.vo.UploadedFileVO;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -42,7 +40,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-    int insertBlogArticle(BlogArticleAddQry blogArticle, Integer userId);
+    int insertBlogArticle(BlogArticleEditQry blogArticle, Integer userId);
 
     /**
      * 新增博客图片
@@ -58,7 +56,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-     int updateBlogArticle(BlogArticleAddQry blogArticle, Integer userId);
+     int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId);
 
     /**
      * 批量删除博客文章
