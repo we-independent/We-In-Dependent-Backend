@@ -1,17 +1,15 @@
 package com.weindependent.app.service.impl.dashboard;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.weindependent.app.convertor.BlogConverter;
 
 import com.weindependent.app.database.dataobject.TagArticleRelationDO;
-import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagArticleRelationMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
-import com.weindependent.app.dto.BlogArticleAddQry;
+import com.weindependent.app.dto.BlogArticleEditQry;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.pagehelper.PageHelper;
@@ -55,8 +53,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     private FileService fileService;
     @Autowired
     private DashboardTagArticleRelationMapper dashboardTagArticleRelationMapper;
-    @Autowired
-    private DashboardTagMapper dashboardTagMapper;
+
 
     private final Integer RESIZE_WIDTH = 1729;
     private final Integer RESIZE_HEIGHT = 438;
@@ -100,7 +97,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public int insertBlogArticle(BlogArticleAddQry blogArticle, Integer userId) {
+    public int insertBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
         //1. 新增blogArticle信息
         BlogArticleDO blogArticleDO = new BlogArticleDO();
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
@@ -111,42 +108,18 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
             throw new RuntimeException("Failed to add Article to database");
         }
-        int articleId = blogArticleDO.getId();
 
-        // 2 根据tags 新增tag信息:
-        // 2.1 不存在相同tagname，新增
-        // 2.2 存在相同tagname， 如果已经删除，恢复
-        //allTagList，用于创建关系数据
-        List<TagDO> allTagList = new ArrayList<>();
-        for (String s : blogArticle.getTags()) {
-            TagDO tag = dashboardTagMapper.selectTagByName(s);
-            if (tag == null) {
-                tag = new TagDO();
-                tag.setName(s);
-                tag.setCreateUserId(userId);
-                tag.setUpdateUserId(userId);
-                tag.setCreateTime(LocalDateTime.now());
-                if (dashboardTagMapper.insertTag(tag) != 1) {
-                    throw new RuntimeException("Failed to add tag to database, tagName: " + s);
-                }
-            } else if (tag.getIsDeleted()) {
-                tag.setUpdateUserId(userId);
-                if (dashboardTagMapper.recoverTag(tag) != 1) {
-                    throw new RuntimeException("Failed to recover tag in database, tagName: " + s);
-                }
-            }
-            allTagList.add(tag);
-        }
-        // 3 根据allTagList添加 tag article relation：
-        for (TagDO tag : allTagList) {
+        //2. 新增 tag article relation
+        for ( Integer tagId : blogArticle.getTags()) {
             TagArticleRelationDO relation = new TagArticleRelationDO();
-            relation.setArticleId(articleId);
-            relation.setTagId(tag.getId());
+            relation.setArticleId(blogArticleDO.getId());
+            relation.setTagId(tagId);
             relation.setCreateUserId(userId);
             relation.setCreateTime(LocalDateTime.now());
             relation.setUpdateUserId(userId);
+
             if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
-                throw new RuntimeException("Failed to add tag to database, tagName: " + tag.getName());
+                throw new RuntimeException("Failed to add TagArticleRelation to database, tagName: " + tagId + ", articleId: " + blogArticleDO.getId());
             }
         }
 
@@ -187,7 +160,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public int updateBlogArticle(BlogArticleAddQry blogArticle, Integer userId) {
+    public int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
 
         //Hurely add null exception
         if (blogArticle.getId() == null) {
@@ -198,61 +171,37 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
             deleteImgById(oldBlog.getBannerImgId());
         }
+
+        //1. 修改blogArticle信息
         BlogArticleDO blogArticleDO = new BlogArticleDO();
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
         blogArticleDO.setUpdateUserId(userId);
         blogArticleDO.setUpdateTime(LocalDateTime.now());
-        blogArticleMapper.updateBlogArticle(blogArticleDO );
 
-        //1. 修改blogArticle信息
-        if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
-            throw new RuntimeException("Failed to add Article to database");
+        if (blogArticleMapper.updateBlogArticle(blogArticleDO ) != 1) {
+            throw new RuntimeException("Failed to update Article to database");
         }
 
-        // 2 根据tags 新增tag信息:
-        // 2.1 不存在相同tagname，新增
-        // 2.2 存在相同tagname， 如果已经删除，恢复
-        //allTagList，用于创建关系数据
-        List<TagDO> allTagList = new ArrayList<>();
-        for (String s : blogArticle.getTags()) {
-            TagDO tag = dashboardTagMapper.selectTagByName(s);
-            if (tag == null) {
-                tag = new TagDO();
-                tag.setName(s);
-                tag.setCreateUserId(userId);
-                tag.setUpdateUserId(userId);
-                tag.setCreateTime(LocalDateTime.now());
-                if (dashboardTagMapper.insertTag(tag) != 1) {
-                    throw new RuntimeException("Failed to add tag to database, tagName: " + s);
-                }
-            } else if (tag.getIsDeleted()) {
-                tag.setUpdateUserId(userId);
-                if (dashboardTagMapper.recoverTag(tag) != 1) {
-                    throw new RuntimeException("Failed to recover tag in database, tagName: " + s);
-                }
-            }
-            allTagList.add(tag);
-        }
-        // 3. 根据ArticleId删除所有 tag article relation
-        // 4. 根据allTagList重新添加 tag article relation：
-        // 4.1. tag article relation不存在，新增
-        // 4.2. 如果tag article relation已经删除，恢复并且修改updatetime
-        dashboardTagArticleRelationMapper.deleteByArticleId(blogArticle.getId(),userId);
-        for (TagDO tag : allTagList) {
-            TagArticleRelationDO relation = dashboardTagArticleRelationMapper.getRelationByTagIdAndArticleId(tag.getId(), blogArticle.getId());
+        //2. 删除现有TagArticleRelation
+        dashboardTagArticleRelationMapper.deleteByArticleId(blogArticle.getId(), userId);
+
+        //3. 新增 tag article relation
+        for (Integer tagId : blogArticle.getTags()) {
+            TagArticleRelationDO relation = dashboardTagArticleRelationMapper.getRelationByTagIdAndArticleId(tagId, blogArticle.getId());
             if (relation == null) {
                 relation = new TagArticleRelationDO();
                 relation.setArticleId(blogArticle.getId());
-                relation.setTagId(tag.getId());
+                relation.setTagId(tagId);
                 relation.setCreateUserId(userId);
                 relation.setCreateTime(LocalDateTime.now());
                 relation.setUpdateUserId(userId);
+                relation.setUpdateTime(LocalDateTime.now());
                 if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
-                    throw new RuntimeException("Failed to add tag to database, tagName: " + tag.getName());
+                    throw new RuntimeException("Failed to add  tag article relation to database, tagId: " + tagId  + ", articleId: " + blogArticle.getId());
                 }
             } else if (relation.getIsDeleted()) {
                 if (dashboardTagArticleRelationMapper.recoverById(relation.getId(),userId) != 1)
-                    throw new RuntimeException("Failed to recover tag article relation in database, tagName: " + tag.getName());
+                    throw new RuntimeException("Failed to recover tag article relation in database, tagId: " + tagId + ", articleId: " + blogArticle.getId());
             }
         }
         return 1;
