@@ -109,14 +109,6 @@ public class GetBlogListController {
             return dto;
         }).collect(Collectors.toList());
 
-        // 构造分页返回数据
-        // Map<String, Object> dataWrapper = new HashMap<>();
-        // dataWrapper.put("list", resultList);
-        // dataWrapper.put("pageNum", pageInfo.getPageNum());
-        // dataWrapper.put("pageSize", pageInfo.getPageSize());
-        // dataWrapper.put("total", pageInfo.getTotal());
-        // dataWrapper.put("pages", pageInfo.getPages());
-
         Map<String, Object> response = new HashMap<>();
         response.put("code", 0);
         response.put("msg", "success");

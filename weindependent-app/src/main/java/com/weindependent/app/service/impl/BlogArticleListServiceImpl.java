@@ -16,6 +16,7 @@ import com.weindependent.app.dto.BlogCommentQry;
 import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,8 +28,8 @@ import org.springframework.stereotype.Service;
 public class BlogArticleListServiceImpl implements IBlogArticleListService {
     @Autowired
     private final BlogArticleListMapper blogArticleListMapper;
-    // @Autowired
-    // private EditorPickService editorsPickService;
+    @Autowired
+    private EditorPickService editorsPickService;
     // @Autowired
     // private SavedCountService savedCountService;
 
@@ -86,8 +87,26 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             log.info("Running related article query: categoryId={}, articleId={}, tagIdList={}",
                     categoryId, articleId, tagIdList);
             List<BlogArticleCardQry> list = blogArticleListMapper.getArticlesByCategoryOrTagsExcludeSelf(categoryId, tagIdList, articleId);
-            //获取readingtime，获取Categoryname，获取跳转single page，获取comments
-            list.forEach(item -> {
+            List<BlogArticleCardQry> relatedArticles = list.stream()
+                                                           .limit(3)
+                                                           .collect(Collectors.toList());
+            
+            //容错，如果related文章不足用mostsaved补全
+            int needed = 3 - relatedArticles.size();
+            if(needed > 0){
+                log.info("Related Articles数量不足3篇,当前已有{}篇，缺少{}篇,用most saved文章补全", relatedArticles.size(), needed);
+                List<Integer> excludeIds = relatedArticles.stream()
+                                                        .map(BlogArticleCardQry::getId)
+                                                        .collect(Collectors.toList());
+                excludeIds.add((int) articleId); 
+                // 从 Most Saved 补充
+                List<BlogArticleCardQry> mostSavedArticles = blogArticleListMapper.getMostSavedArticlesExcludeList(excludeIds, needed);
+
+                relatedArticles.addAll(mostSavedArticles);
+            }
+            
+            //获取readingtime，获取Categoryname，获取editpick
+            relatedArticles.forEach(item -> {
                 BlogArticleListDO article = blogArticleListMapper.selectBlogArticleById(item.getId());
 
                 // 计算阅读时长
@@ -103,25 +122,26 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                 String categoryName = CategoryEnum.getNameByCode(String.valueOf(article.getCategoryId()));
                 item.setCategoryName(categoryName);
 
-                // 设置跳转链接
-                item.setArticleUrl("/article/" + item.getId());
+                // 是否编辑推荐
+                boolean isEditorsPick = editorsPickService.isEditorPickArticle(item.getId());
+                item.setEditorsPick(isEditorsPick);
 
-                // 查询并设置评论
-                List<BlogCommentDO> commentDOs = blogArticleListMapper.selectCommentsByArticleId(item.getId());
-                List<BlogCommentQry> commentVOs = commentDOs.stream().map(c -> {
-                    BlogCommentQry commentVO = new BlogCommentQry();
-                    commentVO.setId(c.getId());
-                    commentVO.setCreateUserId(c.getCreateUserId());
-                    commentVO.setParentCommentId(c.getParentCommentId());
-                    commentVO.setCommentAuthorUserId(c.getCommentAuthorUserId());
-                    commentVO.setContent(c.getContent());
-                    commentVO.setCreateTime(c.getCreateTime());
-                    return commentVO;
-                    }).collect(Collectors.toList());
-                item.setComments(commentVOs);
+                // // 查询并设置评论
+                // List<BlogCommentDO> commentDOs = blogArticleListMapper.selectCommentsByArticleId(item.getId());
+                // List<BlogCommentQry> commentVOs = commentDOs.stream().map(c -> {
+                //     BlogCommentQry commentVO = new BlogCommentQry();
+                //     commentVO.setId(c.getId());
+                //     commentVO.setCreateUserId(c.getCreateUserId());
+                //     commentVO.setParentCommentId(c.getParentCommentId());
+                //     commentVO.setCommentAuthorUserId(c.getCommentAuthorUserId());
+                //     commentVO.setContent(c.getContent());
+                //     commentVO.setCreateTime(c.getCreateTime());
+                //     return commentVO;
+                //     }).collect(Collectors.toList());
+                // item.setComments(commentVOs);
             });
-            log.info("相关文章 candidates 查询结果：{}", list);
-            return list;
+            log.info("相关文章 candidates 查询结果：{}", relatedArticles);
+            return relatedArticles;
         }
 
 
