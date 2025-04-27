@@ -33,7 +33,7 @@
         ON DUPLICATE KEY UPDATE last_login_time = NOW();
     </insert>
 
-    <select id="findById" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+    <select id="findById" parameterType="java.lang.Long" resultType="com.weindependent.app.database.dataobject.UserDO">
         SELECT * FROM t_system_user WHERE id = #{id}
     </select>
 
@@ -44,4 +44,5 @@
     <select id="existsById" parameterType="int" resultType="boolean">
         SELECT COUNT(*) &gt; 0 FROM t_system_user WHERE id = #{id}
     </select>
+
 </mapper>

@@ -5,6 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.UserConvertor;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.vo.UserVO;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.BeanUtils;
 
 public class PageInfoUtil {
@@ -41,5 +46,16 @@ public class PageInfoUtil {
         }
         //通过page对象以及pageInfoE中的导航页码数创建要返回的pageInfo<D>对象
         return new PageInfo<D>(page, pageInfoE.getNavigatePages());
+    }
+
+    //Add for bloglist page success response
+    public static Map<String, Object> wrapPageData(List<?> list, PageInfo<?> pageInfo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("list", list);
+        map.put("pageNum", pageInfo.getPageNum());
+        map.put("pageSize", pageInfo.getPageSize());
+        map.put("total", pageInfo.getTotal());
+        map.put("pages", pageInfo.getPages());
+        return map;
     }
 }

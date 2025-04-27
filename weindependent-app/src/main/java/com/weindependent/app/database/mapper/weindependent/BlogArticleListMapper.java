@@ -2,64 +2,50 @@ package com.weindependent.app.database.mapper.weindependent;
 
 import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
-
+import com.weindependent.app.database.dataobject.BlogCommentDO;
+import com.weindependent.app.dto.BlogArticleCardQry;
+import com.weindependent.app.dto.BlogArticleListQry;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
- * 博客文章ListMapper接口
+ * 博客文章List Mapper 接口
  * 
+ * 定义数据库查询方法
  * 
  * @author Hurely
  *    2025-04-5
  */
 @Mapper
-public interface BlogArticleListMapper 
-{
+public interface BlogArticleListMapper {
+
     /**
-     * 查询博客文章
+     * 根据查询参数查询博客文章列表
+     * 
+     * @param query 查询参数对象
+     * @return 博客文章 DO 集合
+     */
+    List<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry query);
+
+    /**
+     * 根据主键查询单个博客文章
      * 
      * @param id 博客文章主键
-     * @return 博客文章
+     * @return 单个博客文章 DO 对象
      */
-    public BlogArticleListDO selectBlogArticleById(Integer id);
-
-    /**
-     * 查询博客文章列表
+    BlogArticleListDO selectBlogArticleById(Integer id);
+        /**
+     * 根据主键查询单个博客文章comments,tag,bannerimage url
      * 
-     * @param blogArticleListDO 博客文章
-     * @return 博客文章集合
+     * @param articleId 博客文章主键
+     * @return 单个博客文章评论 DO 对象
      */
-    public List<BlogArticleListDO> selectBlogArticleList(BlogArticleListDO blogArticleDO);
-
-    // /**
-    //  * 新增博客文章
-    //  * 
-    //  * @param blogArticle 博客文章
-    //  * @return 结果
-    //  */
-    // public int insertBlogArticle(BlogArticleListDO blogArticle);
-
-    // /**
-    //  * 修改博客文章
-    //  * 
-    //  * @param blogArticle 博客文章
-    //  * @return 结果
-    //  */
-    // public int updateBlogArticle(BlogArticleListDO blogArticle);
-
-    // /**
-    //  * 删除博客文章 , 软删除
-    //  * 
-    //  * @param id 博客文章主键
-    //  * @return 结果
-    //  */
-    // public int deleteBlogArticleById(Integer id);
-
-    // /**
-    //  * 批量删除博客文章 , 软删除
-    //  * 
-    //  * @param ids 需要删除的数据主键集合
-    //  * @return 结果
-    //  */
-    // public int deleteBlogArticleByIds(Integer[] ids);
+    List<BlogCommentDO> selectCommentsByArticleId(@Param("articleId") Integer articleId);
+    List<String> selectTagsByArticleId(@Param("articleId") Integer articleId);
+    String selectBannerImageUrlById(@Param("imgId") Integer imgId);
+    List<BlogArticleCardQry> getArticlesByCategoryOrTagsExcludeSelf(
+        @Param("categoryId") Integer categoryId,
+        @Param("tagIdList") List<Integer> tagIdList,
+        @Param("excludeArticleId") Integer excludeArticleId
+    );
 }

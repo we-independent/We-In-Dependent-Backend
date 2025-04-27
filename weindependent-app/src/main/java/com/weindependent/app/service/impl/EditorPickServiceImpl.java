@@ -1,6 +1,7 @@
 package com.weindependent.app.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,7 +50,11 @@ public class EditorPickServiceImpl implements EditorPickService {
         for (EditorPickDO pick : picks) {
             BlogArticleDO article = articleMap.get(pick.getArticleId());
             if (article != null) {
-                result.add(EditorPickConvertor.toVO(pick, article));
+                // 调用已有的 Convertor
+                EditorPickVO vo = EditorPickConvertor.toVO(pick, article);
+                // 明确设置 heroType
+                vo.setHeroType("Editor's Pick");
+                result.add(vo);
             }
         }
 
@@ -97,4 +102,16 @@ public class EditorPickServiceImpl implements EditorPickService {
     public boolean isEditorPickArticle(Integer articleId) {
         return editorPickMapper.isEditorPick(articleId);
     }
+
+    //Hurely 新增
+    @Override
+    public Map<Integer, Boolean> getEditorsPickMapByArticleIds(List<Integer> articleIds) {
+        Map<Integer, Boolean> result = new HashMap<>();
+        // 遍历每个 Long 类型的 articleId，将其转换为 Integer 调用 isEditorPickArticle 方法
+        for (Integer articleId : articleIds) {
+            result.put(articleId, isEditorPickArticle(articleId.intValue()));
+        }
+        return result;
+    }
+
 }
