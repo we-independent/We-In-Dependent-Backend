@@ -5,9 +5,9 @@ import com.weindependent.app.database.dataobject.BlogPdfDownloadLogDO;
 import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfDownloadLogMapper;
+import com.weindependent.app.dto.FileUploadQry;
 import com.weindependent.app.service.FileService;
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
-import com.weindependent.app.vo.UploadPdfVO;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,21 +90,21 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 String fileName = "WeIndependent_blog_" + blogId + ".pdf";
                 Date generationTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 
-                // 不适用multipartfile的方法，用writePdfToTempFile的方法
-                // 先写入临时文件
-                File tempFile = writePdfToTempFile(pdfBytes, "WeIndependent_blog_" + blogId); // ✅
+                MultipartFile file = new MockMultipartFile(
+                        fileName, // fileName
+                        fileName, // originalFilename
+                        "application/pdf",
+                        pdfBytes  // file content
+                );
 
-                // MultipartFile multipartFile = new MockMultipartFile(
-                //         fileName, fileName, "application/pdf", pdfBytes
-                // );
-                // 使用 File 进行上传
-                UploadPdfVO uploaded = fileService.uploadPdfFile(tempFile, fileName);
-                log.info("🎯 fileId from UploadPdfVO = {}", uploaded.getFileId());
-                log.info("Google Drive 上传返回链接: {}", uploaded.getFilePath());
 
-                // 上传后删除临时文件
-                tempFile.delete(); 
-                String downloadUrl = uploaded.getFilePath();    
+                UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, "blog-pdf");
+
+                log.info("🎯 fileId from UploadPdfVO = {}", uploadedFileVo.getFileId());
+                log.info("Google Drive 上传返回链接: {}", uploadedFileVo.getFilePath());
+
+
+                String downloadUrl = uploadedFileVo.getFilePath();
                 log.info("拿到的链接是: {}", downloadUrl);
 
                 // 插入或更新 blog_pdf 表
