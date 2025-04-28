@@ -100,6 +100,11 @@ public class MostSavedServiceImpl implements MostSavedService {
     }
 
     @Override
+    public List<BlogArticleCardQry> getMostSavedArticlesExcludeList(List<Integer> excludeIds, int needed) {
+        return mostSavedMapper.getMostSavedArticlesExcludeList(excludeIds, needed);
+    }
+
+    @Override
     public List<EditorPickVO> getCurrentMostSavedEditorPickVO()  {
         List<EditorPickDO> mostSavedList = mostSavedMapper.findCurrentMostSavedList();
 

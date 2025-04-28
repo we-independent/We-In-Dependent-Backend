@@ -18,6 +18,8 @@ import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
+import com.weindependent.app.service.MostSavedService;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
     // @Autowired
     // private SavedCountService savedCountService;
 
-    
+    @Autowired
+    private MostSavedService mostSavedService;
 
     public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleListMapper) {
         this.blogArticleListMapper = blogArticleListMapper;
@@ -100,7 +103,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                                                         .collect(Collectors.toList());
                 excludeIds.add((int) articleId); 
                 // 从 Most Saved 补充
-                List<BlogArticleCardQry> mostSavedArticles = blogArticleListMapper.getMostSavedArticlesExcludeList(excludeIds, needed);
+                List<BlogArticleCardQry> mostSavedArticles = mostSavedService.getMostSavedArticlesExcludeList(excludeIds, needed);
 
                 relatedArticles.addAll(mostSavedArticles);
             }
