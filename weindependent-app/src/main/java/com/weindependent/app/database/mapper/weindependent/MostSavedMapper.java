@@ -26,6 +26,4 @@ public interface MostSavedMapper {
 
     List<BlogArticleCardQry> findTopSavedBlogs(@Param("topN") int topN);
 
-    List<BlogArticleCardQry> getMostSavedArticlesExcludeList(List<Integer> excludeArticleId, int needed);
-
 }
