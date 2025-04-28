@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class BlogArticleAddQry {
+public class BlogArticleEditQry {
     /** 文章ID */
     private Integer id;
 
@@ -45,5 +45,5 @@ public class BlogArticleAddQry {
     @NotNull
     private Boolean isDeleted;
 
-    private List<String> tags;
+    private List<Integer>  tags;
 }

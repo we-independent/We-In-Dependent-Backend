@@ -110,14 +110,6 @@ public class GetBlogListController {
             return dto;
         }).collect(Collectors.toList());
 
-        // 构造分页返回数据
-        // Map<String, Object> dataWrapper = new HashMap<>();
-        // dataWrapper.put("list", resultList);
-        // dataWrapper.put("pageNum", pageInfo.getPageNum());
-        // dataWrapper.put("pageSize", pageInfo.getPageSize());
-        // dataWrapper.put("total", pageInfo.getTotal());
-        // dataWrapper.put("pages", pageInfo.getPages());
-
         Map<String, Object> response = new HashMap<>();
         response.put("code", 0);
         response.put("msg", "success");
@@ -137,6 +129,7 @@ public class GetBlogListController {
         BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
         if (articleQry == null){
             // 抛出业务异常，让 GlobalExceptionResolver 自动包装
+            // log.info(String.valueOf(ErrorCode.BLOG_NOT_EXIST.getCode()));
             throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
         }
         return articleQry; // 直接返回业务数据，不包装
@@ -163,7 +156,7 @@ public class GetBlogListController {
             if (candidates == null || candidates.isEmpty()) {
                 return Collections.emptyList();
             }
-            Collections.shuffle(candidates);
+            // Collections.shuffle(candidates);
             return candidates.stream().limit(limit).collect(Collectors.toList());
 
         }catch (Exception e) {

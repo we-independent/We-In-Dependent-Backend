@@ -6,10 +6,8 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogImageDO;
-import com.weindependent.app.dto.BlogArticleAddQry;
+import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.dto.FileUploadQry;
-import com.weindependent.app.vo.UploadedFileVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.weindependent.app.service.IBlogArticleService;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
 
 
 /**
@@ -67,7 +63,7 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客文章")
     @PostMapping
-    public boolean add(@RequestBody BlogArticleAddQry blogArticle) {
+    public boolean add(@RequestBody BlogArticleEditQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
         return blogArticleService.insertBlogArticle(blogArticle,userId) > 0;
     }
@@ -90,7 +86,7 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章")
     @PutMapping
-    public boolean edit(@RequestBody BlogArticleAddQry blogArticle) {
+    public boolean edit(@RequestBody BlogArticleEditQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
 
         return blogArticleService.updateBlogArticle(blogArticle, userId) > 0;

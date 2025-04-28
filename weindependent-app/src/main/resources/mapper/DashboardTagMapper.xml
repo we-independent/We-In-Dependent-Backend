@@ -88,7 +88,16 @@
         <include refid="selectTagVo"/>
         where name = #{name}
     </select>
+
     <update id="recoverTag">
         update tag set is_deleted = 0 where id = #{id}
     </update>
+
+    <select id="selectAllTagList" resultType="com.weindependent.app.vo.TagCategoryVO">
+        select tag.id as tagId, tag.name as tagName, c.id as categoryId, c.name as categoryName
+        from tag
+                 left join weindependent.tag_category_relation tcr on tag.id = tcr.tag_id
+                 left join weindependent.category c on tcr.category_id = c.id and c.is_deleted = 0
+        where tag.is_deleted = 0
+    </select>
 </mapper>

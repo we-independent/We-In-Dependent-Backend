@@ -48,4 +48,6 @@ public interface BlogArticleListMapper {
         @Param("tagIdList") List<Integer> tagIdList,
         @Param("excludeArticleId") Integer excludeArticleId
     );
+
+    List<BlogArticleCardQry> getMostSavedArticlesExcludeList(@Param("excludeArticleId") List<Integer> excludeIds, @Param("needed") int needed);
 }
