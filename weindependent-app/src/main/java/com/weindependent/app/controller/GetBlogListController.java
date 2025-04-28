@@ -11,13 +11,10 @@ import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.IBlogArticleService;
-import com.weindependent.app.service.EditorPickService;
-import com.weindependent.app.service.SavedCountService;
-import com.weindependent.app.service.TagService;
+import com.weindependent.app.service.*;
 import com.weindependent.app.utils.PageInfoUtil;
 
+import com.weindependent.app.vo.BlogHomePageHeroVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -47,12 +44,16 @@ public class GetBlogListController {
     
     @Autowired
     private SavedCountService savedCountService;
-    
+
+    @Autowired
+    private MostSavedService mostSavedService;
+
     @Autowired
     private IBlogArticleService blogarticleService;
 
     @Autowired
     private TagService tagService;
+
 
     /**
      * 获取文章列表接口：
@@ -169,6 +170,13 @@ public class GetBlogListController {
             log.error("Fail to Get Related Articles", e);
             throw new ResponseException(ErrorCode.RELATED_ARTICLE_FETCH_FAILED.getCode(), "Fail to Get Related Articles");
         }
+    }
+
+    @Operation(summary = "冷启动推荐接口返回保存数最多的3篇博客")
+    @GetMapping("/articles/coldstart")
+    public ResponseEntity<List<BlogArticleCardQry>> getColdstartRecommendations() {
+        List<BlogArticleCardQry> blogs = mostSavedService.getTopSavedBlogsForColdstart(3);
+        return ResponseEntity.ok(blogs);
     }
 
 }

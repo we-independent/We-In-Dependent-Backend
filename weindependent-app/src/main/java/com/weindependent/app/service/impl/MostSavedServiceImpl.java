@@ -6,11 +6,13 @@ import com.weindependent.app.database.dataobject.EditorPickDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleMapper;
 import com.weindependent.app.database.mapper.weindependent.EditorPickMapper;
 import com.weindependent.app.database.mapper.weindependent.MostSavedMapper;
+import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.MostSavedService;
 import com.weindependent.app.vo.BlogHomePageHeroVO;
 import com.weindependent.app.vo.EditorPickVO;
+import com.weindependent.app.dto.BlogArticleCardQry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -166,4 +168,34 @@ public class MostSavedServiceImpl implements MostSavedService {
         }
         return result;
     }
+
+    @Override
+    public List<BlogArticleCardQry> getTopSavedBlogsForColdstart(int topN) {
+        List<BlogArticleCardQry> blogCards = mostSavedMapper.findTopSavedBlogs(topN);
+
+        if (blogCards == null || blogCards.isEmpty()) {
+            throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "没有查询到Top Saved博客");
+        }
+
+        for (BlogArticleCardQry card : blogCards) {
+            // 1. 计算阅读时长
+            if (card.getContent() != null) {
+                int wordCount = card.getContent().trim().split("\\s+").length;
+                int readingTimeMinutes = Math.min(30, Math.max(1, (int) Math.ceil(wordCount / 200.0)));
+                card.setReadingTime(readingTimeMinutes + " min");
+            } else {
+                card.setReadingTime("1 min");  // 防止null
+            }
+
+            // 2. 设置 articleUrl (href)
+            card.setArticleUrl("/blogs/" + card.getCategoryName().toLowerCase() + "/" + card.getId());
+
+            // 3. 去掉 content，不传给前端
+            card.setContent(null);
+        }
+
+        return blogCards;
+    }
+
+
 }

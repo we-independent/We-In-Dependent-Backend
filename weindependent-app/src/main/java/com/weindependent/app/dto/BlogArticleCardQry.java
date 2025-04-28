@@ -46,5 +46,6 @@ public class BlogArticleCardQry {
     //Blog page
     private String articleUrl;
 
-    
+    private String content;  // 只是为了算阅读时长，返回前端的时候不要返回
+
 }

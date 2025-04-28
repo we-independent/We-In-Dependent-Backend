@@ -86,4 +86,25 @@
           AND tag.is_deleted = 0
           AND tag_article_relation.is_deleted = 0
     </select>
+
+    <select id="findTopSavedBlogs" parameterType="int" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT
+            ba.id AS id,
+            ba.title AS title,
+            ba.update_time AS time,
+        ba.content AS content,
+        bi.file_path AS imageUrl,
+        ba.category_id AS category,
+        c.name AS categoryName,
+        (SELECT COUNT(*) FROM save_list_article sla WHERE sla.article_id = ba.id) AS savedCount,
+        (CASE WHEN ep.id IS NOT NULL THEN true ELSE false END) AS editorsPick
+        FROM blog_article ba
+            LEFT JOIN blog_image bi ON ba.banner_img_id = bi.id
+            LEFT JOIN category c ON ba.category_id = c.id
+            LEFT JOIN editor_picks ep ON ba.id = ep.article_id AND ep.status = 1
+        WHERE ba.is_deleted = 0
+        ORDER BY savedCount DESC
+            LIMIT #{topN}
+    </select>
+
 </mapper>
