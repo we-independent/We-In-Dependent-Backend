@@ -6,10 +6,12 @@ import com.weindependent.app.dto.EventQry;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public interface IDashboardEventService {
-    void createEvent(EventQry eventQry);
-    void deleteEvent(Integer id);
-    void updateEvent(EventDO event);
+    EventDO create(EventQry eventQry);
+    void delete(List<Integer> ids);
+    void update(Integer id, EventQry eventQry);
     ImageDO insertEventBanner(MultipartFile file);
 }
