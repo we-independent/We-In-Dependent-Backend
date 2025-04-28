@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventMapper">
+
+    <insert id="create" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO event (title, summary, content, event_time, location, speaker_user_id, banner_id)
+        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{speakerUserId}, #{bannerId})
+    </insert>
+
+    <select id="getById" parameterType="java.lang.Integer" resultType="com.weindependent.app.database.dataobject.EventDO">
+        SELECT *
+        FROM event
+        WHERE id = #{id}
+    </select>
+
+    <update id="delete" parameterType="java.util.List">
+        UPDATE event e
+        JOIN event_image ei ON e.banner_id = ei.id
+        SET e.is_deleted = 1,
+        ei.is_deleted = 1
+        WHERE e.id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="update" parameterType="com.weindependent.app.vo.EventVO">
+        UPDATE event e
+            LEFT JOIN event_image ei ON e.banner_id = ei.id
+            SET
+                e.title = #{title},
+                e.summary = #{summary},
+                e.content = #{content},
+                e.event_start_time = #{eventStartTime},
+                e.location = #{location},
+                e.speaker_user_id = #{speakerUserId},
+                e.banner_id = #{bannerId},
+                ei.is_deleted = CASE
+                WHEN e.banner_id != #{bannerId} THEN 1
+                ELSE ei.is_deleted
+        END
+        WHERE e.id = #{id}
+    </update>
+
+
+</mapper>

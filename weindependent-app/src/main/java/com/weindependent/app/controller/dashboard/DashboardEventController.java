@@ -1,12 +1,12 @@
 package com.weindependent.app.controller.dashboard;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IDashboardEventService;
-import com.weindependent.app.service.IEventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 @Tag(name = "博客活動管理")
 @RestController
@@ -28,8 +29,9 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @SignatureAuth
     @PostMapping()
-    public void createEvent(@RequestBody @Valid EventQry eventQry)  {
-        IDashboardEventService.createEvent(eventQry);
+    public EventDO create(@Valid @RequestBody EventQry eventQry)  {
+        int userId = StpUtil.getLoginIdAsInt();
+        return IDashboardEventService.create(eventQry);
     }
 
     /**
@@ -39,7 +41,7 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageDO addBlogBanner(@RequestParam("file") MultipartFile file) {
+    public ImageDO createBanner(@RequestParam("file") MultipartFile file) {
         return IDashboardEventService.insertEventBanner(file);
     }
 
@@ -47,15 +49,15 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @SignatureAuth
     @PutMapping()
-    public void updateEvent(@RequestBody @Valid EventDO event){
-        IDashboardEventService.updateEvent(event);
+    public void update(@RequestBody Integer id, @RequestBody @Valid EventQry event){
+        IDashboardEventService.update(id,event);
     }
 
     @Operation(summary = "Delete an event")
     @SaCheckRole("admin")
     @SignatureAuth
     @DeleteMapping("/{id}")
-    public void deleteEvent(@PathVariable @Valid Integer id)  {
-        IDashboardEventService.deleteEvent(id);
+    public void delete(@PathVariable @Valid List<Integer> ids)  {
+        IDashboardEventService.delete(ids);
     }
 }

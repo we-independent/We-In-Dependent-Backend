@@ -1,25 +1,15 @@
 package com.weindependent.app.database.mapper.dashboard;
 
+import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.ImageDO;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+@Mapper
 public interface DashboardEventImageMapper {
-    /**
-     * 查询活動图片
-     *
-     * @param id 活動图片主键
-     * @return 活動图片
-     */
-    public ImageDO findById(Integer id);
+   public int create(EventDO eventDO);
 
-    /**
-     * 查询活動图片列表
-     *
-     * @param image  活動图片
-     * @return 活動图片集合
-     */
-    public List<ImageDO> query(ImageDO image);
 
     /**
      * 新增活動图片
@@ -36,5 +26,7 @@ public interface DashboardEventImageMapper {
      * @return 结果
      */
     public int update(ImageDO image);
+
+    public int delete(List<Integer> ids);
 
 }

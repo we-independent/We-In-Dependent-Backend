@@ -1,8 +1,6 @@
 package com.weindependent.app.service.impl;
 
-import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
-import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.EventVO;
 import com.weindependent.app.vo.RecentEventVO;
@@ -20,18 +18,18 @@ public class EventServiceImpl implements IEventService {
     @Override
     public List<RecentEventVO> getRecentEvents(int page, int size) {
         int offset = (page - 1) * size;
-        List<RecentEventVO> recentEventVOS = eventMapper.getRecentEvents(offset, size);
+        List<RecentEventVO> recentEventVOS = eventMapper.getRecent(offset, size);
         if(recentEventVOS == null ){
             throw new RuntimeException("Failed to find recent events");
         }
-        return eventMapper.getRecentEvents(size, offset);
+        return eventMapper.getRecent(size, offset);
     }
 
 
 
     @Override
     public EventVO getEventById(Integer id) {
-        EventVO eventDO= eventMapper.getEventById(id);
+        EventVO eventDO= eventMapper.getById(id);
         if (eventDO == null) {
             throw new RuntimeException("Failed to get event");
         }
