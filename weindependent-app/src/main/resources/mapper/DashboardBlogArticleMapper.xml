@@ -22,6 +22,22 @@
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+    <resultMap type="com.weindependent.app.vo.BlogArticleEditVO" id="BlogArticleEditVOResult">
+        <result property="id"    column="id"    />
+        <result property="articleSourceType"    column="article_source_type"    />
+        <result property="sourceUrl"    column="source_url"    />
+        <result property="authorId"    column="author_id"    />
+        <result property="bannerImgId"    column="banner_img_id"    />
+        <result property="bannerImgUrl"    column="file_path"    />
+        <result property="summary"    column="summary"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="articleStatus"    column="article_status"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="isDeleted"    column="is_deleted"    />
+
+    </resultMap>
+
     <sql id="selectBlogArticleVo">
         select id, article_source_type, source_url, author_id, banner_img_id, summary, title, content, article_status, category_id, is_deleted, create_user_id, create_time, update_user_id, update_time from blog_article
     </sql>
@@ -162,6 +178,13 @@
 
     <select id="existsById" parameterType="int" resultType="boolean">
         SELECT COUNT(*) &gt; 0 FROM blog_article WHERE id = #{id}
+    </select>
+
+    <select id="selectBlogArticleEditVOById" resultMap="BlogArticleEditVOResult">
+        select a.id, article_source_type, source_url, author_id, banner_img_id, bi.file_path, summary, title, content, article_status, category_id, a.is_deleted
+        from blog_article as a
+        left join blog_image bi on a.banner_img_id = bi.id and bi.is_deleted = 0
+        where a.id = #{id}
     </select>
 
 </mapper>
