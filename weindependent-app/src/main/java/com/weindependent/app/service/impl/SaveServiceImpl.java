@@ -23,7 +23,7 @@ public class SaveServiceImpl implements SaveService{
     @Autowired
     private SaveListService saveListService;
 
-    /*收藏文章 */
+    /* 收藏文章 */
     @Transactional
     public int saveBlog(int userId, Integer listId, int blogId){
         if (!saveMapper.existBlogId(blogId)) {
@@ -39,7 +39,7 @@ public class SaveServiceImpl implements SaveService{
         }
     }
     
-    /*取消收藏*/
+    /* 取消收藏文章 */
     @Transactional
     public int unsaveBlog(int userId, Integer listId, int blogId){
         if (!saveMapper.existBlogId(blogId)) {
@@ -51,6 +51,26 @@ public class SaveServiceImpl implements SaveService{
                 return ErrorCode.UNAUTHORIZED_ACCESS.getCode();
             else return unsaveBlogFromList(listId, blogId);
         }
+    }
+
+    /* 收藏活动 */
+    public int saveEvent(int userId, int eventId){
+        if(!saveMapper.existEventId(eventId)){
+            return ErrorCode.EVENT_NOT_EXIST.getCode();
+        }else if(saveMapper.saveEvent(userId, eventId) <= 0){
+            return ErrorCode.UPDATE_DB_FAILED.getCode();
+        }
+        else return ErrorCode.SUCCESS.getCode();
+    }
+
+    /* 取消活动收藏 */
+    public int unsaveEvent(int userId, int eventId){
+        if(!saveMapper.existEventId(eventId)){
+            return ErrorCode.EVENT_NOT_EXIST.getCode();
+        }else if(saveMapper.unsaveEvent(userId, eventId) <= 0){
+            return ErrorCode.UPDATE_DB_FAILED.getCode();
+        }
+        else return ErrorCode.SUCCESS.getCode();
     }
 
     /* helper 储存文章到默认收藏夹 */

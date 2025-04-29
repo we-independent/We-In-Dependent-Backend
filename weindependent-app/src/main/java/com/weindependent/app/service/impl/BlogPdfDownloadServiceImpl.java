@@ -15,16 +15,16 @@ public class BlogPdfDownloadServiceImpl implements IBlogPdfDownloadService {
     private BlogPdfDownloadLogMapper blogDownloadLogMapper;
 
     @Override
-    public void updateStatistics(Integer blogId, Long userId, LocalDateTime downloadTime) {
+    public void updateStatistics(Long blogId, Long userId, LocalDateTime downloadTime) {
         BlogPdfDownloadLogDO log = new BlogPdfDownloadLogDO();
-        log.setBlogId(blogId);
+        log.setBlogId(blogId.intValue());
         log.setUserId(userId);
         log.setDownloadTime(downloadTime);
         blogDownloadLogMapper.insertLog(log);
     }
 
     @Override
-    public int getDownloadCount(Integer blogId) {
+    public int getDownloadCount(Long blogId) {
         return blogDownloadLogMapper.getDownloadCount(blogId);
     }
 }

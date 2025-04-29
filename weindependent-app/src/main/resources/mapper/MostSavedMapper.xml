@@ -10,6 +10,14 @@
         <result property="categoryId" column="category_id"/>
         <result property="categoryName" column="category_name"/>
         <result property="bannerImageUrl" column="file_path" />
+
+        <result property="createTime" column="create_time" />
+        <result property="createUserId" column="create_user_id" />
+        <result property="updateTime" column="update_time" />
+        <result property="updateUserId" column="update_user_id" />
+
+        <result property="isDeleted" column="is_deleted" />
+
         <collection property="tagVOList" ofType="com.weindependent.app.vo.TagVO" column="article_id" select="selectTagVOList"/>
     </resultMap>
 
@@ -47,14 +55,22 @@
     </select>
 
     <select id="findBlogHomePageHeroVOByIds" resultMap="BlogHomePageHeroVOResult">
-        SELECT blog_article.id AS article_id,
-        title AS article_title,
-        category_id,
-        category.name as category_name,
-        file_path
+        SELECT 
+            blog_article.id AS article_id,
+            blog_article.title AS article_title,
+            blog_article.category_id,
+            category.name AS category_name,
+            blog_image.file_path,
+            
+            blog_article.create_time,
+            blog_article.create_user_id,
+            blog_article.update_time AS update_time,
+            blog_article.update_user_id AS update_user_id,
+            blog_article.is_deleted
+
         FROM blog_article
-        LEFT JOIN category on blog_article.category_id = category.id
-        LEFT JOIN blog_image on blog_article.banner_img_id = blog_image.Id
+        LEFT JOIN category ON blog_article.category_id = category.id
+        LEFT JOIN blog_image ON blog_article.banner_img_id = blog_image.id
         WHERE blog_article.id IN
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
@@ -70,4 +86,58 @@
           AND tag.is_deleted = 0
           AND tag_article_relation.is_deleted = 0
     </select>
+
+    <select id="findTopSavedBlogs" parameterType="int" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT
+            ba.id AS id,
+            ba.title AS title,
+            ba.update_time AS time,
+        ba.content AS content,
+        bi.file_path AS imageUrl,
+        ba.category_id AS category,
+        c.name AS categoryName,
+        (SELECT COUNT(*) FROM save_list_article sla WHERE sla.article_id = ba.id) AS savedCount,
+        (CASE WHEN ep.id IS NOT NULL THEN true ELSE false END) AS editorsPick
+        FROM blog_article ba
+            LEFT JOIN blog_image bi ON ba.banner_img_id = bi.id
+            LEFT JOIN category c ON ba.category_id = c.id
+            LEFT JOIN editor_picks ep ON ba.id = ep.article_id AND ep.status = 1
+        WHERE ba.is_deleted = 0
+        ORDER BY savedCount DESC
+            LIMIT #{topN}
+    </select>
+
+    <select id="getMostSavedArticlesExcludeList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT 
+            a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            "WeIndependent" AS author,
+            i.file_path AS imageUrl,
+            NULL AS readingTime,
+            NULL AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM blog_article a
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        WHERE a.is_deleted = 0
+            AND a.article_status = 'published'
+            AND COALESCE(s.savedCount, 0) > 0
+            AND a.category_id IN ("1","2","3","4","7") 
+        <if test="excludeArticleId != null and excludeArticleId.size() > 0">
+            AND a.id NOT IN
+            <foreach collection="excludeArticleId" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY savedCount DESC, a.update_time DESC 
+        LIMIT #{needed}
+    </select>
+
+
 </mapper>

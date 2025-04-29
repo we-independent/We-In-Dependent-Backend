@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import com.weindependent.app.vo.EditorPickVO;
 
 @Tag(name = "Blog首页Hero区域")
 @RestController
@@ -18,7 +19,13 @@ public class BlogHomePageHeroSectionController {
 
     // 获取Blog首页Hero区域列表
     @GetMapping("/current")
-    public List<BlogHomePageHeroVO> getEditorPickArticles(){
+    public List<BlogHomePageHeroVO> getCurrentHeroArticles(){
         return mostSavedService.getCurrentBlogHomePageHeroVO();
+    }
+
+    // 获取历史 Most Saved 推送记录
+    @GetMapping("/previous")
+    public List<EditorPickVO> getPreviousMostSaved() {
+        return mostSavedService.getPreviousMostSavedEditorPickVO();
     }
 }

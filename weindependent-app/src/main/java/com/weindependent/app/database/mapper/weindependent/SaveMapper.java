@@ -9,11 +9,19 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface SaveMapper {
 
-    /*收藏 */
+    /*收藏文章 */
     int saveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
 
-    /*取消收藏 */
+    /*取消文章收藏 */
     int unsaveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
 
     boolean existBlogId(@Param("blogId") int blogId);
+
+    boolean existEventId(@Param("eventId") int eventId);
+
+    /* 收藏活动 */
+    int saveEvent(@Param("userId") int userId, @Param("eventId") int eventId);
+
+    /* 取消活动收藏 */
+    int unsaveEvent(@Param("userId") int userId, @Param("eventId") int eventId);
 }

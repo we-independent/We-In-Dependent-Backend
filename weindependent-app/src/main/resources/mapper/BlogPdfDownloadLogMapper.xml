@@ -5,12 +5,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogPdfDownloadLogMapper">
     <insert id="insertLog" parameterType="com.weindependent.app.database.dataobject.BlogPdfDownloadLogDO">
         <!-- 目前允许插入同一用户多次下载同一篇文章的记录 -->
-        INSERT INTO blog_pdf_download_logs (blog_id, user_id, download_time)
-        VALUES (#{blogId}, #{userId}, #{downloadTime}) 
+        INSERT INTO blog_pdf_download_logs (blog_id, user_id, download_time, download_url)
+        VALUES (#{blogId}, #{userId}, #{downloadTime}, #{downloadUrl}) 
     </insert>
 
     <!-- 查询下载次数 -->
-    <select id="getDownloadCount" parameterType="int" resultType="int">
+    <select id="getDownloadCount" parameterType="Long" resultType="int">
         SELECT COUNT(1) FROM blog_pdf_download_logs WHERE blog_id = #{blogId}
     </select>
 </mapper>

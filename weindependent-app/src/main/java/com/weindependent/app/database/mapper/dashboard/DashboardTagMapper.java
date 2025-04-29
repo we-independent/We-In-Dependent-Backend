@@ -3,6 +3,7 @@ package com.weindependent.app.database.mapper.dashboard;
 import java.util.List;
 
 import com.weindependent.app.database.dataobject.TagDO;
+import com.weindependent.app.vo.TagCategoryVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -65,4 +66,10 @@ public interface DashboardTagMapper {
     TagDO selectTagByName(String name);
 
     int recoverTag(TagDO existTag);
+
+    /**
+     * 查询所有未删除的标签
+     * @return 返回标签的id、标签的name、标签所属分类的id和标签所属分类的name。如果标签没有所属分类或所属分类已经删除，则TagCategoryVO中的categoryId和categoryName 为 null
+     */
+    List<TagCategoryVO> selectAllTagList();
 }

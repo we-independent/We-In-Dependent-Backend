@@ -2,6 +2,7 @@ package com.weindependent.app.database.mapper.dashboard;
 
 import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.vo.BlogArticleEditVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -80,4 +81,6 @@ public interface DashboardBlogArticleMapper {
     List<BlogArticleDO> searchByExactKeywords(String keyword);
 
     boolean existsById(int id);
+
+    BlogArticleEditVO selectBlogArticleEditVOById(Integer id);
 }

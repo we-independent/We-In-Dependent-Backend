@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.vo.BlogArticleEditVO;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.dto.FileUploadQry;
-import com.weindependent.app.vo.UploadedFileVO;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -26,6 +28,14 @@ public interface IBlogArticleService {
     BlogArticleDO selectBlogArticleById(Integer id);
 
     /**
+     * 查询博客文章
+     *
+     * @param id 博客文章主键
+     * @return 博客文章
+     */
+    BlogArticleEditVO selectBlogArticleByIdForEdit(Integer id);
+
+    /**
      * 查询博客文章列表
      *
      * @param blogArticleQry 博客文章查询模板
@@ -39,7 +49,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-    int insertBlogArticle(BlogArticleDO blogArticle);
+    int insertBlogArticle(BlogArticleEditQry blogArticle, Integer userId);
 
     /**
      * 新增博客图片
@@ -47,7 +57,7 @@ public interface IBlogArticleService {
      * @param fileUploadQry 博客图片
      * @return 结果
      */
-    UploadedFileVO insertBlogBanner(FileUploadQry fileUploadQry);
+    BlogImageDO insertBlogBanner(MultipartFile fileUploadQry);
 
     /**
      * 修改博客文章
@@ -55,7 +65,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-    int updateBlogArticle(BlogArticleDO blogArticle);
+     int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId);
 
     /**
      * 批量删除博客文章
