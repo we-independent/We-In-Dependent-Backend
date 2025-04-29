@@ -3,6 +3,7 @@ import com.weindependent.app.enums.CategoryEnum;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Match 前端 blogcard
@@ -32,9 +33,19 @@ public class BlogArticleCardQry {
     // 收藏次数
     private Integer savedCount;
 
+    private List<BlogCommentQry> comments;
+
     //跳过lombok的set，自己define Category name
     public void setCategory(String category) {
         this.category = category;
         this.categoryName = CategoryEnum.getNameByCode(category);
     }
+    // Blog作者
+    private String author;
+
+    //Blog page
+    private String articleUrl;
+
+    private String content;  // 只是为了算阅读时长，返回前端的时候不要返回
+
 }

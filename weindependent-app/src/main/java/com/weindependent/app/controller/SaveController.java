@@ -18,7 +18,7 @@ import cn.dev33.satoken.stp.StpUtil;
 /**
  * @author Elly
  * 2025-04-17
- * Note: all need to pass token
+ * IMPORTANT NOTE: all need to pass token in header
  */
 @RestController
 @RequestMapping(value = "/api/saves")
@@ -53,6 +53,40 @@ public class SaveController {
     public void unsaveBlog(@PathVariable int blogId, @RequestBody SaveListQry saveBlogQry) {
         int userId = StpUtil.getLoginIdAsInt();
         int resultCode = saveService.unsaveBlog(userId, saveBlogQry.getListId(), blogId);
+        if (resultCode == ErrorCode.SUCCESS.getCode()) return;
+        else if (resultCode == ErrorCode.USER_NOT_EXIST.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.USER_NOT_EXIST.getTitle());
+        }
+        else if (resultCode == ErrorCode.BLOG_NOT_EXIST.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.BLOG_NOT_EXIST.getTitle());
+        }
+        else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
+        }
+    }
+
+    @Operation(summary = "收藏活动")
+    @PostMapping("/events/{eventId}")
+    public void saveEvent(@PathVariable int eventId){
+        int userId = StpUtil.getLoginIdAsInt();
+        int resultCode = saveService.saveEvent(userId, eventId);
+        if (resultCode == ErrorCode.SUCCESS.getCode()) return;
+        else if (resultCode == ErrorCode.USER_NOT_EXIST.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.USER_NOT_EXIST.getTitle());
+        }
+        else if (resultCode == ErrorCode.BLOG_NOT_EXIST.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.BLOG_NOT_EXIST.getTitle());
+        }
+        else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
+        }
+    }
+
+    @Operation(summary = "取消活动收藏")
+    @DeleteMapping("/events/{eventId}")
+    public void unsaveEvent(@PathVariable int eventId){
+        int userId = StpUtil.getLoginIdAsInt();
+        int resultCode = saveService.unsaveEvent(userId, eventId);
         if (resultCode == ErrorCode.SUCCESS.getCode()) return;
         else if (resultCode == ErrorCode.USER_NOT_EXIST.getCode()){
             throw new ResponseException(resultCode, ErrorCode.USER_NOT_EXIST.getTitle());

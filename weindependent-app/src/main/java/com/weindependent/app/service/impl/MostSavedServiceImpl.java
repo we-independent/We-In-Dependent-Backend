@@ -6,11 +6,13 @@ import com.weindependent.app.database.dataobject.EditorPickDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleMapper;
 import com.weindependent.app.database.mapper.weindependent.EditorPickMapper;
 import com.weindependent.app.database.mapper.weindependent.MostSavedMapper;
+import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.MostSavedService;
 import com.weindependent.app.vo.BlogHomePageHeroVO;
 import com.weindependent.app.vo.EditorPickVO;
+import com.weindependent.app.dto.BlogArticleCardQry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.weindependent.app.utils.CommonUtil;
 
 @Service
 public class MostSavedServiceImpl implements MostSavedService {
@@ -58,17 +62,46 @@ public class MostSavedServiceImpl implements MostSavedService {
         List<BlogHomePageHeroVO> editorPickBlogHomePageHeroVO = mostSavedMapper.findBlogHomePageHeroVOByIds(editorPickArticleIdList);
         List<BlogHomePageHeroVO> result = new ArrayList<>();
 
-        for (BlogHomePageHeroVO blogHomePageHeroVO : mostSavedBlogHomePageHeroVO) {
-            blogHomePageHeroVO.setHeroType("Most Saved");
-            result.add(blogHomePageHeroVO);
+        // 拼装 Most Saved 数据，补全字段 + 图片地址处理
+        for (BlogHomePageHeroVO vo : mostSavedBlogHomePageHeroVO) {
+            vo.setHeroType("Most Saved");
+
+            EditorPickDO match = mostSavedList.stream()
+                    .filter(item -> item.getArticleId().equals(vo.getArticleId()))
+                    .findFirst().orElse(null);
+            if (match != null) {
+                vo.setCreateTime(match.getCreateTime());
+                vo.setCreateUserId(match.getCreateUserId());
+            }
+
+            vo.setBannerImageUrl(CommonUtil.convertToImgSrc(vo.getBannerImageUrl(), 400));
+            result.add(vo);
         }
 
-        for (BlogHomePageHeroVO blogHomePageHeroVO : editorPickBlogHomePageHeroVO) {
-            blogHomePageHeroVO.setHeroType("Editor's Pick");
-            result.add(blogHomePageHeroVO);
+        // 拼装 Editor's Pick 数据，补全字段 + 图片地址处理
+        for (BlogHomePageHeroVO vo : editorPickBlogHomePageHeroVO) {
+            vo.setHeroType("Editor's Pick");
+
+            EditorPickDO match = editorPickList.stream()
+                    .filter(item -> item.getArticleId().equals(vo.getArticleId()))
+                    .findFirst().orElse(null);
+            if (match != null) {
+                vo.setCreateTime(match.getCreateTime());
+                vo.setCreateUserId(match.getCreateUserId());
+            }
+
+            vo.setBannerImageUrl(CommonUtil.convertToImgSrc(vo.getBannerImageUrl(), 400));
+            result.add(vo);
+
+            System.out.println(">>> articleId=" + vo.getArticleId() + ", isDeleted=" + vo.getIsDeleted());
         }
 
         return result;
+    }
+
+    @Override
+    public List<BlogArticleCardQry> getMostSavedArticlesExcludeList(List<Integer> excludeIds, int needed) {
+        return mostSavedMapper.getMostSavedArticlesExcludeList(excludeIds, needed);
     }
 
     @Override
@@ -140,4 +173,34 @@ public class MostSavedServiceImpl implements MostSavedService {
         }
         return result;
     }
+
+    @Override
+    public List<BlogArticleCardQry> getTopSavedBlogsForColdstart(int topN) {
+        List<BlogArticleCardQry> blogCards = mostSavedMapper.findTopSavedBlogs(topN);
+
+        if (blogCards == null || blogCards.isEmpty()) {
+            throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "没有查询到Top Saved博客");
+        }
+
+        for (BlogArticleCardQry card : blogCards) {
+            // 1. 计算阅读时长
+            if (card.getContent() != null) {
+                int wordCount = card.getContent().trim().split("\\s+").length;
+                int readingTimeMinutes = Math.min(30, Math.max(1, (int) Math.ceil(wordCount / 200.0)));
+                card.setReadingTime(readingTimeMinutes + " min");
+            } else {
+                card.setReadingTime("1 min");  // 防止null
+            }
+
+            // 2. 设置 articleUrl (href)
+            card.setArticleUrl("/blogs/" + card.getCategoryName().toLowerCase() + "/" + card.getId());
+
+            // 3. 去掉 content，不传给前端
+            card.setContent(null);
+        }
+
+        return blogCards;
+    }
+
+
 }

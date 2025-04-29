@@ -1,5 +1,9 @@
 package com.weindependent.app.service;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.dto.BlogArticleCardQry;
@@ -25,4 +29,6 @@ public interface IBlogArticleListService {
      */
     PageInfo<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry query);
     BlogArticleSinglePageQry getArticleDetailById(Integer id, Integer pageNum, Integer pageSize);
+    //For related blog card controller
+    List<BlogArticleCardQry> getArticlesByCategoryOrTagsExcludeSelf(Integer categoryId, List<Integer> tagIdList, int excludeArticleId);
 }

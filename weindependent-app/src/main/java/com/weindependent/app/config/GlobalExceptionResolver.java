@@ -6,7 +6,11 @@ import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.exception.SignatureAuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -18,46 +22,36 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 统一异常处理，不论是正常跳转请求
- * @desc ajax请求暂不支持
- */
-@Slf4j
-@Component
-@RestControllerAdvice
-public class GlobalExceptionResolver implements HandlerExceptionResolver {
-    @Override
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
-        Map<String, Object> map = new HashMap<>();
-        if (handler instanceof HandlerMethod) {
-            Map<String, String> headerMap = SignatureAuthAspect.getSignHeader(request);
-            String requestUrl = request.getRequestURL().toString();
-            if (e instanceof SignatureAuthException) {
-                SignatureAuthException exception = (SignatureAuthException) e;
-                log.error("签名验证异常,当前请求URL：{}，当前请求Header：{}，异常信息：{}", requestUrl, headerMap, exception);
-                map.put("code", exception.getCode());
-                map.put("msg", exception.getMessage());
-                map.put("data", "");
-            } else {
-                String body = null;
-                try {
-                    body = new RequestWrapper(request).getBodyString();
-                } catch (Exception exception) {
-                    log.error("当前请求URL：{}，RequestWrapper invoke getBodyString occur exception: ", requestUrl, exception);
-                }
-                log.error("系统异常,当前请求URL：{}，当前请求Header：{}，当前请求Body：{}，异常信息：{}", requestUrl, headerMap, body, e);
 
-                if (e instanceof ResponseException) {
-                    map.put("code", ((ResponseException) e).getErrorCode());
-                } else {
-                    map.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
-                }
-                map.put("msg", StringUtils.isEmpty(e.getMessage()) ? "系统异常，请稍后操作" : e.getMessage());
-                map.put("data", "");
-            }
-        }
-        ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
-        modelAndView.addAllObjects(map);
-        return modelAndView;
+@RestControllerAdvice
+@Slf4j
+public class GlobalExceptionResolver{
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("code", ErrorCode.INVALID_PARAM.getCode());
+        error.put("msg", ex.getBindingResult().getFieldError().getDefaultMessage());
+        error.put("data", "");
+        return error;
+    }
+
+    @ExceptionHandler(SignatureAuthException.class)
+    public Map<String, Object> handleSignatureException(SignatureAuthException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("code", ex.getCode());
+        error.put("msg", ex.getMessage());
+        error.put("data", "");
+        return error;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Map<String, Object> handleGenericException(Exception e) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
+        error.put("msg", StringUtils.isEmpty(e.getMessage()) ? "系统异常，请稍后操作" : e.getMessage());
+        error.put("data", "");
+        return error;
     }
 }

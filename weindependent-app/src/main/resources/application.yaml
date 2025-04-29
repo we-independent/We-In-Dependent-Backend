@@ -7,8 +7,10 @@ frontend:
 spring:
   servlet:
     multipart:
+      enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher 
@@ -128,3 +130,7 @@ google:
       parent-id: 1By9T_LMsLkAkK2fHXbtPbQw9GqzVBF4i
       blog: blog
       blog-id: 1jjKBKhVrxnfg_PlGzTk0bhOp9NhQod01
+      blog-banner: blog-banner
+      blog-banner-id: 1UEvRtfjQH2Zk3HUVNmIbFk7uPt-iNRgE
+      blog-pdf: 1XNTL2bOnjIjj-eWvEcalgnv3E23X9f63
+      event: 1m0OAEE2uZQvir7b6Np6WErtCCDHyPheD

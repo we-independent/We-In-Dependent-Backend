@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardCategoryMapper">
-    
+
     <resultMap type="CategoryDO" id="CategoryResult">
         <result property="id"    column="id"    />
         <result property="name"    column="name"    />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectCategoryList" parameterType="CategoryDO" resultMap="CategoryResult">
         <include refid="selectCategoryVo"/>
-        <where>  
+        <where>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
             <if test="createUserId != null "> and create_user_id = #{createUserId}</if>
@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null "> and update_time = #{updateTime}</if>
         </where>
     </select>
-    
+
     <select id="selectCategoryById" parameterType="Integer" resultMap="CategoryResult">
         <include refid="selectCategoryVo"/>
         where id = #{id}
@@ -44,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateUserId != null">update_user_id,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="isDeleted != null">#{isDeleted},</if>
@@ -52,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="updateUserId != null">#{updateUserId},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateCategory" parameterType="CategoryDO">
@@ -73,8 +73,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <update id="deleteCategoryByIds" parameterType="String">
-        update category set is_deleted = 1 where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        update category
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
@@ -82,6 +85,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectCategoryByName" resultMap="CategoryResult">
         <include refid="selectCategoryVo"/>
         where name = #{name}
+    </select>
+    <select id="selectAllCategory" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        limit 100;
     </select>
 
     <update id="recoverCategory" >

@@ -1,25 +1,32 @@
 package com.weindependent.app.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
+import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
 import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
 import com.weindependent.app.enums.CategoryEnum;
-import com.weindependent.app.service.IBlogArticleListService;
-import com.weindependent.app.service.EditorPickService;
-import com.weindependent.app.service.SavedCountService;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.*;
+import com.weindependent.app.utils.PageInfoUtil;
+
+import com.weindependent.app.vo.BlogHomePageHeroVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Tag(name = "博客文章 Article List 获取")
 @RestController
 @RequestMapping("/api")
@@ -28,7 +35,6 @@ public class GetBlogListController {
     @Autowired
     private IBlogArticleListService blogArticleListService;
     
-    @Autowired
     private final BlogArticleListMapper blogArticleMapper;
     public GetBlogListController(BlogArticleListMapper blogArticleMapper) {
         this.blogArticleMapper = blogArticleMapper;
@@ -38,6 +44,16 @@ public class GetBlogListController {
     
     @Autowired
     private SavedCountService savedCountService;
+
+    @Autowired
+    private MostSavedService mostSavedService;
+
+    @Autowired
+    private IBlogArticleService blogarticleService;
+
+    @Autowired
+    private TagService tagService;
+
 
     /**
      * 获取文章列表接口：
@@ -51,11 +67,7 @@ public class GetBlogListController {
         PageInfo<BlogArticleListDO> pageInfo = blogArticleListService.selectBlogArticleList(query);
 
         if (pageInfo.getList() == null || pageInfo.getList().isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("code", 1001);
-            response.put("msg", "No articles found under this condition");
-            response.put("data", Collections.emptyList());
-            return ResponseEntity.ok(response);
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "No articles found under this condition");
         }
 
         // 获取所有文章ID，批量查询编辑推荐状态和收藏次数
@@ -64,18 +76,18 @@ public class GetBlogListController {
                 .collect(Collectors.toList());
 
         Map<Integer, Boolean> editorsPickMap = editorsPickService.getEditorsPickMapByArticleIds(articleIds);
-        Map<Integer, Integer> tempMap;
+        Map<Integer, Integer> savedCountMap;
         try {
-            tempMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
+            savedCountMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
         } catch (Exception e) {
-            tempMap = new HashMap<>();
-            for (Integer id : articleIds) {
-                tempMap.put(id, 0);
-            }
+            log.warn("获取收藏数失败，使用默认值 0", e);
+            savedCountMap = articleIds.stream().collect(Collectors.toMap(id -> id, id -> 0));
         }
-        final Map<Integer, Integer> finalSavedCountMap = tempMap;
-        System.out.println("当前页面文章 ID: " + articleIds);
-        System.out.println("收藏数 map: " + tempMap);
+
+        final Map<Integer, Integer> finalSavedCountMap = savedCountMap;
+        log.info("当前页面文章 ID: " + articleIds);
+        log.info("收藏数 map: " + savedCountMap);
+
         // 将 DO 转换为前端 BlogCard DTO
         List<BlogArticleCardQry> resultList = pageInfo.getList().stream().map(article -> {
             BlogArticleCardQry dto = new BlogArticleCardQry();
@@ -85,8 +97,8 @@ public class GetBlogListController {
             dto.setTime(article.getUpdateTime());
             
             // 计算阅读时长：假设每分钟 200 字（常见阅读速度）
-            int wordCount = article.getContent() != null ? article.getContent().length() : 0;
-            dto.setReadingTime((int)Math.ceil(wordCount / 200.0) + " min");
+            int wordCount = article.getContent() != null ? article.getContent().trim().split("\\s+").length : 0;
+            dto.setReadingTime(Math.min(30, Math.max(1, (int)Math.ceil(wordCount / 200.0))) + " min");
 
             // 图片 URL 和链接可根据实际情况替换，目前为固定值
             dto.setImageUrl(blogArticleMapper.selectBannerImageUrlById(article.getBannerImgId()));
@@ -98,34 +110,66 @@ public class GetBlogListController {
             return dto;
         }).collect(Collectors.toList());
 
-        // 构造分页返回数据
-        Map<String, Object> dataWrapper = new HashMap<>();
-        dataWrapper.put("list", resultList);
-        dataWrapper.put("pageNum", pageInfo.getPageNum());
-        dataWrapper.put("pageSize", pageInfo.getPageSize());
-        dataWrapper.put("total", pageInfo.getTotal());
-        dataWrapper.put("pages", pageInfo.getPages());
-
         Map<String, Object> response = new HashMap<>();
         response.put("code", 0);
         response.put("msg", "success");
-        response.put("data", dataWrapper);
+        response.put("data", PageInfoUtil.wrapPageData(resultList, pageInfo));
         return ResponseEntity.ok(response);
     }
 
 
     @Operation(summary = "获取单独博客文章, by id from blogcard when click title")
     @GetMapping("/article/{id}")
-    public ResponseEntity<?> getSingleArticle(    @PathVariable("id") Integer id,
-    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize){
-        // 获取文章详细信息
+
+    public BlogArticleSinglePageQry getSingleArticle(
+        @PathVariable("id") Integer id,
+        @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+        @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
+
         BlogArticleSinglePageQry articleQry = blogArticleListService.getArticleDetailById(id, pageNum, pageSize);
         if (articleQry == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+            // 抛出业务异常，让 GlobalExceptionResolver 自动包装
+            // log.info(String.valueOf(ErrorCode.BLOG_NOT_EXIST.getCode()));
+            throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
         }
-        return ResponseEntity.ok(articleQry);
+        return articleQry; // 直接返回业务数据，不包装
     }
 
+    @Operation(summary = "获取related文章card")
+    @GetMapping("/article/related")
+    public Object getRelatedArticles(@RequestParam int articleId, @RequestParam(defaultValue = "3") int limit){
+        try {
+            //先获取当前article的Category和taglist
+            BlogArticleDO currentArticle = blogarticleService.selectBlogArticleById(articleId);
+            if(currentArticle == null){
+                throw new ResponseException(ErrorCode.BLOG_NOT_EXIST.getCode(), "文章不存在");
+            }
+            Integer categoryId = currentArticle.getCategoryId();
+            List<TagDO> tagList = tagService.getTagsByArticleId(articleId);
+            List<Integer> tagIdList = tagList.stream().map(TagDO::getId).collect(Collectors.toList());
+            log.info("tagIdList = " + tagIdList);
+
+            //找出所有同分类同tag的文章
+            List<BlogArticleCardQry> candidates = blogArticleListService.getArticlesByCategoryOrTagsExcludeSelf(categoryId, tagIdList, articleId);
+            log.info("category: {}, tags: {}, candidates: {}", categoryId, tagIdList, candidates);
+            //从候选文章中随机挑选三篇文章显示
+            if (candidates == null || candidates.isEmpty()) {
+                return Collections.emptyList();
+            }
+            // Collections.shuffle(candidates);
+            return candidates.stream().limit(limit).collect(Collectors.toList());
+
+        }catch (Exception e) {
+            log.error("Fail to Get Related Articles", e);
+            throw new ResponseException(ErrorCode.RELATED_ARTICLE_FETCH_FAILED.getCode(), "Fail to Get Related Articles");
+        }
+    }
+
+    @Operation(summary = "冷启动推荐接口返回保存数最多的3篇博客")
+    @GetMapping("/articles/coldstart")
+    public ResponseEntity<List<BlogArticleCardQry>> getColdstartRecommendations() {
+        List<BlogArticleCardQry> blogs = mostSavedService.getTopSavedBlogsForColdstart(3);
+        return ResponseEntity.ok(blogs);
+    }
 
 }
