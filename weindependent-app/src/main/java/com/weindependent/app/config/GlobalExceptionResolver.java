@@ -51,7 +51,7 @@ public class GlobalExceptionResolver{
         log.error("Unhandled exception occurred", e);
         Map<String, Object> error = new HashMap<>();
         error.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
-        error.put("msg", StringUtils.isEmpty(e.getMessage()) ? "系统异常，请稍后操作" : e);
+        error.put("msg", e.getMessage());
         error.put("data", "");
         return error;
     }
