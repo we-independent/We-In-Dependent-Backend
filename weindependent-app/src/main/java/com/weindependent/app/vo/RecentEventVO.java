@@ -7,6 +7,6 @@ public class RecentEventVO {
     private Long id;
     private String title;
     private String summary;
-    private String eventStartTime;
+    private String eventTime;
     private String bannerUrl;
 }

@@ -2,19 +2,19 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.weindependent.app.mapper.EventMapper">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.EventMapper">
     <resultMap id="RecentEventVOMap" type="com.weindependent.app.vo.RecentEventVO">
         <result property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="summary" column="summary"/>
-        <result property="eventStartTime" column="event_start_time"/>
+        <result property="eventTime" column="event_time"/>
         <result property="bannerUrl" column="file_path"/>
     </resultMap>
     <resultMap id="EventVOMap" type="com.weindependent.app.vo.EventVO">
         <result property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
-        <result property="eventStartTime" column="event_start_time"/>
+        <result property="eventTime" column="event_time"/>
         <result property="location" column="location"/>
         <result property="bannerUrl" column="banner_url"/>
         <association property="speaker" javaType="com.weindependent.app.vo.UserVO">
@@ -23,11 +23,11 @@
         </association>
     </resultMap>
     <select id="getRecent" resultMap="RecentEventVOMap">
-        SELECT e.id, e.title, e.summary, e.event_start_time, f.file_path
+        SELECT e.id, e.title, e.summary, e.event_time, f.file_path
         FROM event e
                  LEFT JOIN event_image f ON e.banner_id = f.id
         WHERE e.is_deleted = 0
-        ORDER BY e.event_start_time DESC
+        ORDER BY e.event_time DESC
             LIMIT #{size} OFFSET #{offset}
     </select>
 
@@ -36,7 +36,7 @@
             e.id,
             e.title,
             e.content,
-            e.event_start_time,
+            e.event_time,
             e.location,
             e.banner_id,
             u.account AS speaker_account,
