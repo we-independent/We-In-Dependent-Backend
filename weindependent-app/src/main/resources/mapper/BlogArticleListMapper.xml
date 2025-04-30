@@ -111,10 +111,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             a.title,
             a.update_time AS time,
             a.category_id AS category,
-            "WeIndependent" AS author,
+            "We Independent" AS author,
             i.file_path AS imageUrl,
-            NULL AS readingTime,
-            NULL AS editorsPick,
+            CASE 
+                WHEN a.content IS NULL THEN 0
+                ELSE CEIL((CHAR_LENGTH(a.content) - CHAR_LENGTH(REPLACE(a.content, ' ', '')) + 1) / 200) 
+            END AS readingTime,
+            CASE 
+                WHEN ep.id IS NOT NULL AND ep.status = 1 THEN TRUE
+                ELSE FALSE
+            END AS editorsPick,
             COALESCE(s.savedCount, 0) AS savedCount
         FROM blog_article a
         LEFT JOIN category c ON a.category_id = c.id
@@ -124,6 +130,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             FROM save_list_article
             GROUP BY article_id
         ) s ON a.id = s.article_id
+        LEFT JOIN editor_picks ep ON a.id = ep.article_id
         WHERE a.is_deleted = 0
           AND a.article_status = 'published'
             <if test="query.categoryId != null">
@@ -143,8 +150,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
             </otherwise>
         </choose>
-
-        ORDER BY time DESC, savedCount DESC
     </select>
 
 
