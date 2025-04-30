@@ -19,6 +19,7 @@ import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.MostSavedService;
+import com.weindependent.app.vo.BlogArticleVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -200,5 +201,30 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setDisclaimer("The information in this article is for general purposes only. We make no warranties about the accuracy or completeness of the content. Views expressed are those of the author(s) and do not reflect the views of We Independent. We are not responsible for any actions taken based on this information. Please seek professional advice if needed.");
 
         return qry;
+    }
+
+    public PageInfo<BlogArticleCardQry> searchByKeywords(BlogArticleListQry query, String keyword){
+        // 分页容错处理
+        int pageNum = (query.getPageNum() != null && query.getPageNum() > 0) ? query.getPageNum() : 1;
+        int pageSize = (query.getPageSize() != null && query.getPageSize() > 0) ? query.getPageSize() : 9;
+
+        // 构造 SQL 排序子句
+        String orderBy = query.getOrderBy();
+        if (orderBy == null || orderBy.trim().isEmpty() || "latest".equalsIgnoreCase(orderBy)) {
+            query.setOrderClause("update_time DESC");
+        } else if ("most_saved".equalsIgnoreCase(orderBy)) {
+            query.setOrderClause("(SELECT COUNT(1) FROM save_list_article sa WHERE sa.article_id = blog_article.id) DESC, update_time DESC");
+        } else {
+            // 默认回退
+            query.setOrderClause("update_time DESC");
+        }
+
+        // 启用分页，不传排序到 PageHelper（排序由 XML 使用 ${orderClause} 动态拼接）
+        PageHelper.startPage(pageNum, pageSize);
+
+        // 查询
+        List<BlogArticleCardQry> list = blogArticleListMapper.searchByKeywords(query, keyword);
+
+        return new PageInfo<>(list);
     }
 }

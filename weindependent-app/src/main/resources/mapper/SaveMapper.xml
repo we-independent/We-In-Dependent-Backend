@@ -10,7 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <delete id="unsaveBlog">
-        DELETE FROM save_list_article
+        DELETE IGNORE FROM save_list_article
         WHERE list_id = #{listId} AND article_id = #{blogId}
     </delete>
 
