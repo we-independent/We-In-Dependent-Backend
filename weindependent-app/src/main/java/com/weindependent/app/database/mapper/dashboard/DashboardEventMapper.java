@@ -3,6 +3,7 @@ package com.weindependent.app.database.mapper.dashboard;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface DashboardEventMapper {
 
     int update(EventDO eventDO);
 
-    int delete(List<Integer> ids, int updateUserId);
+    int delete(@Param("ids") List<Long> ids, @Param("updateUserId") Long updateUserId);
 
 }
 

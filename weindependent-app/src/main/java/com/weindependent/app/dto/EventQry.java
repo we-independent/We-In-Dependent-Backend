@@ -24,8 +24,8 @@ public class EventQry {
     private String location;
 
     @NotNull(message = "speakerUserId is mandatory")
-    private Integer speakerUserId;
+    private Long speakerUserId;
 
     @NotNull(message = "bannerId is mandatory")
-    private Integer bannerId;
+    private Long bannerId;
 }

@@ -48,16 +48,16 @@ public class DashboardEventController {
     @Operation(summary = "Update an existing event")
     @SaCheckRole("admin")
     @SignatureAuth
-    @PutMapping()
-    public void update(@RequestBody Integer id, @RequestBody @Valid EventQry event){
+    @PutMapping("/{id}")
+    public void update(@PathVariable Long id, @RequestBody @Valid EventQry event){
         IDashboardEventService.update(id,event);
     }
 
     @Operation(summary = "Delete an event")
     @SaCheckRole("admin")
     @SignatureAuth
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable @Valid List<Integer> ids)  {
+    @DeleteMapping("/{ids}")
+    public void delete(@PathVariable @Valid List<Long> ids)  {
         IDashboardEventService.delete(ids);
     }
 }

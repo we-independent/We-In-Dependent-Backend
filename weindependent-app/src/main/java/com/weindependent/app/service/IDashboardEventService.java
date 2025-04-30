@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface IDashboardEventService {
     EventDO create(EventQry eventQry);
-    void delete(List<Integer> ids);
-    void update(Integer id, EventQry eventQry);
+    void delete(List<Long> ids);
+    void update(Long id, EventQry eventQry);
     ImageDO insertEventBanner(MultipartFile file);
 }

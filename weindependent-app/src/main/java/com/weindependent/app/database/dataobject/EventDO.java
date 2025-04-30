@@ -11,17 +11,17 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDO {
-    private Integer id;
+    private Long id;
     private String title;
     private String summary;
     private String content;
     private LocalDateTime eventTime;
     private String location;
-    private Integer speakerUserId;
-    private Integer bannerId;
+    private Long speakerUserId;
+    private Long bannerId;
     private boolean isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private Integer createUserId;
-    private Integer updateUserId;
+    private Long createUserId;
+    private Long updateUserId;
 }

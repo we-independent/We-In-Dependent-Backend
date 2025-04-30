@@ -17,7 +17,7 @@ public class EventConverter {
         return eventVO;
     }
 
-    public static EventDO toEventDO(EventQry eventQry, Integer id, Integer createUserId, Integer updateUserId) {
+    public static EventDO toEventDO(EventQry eventQry, Long id, Long createUserId, Long updateUserId) {
         EventDO eventDO = new EventDO();
         BeanUtils.copyProperties(eventQry,eventDO);
         eventDO.setId(id);

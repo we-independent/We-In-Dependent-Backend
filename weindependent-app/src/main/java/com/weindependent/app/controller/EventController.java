@@ -15,7 +15,7 @@ import java.util.List;
 @Tag(name = "活動")
 @Slf4j
 @RestController
-@RequestMapping(value = "/api/dashboard/event", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/api/event")
 public class EventController {
 
     @Resource

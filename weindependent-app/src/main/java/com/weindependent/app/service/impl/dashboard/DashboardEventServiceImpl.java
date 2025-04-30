@@ -39,8 +39,8 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
 
     @Override
     public EventDO create(EventQry eventQry) {
-        int userId = StpUtil.getLoginIdAsInt();
-        EventDO eventDO = EventConverter.toEventDO(eventQry,null,userId,null);
+        Long userId = StpUtil.getLoginIdAsLong();
+        EventDO eventDO = EventConverter.toEventDO(eventQry,null,userId,userId);
         if (dashboardEventMapper.create(eventDO) == 0) {
             throw new RuntimeException("Failed to create event");
         }
@@ -48,15 +48,15 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     }
 
     @Override
-    public void delete(List<Integer> ids) {
-         int userId = StpUtil.getLoginIdAsInt();
+    public void delete(List<Long> ids) {
+         Long userId = StpUtil.getLoginIdAsLong();
          dashboardEventImageMapper.delete(ids);
          dashboardEventMapper.delete(ids,userId);
     }
 
     @Override
-    public void update(Integer id, EventQry event) {
-        int userId = StpUtil.getLoginIdAsInt();
+    public void update(Long id, EventQry event) {
+        Long userId = StpUtil.getLoginIdAsLong();
         EventDO eventDO = EventConverter.toEventDO(event,id,null,userId);
         dashboardEventMapper.update(eventDO);
 

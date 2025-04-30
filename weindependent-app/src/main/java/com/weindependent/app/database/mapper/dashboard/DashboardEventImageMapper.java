@@ -27,6 +27,6 @@ public interface DashboardEventImageMapper {
      */
     public int update(ImageDO image);
 
-    public int delete(List<Integer> ids);
+    public int delete(List<Long> ids);
 
 }
