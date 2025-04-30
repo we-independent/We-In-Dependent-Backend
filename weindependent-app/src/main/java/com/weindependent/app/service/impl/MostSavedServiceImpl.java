@@ -197,6 +197,9 @@ public class MostSavedServiceImpl implements MostSavedService {
 
             // 3. 去掉 content，不传给前端
             card.setContent(null);
+
+            // 4. author默认都是We Independence
+            card.setAuthor("We Independence");
         }
 
         return blogCards;
