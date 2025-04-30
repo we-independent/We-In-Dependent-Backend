@@ -63,7 +63,7 @@ public class GetBlogListController {
      */
     @Operation(summary = "获取文章列表，支持分页、排序及分类筛选")
     @PostMapping("/articles")
-    public ResponseEntity<Map<String, Object>> getArticles(@RequestBody BlogArticleListQry query) {
+    public Object getArticles(@RequestBody BlogArticleListQry query) {
         PageInfo<BlogArticleListDO> pageInfo = blogArticleListService.selectBlogArticleList(query);
 
         if (pageInfo.getList() == null || pageInfo.getList().isEmpty()) {
@@ -110,11 +110,13 @@ public class GetBlogListController {
             return dto;
         }).collect(Collectors.toList());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", 0);
-        response.put("msg", "success");
-        response.put("data", PageInfoUtil.wrapPageData(resultList, pageInfo));
-        return ResponseEntity.ok(response);
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("code", 0);
+        // response.put("msg", "success");
+        // response.put("data", PageInfoUtil.wrapPageData(resultList, pageInfo));
+        // return ResponseEntity.ok(response);
+        Object pageData = PageInfoUtil.wrapPageData(resultList, pageInfo);
+        return pageData;
     }
 
 
@@ -167,9 +169,9 @@ public class GetBlogListController {
 
     @Operation(summary = "冷启动推荐接口返回保存数最多的3篇博客")
     @GetMapping("/articles/coldstart")
-    public ResponseEntity<List<BlogArticleCardQry>> getColdstartRecommendations() {
+    public Object getColdstartRecommendations() {
         List<BlogArticleCardQry> blogs = mostSavedService.getTopSavedBlogsForColdstart(3);
-        return ResponseEntity.ok(blogs);
+        return blogs;
     }
 
 }
