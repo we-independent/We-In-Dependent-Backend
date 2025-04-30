@@ -169,9 +169,8 @@ public class GetBlogListController {
 
     @Operation(summary = "冷启动推荐接口返回保存数最多的3篇博客")
     @GetMapping("/articles/coldstart")
-    public Object getColdstartRecommendations() {
-        List<BlogArticleCardQry> blogs = mostSavedService.getTopSavedBlogsForColdstart(3);
-        return blogs;
+    public List<BlogArticleCardQry> getColdstartRecommendations() {
+        return mostSavedService.getTopSavedBlogsForColdstart(3);
     }
 
 }

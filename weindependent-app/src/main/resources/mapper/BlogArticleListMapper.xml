@@ -70,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             a.title,
             a.update_time AS time,
             a.category_id AS category,
-            a.source_url AS author,
+            "WeIndependent" AS author,
             i.file_path AS imageUrl,
             NULL AS readingTime,
             NULL AS editorsPick,

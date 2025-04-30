@@ -64,7 +64,7 @@ public class SaveListController {
     }
 
     @Operation(summary = "删除收藏夹")
-    @GetMapping("/delete-list/{listId}")
+    @DeleteMapping("/delete-list/{listId}")
     public void deleteList(@PathVariable int listId){
         int userId = StpUtil.getLoginIdAsInt();
         int resultCode = saveListService.deleteList(userId, listId);
