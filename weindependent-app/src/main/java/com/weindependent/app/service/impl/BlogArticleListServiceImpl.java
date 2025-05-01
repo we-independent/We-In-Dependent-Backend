@@ -83,18 +83,18 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                 log.warn("Invalid parameters for related article fetch: categoryId={}, articleId={}", categoryId, articleId);
                 throw new ResponseException(ErrorCode.RELATED_ARTICLE_FETCH_FAILED.getCode(), "没有找到相关文章");
             }
-        
+
             if (tagIdList == null) {
                 tagIdList = Collections.emptyList();
             }
-        
+
             log.info("Running related article query: categoryId={}, articleId={}, tagIdList={}",
                     categoryId, articleId, tagIdList);
             List<BlogArticleCardQry> list = blogArticleListMapper.getArticlesByCategoryOrTagsExcludeSelf(categoryId, tagIdList, articleId);
             List<BlogArticleCardQry> relatedArticles = list.stream()
                                                            .limit(3)
                                                            .collect(Collectors.toList());
-            
+
             //容错，如果related文章不足用mostsaved补全
             int needed = 3 - relatedArticles.size();
             if(needed > 0){
@@ -102,13 +102,13 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                 List<Integer> excludeIds = relatedArticles.stream()
                                                         .map(BlogArticleCardQry::getId)
                                                         .collect(Collectors.toList());
-                excludeIds.add((int) articleId); 
+                excludeIds.add((int) articleId);
                 // 从 Most Saved 补充
                 List<BlogArticleCardQry> mostSavedArticles = mostSavedService.getMostSavedArticlesExcludeList(excludeIds, needed);
 
                 relatedArticles.addAll(mostSavedArticles);
             }
-            
+
             //获取readingtime，获取Categoryname，获取editpick
             relatedArticles.forEach(item -> {
                 BlogArticleListDO article = blogArticleListMapper.selectBlogArticleById(item.getId());
@@ -196,7 +196,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             commentVO.setContent(c.getContent());
             commentVO.setCreateTime(c.getCreateTime());
             return commentVO;
-            }).collect(Collectors.toList());
+        }).collect(Collectors.toList());
         qry.setComments(commentVOs);
         qry.setDisclaimer("The information in this article is for general purposes only. We make no warranties about the accuracy or completeness of the content. Views expressed are those of the author(s) and do not reflect the views of We Independent. We are not responsible for any actions taken based on this information. Please seek professional advice if needed.");
 

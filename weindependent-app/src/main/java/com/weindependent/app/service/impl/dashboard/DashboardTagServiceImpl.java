@@ -8,8 +8,6 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.dto.TagQry;
-import com.weindependent.app.enums.ErrorCode;
-import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.vo.TagCategoryVO;
 import org.springframework.beans.BeanUtils;
@@ -58,27 +56,14 @@ public class DashboardTagServiceImpl implements ITagService {
     }
 
     /**
-     * 新增标签,
-     * 由于是软删除，首先根据新标签名称搜索数据库，
-     * 1. 如果已有标签，
-     * 1.1 如果已有标签，未被删除 return
-     * 1.2 如果已有标签，被删除，恢复标签 return
-     * 2. 没有搜索到标签，则新增标签
+     * 新增标签
+     * 标签可以有重复的name字段
      *
      * @param newTag 标签
      * @return 结果
      */
     @Override
     public int insertTag(TagDO newTag) {
-        TagDO existTag = dashboardTagMapper.selectTagByName(newTag.getName());
-        if (existTag != null) {
-            if (existTag.getIsDeleted()) {
-                dashboardTagMapper.recoverTag(existTag);
-                throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "被删除Tag已经恢复");
-            } else {
-                throw new ResponseException(ErrorCode.UNDEFINED_ERROR.getCode(), "同名Tag已经存在");
-            }
-        }
         newTag.setCreateTime(LocalDateTime.now());
         return dashboardTagMapper.insertTag(newTag);
     }

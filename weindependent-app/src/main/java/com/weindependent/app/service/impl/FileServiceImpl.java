@@ -46,8 +46,8 @@ public class FileServiceImpl implements FileService {
     @Value("${google.drive.folder.blog-pdf}")
     private String blogPdfFolderId;
 
-    @Value("${google.drive.folder.event-banner}")
-    private String eventBannerFolderId;
+    @Value("${google.drive.folder.event}")
+    private String eventFolderId;
 
     @Value("${file.upload.tmp-folder}")
     private String tmpFolder;

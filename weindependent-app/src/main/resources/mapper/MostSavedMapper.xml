@@ -107,4 +107,37 @@
             LIMIT #{topN}
     </select>
 
+    <select id="getMostSavedArticlesExcludeList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT
+            a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            "WeIndependent" AS author,
+            i.file_path AS imageUrl,
+            NULL AS readingTime,
+            NULL AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM blog_article a
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        WHERE a.is_deleted = 0
+            AND a.article_status = 'published'
+            AND COALESCE(s.savedCount, 0) > 0
+            AND a.category_id IN ("1","2","3","4","7")
+        <if test="excludeArticleId != null and excludeArticleId.size() > 0">
+            AND a.id NOT IN
+            <foreach collection="excludeArticleId" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY savedCount DESC, a.update_time DESC
+        LIMIT #{needed}
+    </select>
+
+
 </mapper>
