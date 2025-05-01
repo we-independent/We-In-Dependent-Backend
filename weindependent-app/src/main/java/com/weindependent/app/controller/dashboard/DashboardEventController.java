@@ -7,6 +7,7 @@ import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IDashboardEventService;
+import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -32,6 +33,15 @@ public class DashboardEventController {
     public EventDO create(@Valid @RequestBody EventQry eventQry)  {
         int userId = StpUtil.getLoginIdAsInt();
         return IDashboardEventService.create(eventQry);
+    }
+
+    @Operation(summary = "list all events")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @PostMapping("/list")
+    public List<DashboardEventVO> list()  {
+        int userId = StpUtil.getLoginIdAsInt();
+        return IDashboardEventService.getAll();
     }
 
     /**

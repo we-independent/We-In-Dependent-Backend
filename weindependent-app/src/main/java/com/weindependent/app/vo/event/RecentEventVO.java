@@ -1,4 +1,4 @@
-package com.weindependent.app.vo;
+package com.weindependent.app.vo.event;
 
 import lombok.Data;
 

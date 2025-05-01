@@ -2,8 +2,8 @@ package com.weindependent.app.controller;
 
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
-import com.weindependent.app.vo.EventVO;
-import com.weindependent.app.vo.RecentEventVO;
+import com.weindependent.app.vo.event.EventVO;
+import com.weindependent.app.vo.event.RecentEventVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class EventController {
     @Operation(summary = "Get event by ID")
     @SignatureAuth
     @GetMapping("/{id}")
-    public EventVO getEventById(@PathVariable Integer id) {
+    public EventVO getEventById(@PathVariable Long id) {
         return IEventService.getEventById(id);
     }
 

@@ -1,6 +1,6 @@
-package com.weindependent.app.vo;
+package com.weindependent.app.vo.event;
 
-import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.vo.UserVO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,6 +12,8 @@ public class EventVO {
     private String content;
     private LocalDateTime eventTime;
     private String location;
-    private UserVO speaker;
+    private Integer speakerId;
+    private String speakerName;
+    private Long bannerId;
     private String bannerUrl;
 }

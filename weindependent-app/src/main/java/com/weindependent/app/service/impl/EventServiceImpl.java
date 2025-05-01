@@ -1,9 +1,11 @@
 package com.weindependent.app.service.impl;
 
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEventService;
-import com.weindependent.app.vo.EventVO;
-import com.weindependent.app.vo.RecentEventVO;
+import com.weindependent.app.vo.event.EventVO;
+import com.weindependent.app.vo.event.RecentEventVO;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,7 +22,7 @@ public class EventServiceImpl implements IEventService {
         int offset = (page - 1) * size;
         List<RecentEventVO> recentEventVOS = eventMapper.getRecent(offset, size);
         if(recentEventVOS == null ){
-            throw new RuntimeException("Failed to find recent events");
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
         return eventMapper.getRecent(size, offset);
     }
@@ -28,10 +30,10 @@ public class EventServiceImpl implements IEventService {
 
 
     @Override
-    public EventVO getEventById(Integer id) {
+    public EventVO getEventById(Long id) {
         EventVO eventDO= eventMapper.getById(id);
         if (eventDO == null) {
-            throw new RuntimeException("Failed to get event");
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
         }
         return eventDO;
     }

@@ -8,16 +8,19 @@ import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper
 import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
 import com.weindependent.app.dto.EventQry;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.FileService;
 import com.weindependent.app.service.IDashboardEventService;
 import com.weindependent.app.utils.ImageResizeUtil;
 import com.weindependent.app.vo.UploadedFileVO;
+import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
+import javax.management.relation.RelationServiceNotRegisteredException;
 import java.util.List;
 
 @Service
@@ -33,8 +36,11 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     private DashboardEventImageMapper dashboardEventImageMapper;
     @Autowired
     private DashboardEventMapper dashboardEventMapper;
-    @Autowired
-    private EventMapper eventMapper;
+
+    @Override
+    public List<DashboardEventVO> getAll() {
+        return dashboardEventMapper.getAll();
+    }
 
 
     @Override
@@ -42,7 +48,7 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         Long userId = StpUtil.getLoginIdAsLong();
         EventDO eventDO = EventConverter.toEventDO(eventQry,null,userId,userId);
         if (dashboardEventMapper.create(eventDO) == 0) {
-            throw new RuntimeException("Failed to create event");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(),"Failed to create event");
         }
         return eventDO;
     }
@@ -50,15 +56,18 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     @Override
     public void delete(List<Long> ids) {
          Long userId = StpUtil.getLoginIdAsLong();
-         dashboardEventImageMapper.delete(ids);
-         dashboardEventMapper.delete(ids,userId);
+         if(dashboardEventMapper.delete(ids,userId)==0){
+             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(),"Failed to delete events");
+         };
     }
 
     @Override
     public void update(Long id, EventQry event) {
         Long userId = StpUtil.getLoginIdAsLong();
         EventDO eventDO = EventConverter.toEventDO(event,id,null,userId);
-        dashboardEventMapper.update(eventDO);
+        if(dashboardEventMapper.update(eventDO)==0){
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString());
+        };
 
     }
 
@@ -83,7 +92,7 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         imageDo.setFilePath(uploadedFileVO.getFilePath());
         int affectedRows = dashboardEventImageMapper.insert(imageDo);
         if (affectedRows != 1) {
-            throw new RuntimeException("Failed to add image to database");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
         }
         return imageDo;
     }

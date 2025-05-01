@@ -46,8 +46,8 @@ public class FileServiceImpl implements FileService {
     @Value("${google.drive.folder.blog-pdf}")
     private String blogPdfFolderId;
 
-    @Value("${google.drive.folder.event}")
-    private String eventFolderId;
+    @Value("${google.drive.folder.event-banner}")
+    private String eventBannerFolderId;
 
     @Value("${file.upload.tmp-folder}")
     private String tmpFolder;
@@ -69,7 +69,7 @@ public class FileServiceImpl implements FileService {
             folderIdMap.put("blog", blogFolderId);
             folderIdMap.put("blog-banner", blogBannerFolderId);
             folderIdMap.put("blog-pdf", blogPdfFolderId);
-            folderIdMap.put("event", eventFolderId);
+            folderIdMap.put("event-banner", eventBannerFolderId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Google Drive", e);
         }
