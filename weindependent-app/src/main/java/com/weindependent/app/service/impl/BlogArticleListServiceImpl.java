@@ -196,7 +196,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             commentVO.setContent(c.getContent());
             commentVO.setCreateTime(c.getCreateTime());
             return commentVO;
-        }).collect(Collectors.toList());
+            }).collect(Collectors.toList());
         qry.setComments(commentVOs);
         qry.setDisclaimer("The information in this article is for general purposes only. We make no warranties about the accuracy or completeness of the content. Views expressed are those of the author(s) and do not reflect the views of We Independent. We are not responsible for any actions taken based on this information. Please seek professional advice if needed.");
 

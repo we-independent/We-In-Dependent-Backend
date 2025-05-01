@@ -69,7 +69,7 @@ public class FileServiceImpl implements FileService {
             folderIdMap.put("blog", blogFolderId);
             folderIdMap.put("blog-banner", blogBannerFolderId);
             folderIdMap.put("blog-pdf", blogPdfFolderId);
-            folderIdMap.put("event-banner", eventBannerFolderId);
+            folderIdMap.put("event", eventFolderId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Google Drive", e);
         }
