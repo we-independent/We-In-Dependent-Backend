@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
-import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import com.weindependent.app.vo.BlogArticleVO;
@@ -57,7 +57,7 @@ public interface IBlogArticleService {
      * @param fileUploadQry 博客图片
      * @return 结果
      */
-    BlogImageDO insertBlogBanner(MultipartFile fileUploadQry);
+    ImageDO insertBlogBanner(MultipartFile fileUploadQry);
 
     /**
      * 修改博客文章

@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper;
@@ -142,7 +142,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     }
 
     @Override
-    public BlogImageDO insertBlogBanner(MultipartFile file) {
+    public ImageDO insertBlogBanner(MultipartFile file) {
         // Resize image first
         MultipartFile resizedFile;
         try {
@@ -153,19 +153,19 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         }
 
         // Then upload
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"blog-banner" );
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"event-banner" );
 
-        BlogImageDO blogImageDO = new BlogImageDO();
-        blogImageDO.setCategory("blog-banner");
-        blogImageDO.setFileName(uploadedFileVO.getFileName());
-        blogImageDO.setFileKey(uploadedFileVO.getFileKey());
-        blogImageDO.setFileType(resizedFile.getContentType());
-        blogImageDO.setFilePath(uploadedFileVO.getFilePath());
-        int affectedRows = blogImageMapper.insert(blogImageDO);
+        ImageDO imageDo = new ImageDO();
+        imageDo.setCategory("blog-banner");
+        imageDo.setFileName(uploadedFileVO.getFileName());
+        imageDo.setFileKey(uploadedFileVO.getFileKey());
+        imageDo.setFileType(resizedFile.getContentType());
+        imageDo.setFilePath(uploadedFileVO.getFilePath());
+        int affectedRows = blogImageMapper.insert(imageDo);
         if (affectedRows != 1) {
             throw new RuntimeException("Failed to add image to database");
         }
-        return blogImageDO;
+        return imageDo;
     }
 
     /**
@@ -286,7 +286,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
             log.warn("deleteImgById 调用时传入的 imgId 为 null, 跳过删除");
             return;
         }
-        BlogImageDO image= blogImageMapper.findById(imgId);
+        ImageDO image= blogImageMapper.findById(imgId);
         if (image == null) {
             log.warn("未找到图片,imgId = {}，跳过删除", imgId);
             return;

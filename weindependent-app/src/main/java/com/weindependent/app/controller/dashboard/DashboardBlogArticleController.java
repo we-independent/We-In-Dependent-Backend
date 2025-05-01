@@ -5,7 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
-import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.vo.BlogArticleEditVO;
@@ -76,7 +76,7 @@ public class DashboardBlogArticleController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BlogImageDO addBlogBanner(@RequestParam("file") MultipartFile file) {
+    public ImageDO addBlogBanner(@RequestParam("file") MultipartFile file) {
         return blogArticleService.insertBlogBanner(file);
     }
 

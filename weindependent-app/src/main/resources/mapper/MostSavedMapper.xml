@@ -108,7 +108,7 @@
     </select>
 
     <select id="getMostSavedArticlesExcludeList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
-        SELECT 
+        SELECT
             a.id,
             a.title,
             a.update_time AS time,
@@ -128,14 +128,14 @@
         WHERE a.is_deleted = 0
             AND a.article_status = 'published'
             AND COALESCE(s.savedCount, 0) > 0
-            AND a.category_id IN ("1","2","3","4","7") 
+            AND a.category_id IN ("1","2","3","4","7")
         <if test="excludeArticleId != null and excludeArticleId.size() > 0">
             AND a.id NOT IN
             <foreach collection="excludeArticleId" item="id" open="(" separator="," close=")">
                 #{id}
             </foreach>
         </if>
-        ORDER BY savedCount DESC, a.update_time DESC 
+        ORDER BY savedCount DESC, a.update_time DESC
         LIMIT #{needed}
     </select>
 

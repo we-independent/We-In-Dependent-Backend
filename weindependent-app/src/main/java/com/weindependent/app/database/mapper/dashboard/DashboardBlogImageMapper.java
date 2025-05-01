@@ -1,6 +1,6 @@
 package com.weindependent.app.database.mapper.dashboard;
 
-import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.database.dataobject.ImageDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface DashboardBlogImageMapper
      * @param id 博客图片主键
      * @return 博客图片
      */
-    public BlogImageDO findById(Integer id);
+    public ImageDO findById(Integer id);
 
     /**
      * 查询博客图片列表
@@ -26,7 +26,7 @@ public interface DashboardBlogImageMapper
      * @param blogImage 博客图片
      * @return 博客图片集合
      */
-    public List<BlogImageDO> query(BlogImageDO blogImage);
+    public List<ImageDO> query(ImageDO blogImage);
 
     /**
      * 新增博客图片
@@ -34,7 +34,7 @@ public interface DashboardBlogImageMapper
      * @param blogImage 博客图片
      * @return 结果
      */
-    public int insert(BlogImageDO blogImage);
+    public int insert(ImageDO blogImage);
 
     /**
      * 修改博客图片
@@ -42,7 +42,7 @@ public interface DashboardBlogImageMapper
      * @param blogImage 博客图片
      * @return 结果
      */
-    public int update(BlogImageDO blogImage);
+    public int update(ImageDO blogImage);
 
     /**
      * 删除博客图片, 软删除
