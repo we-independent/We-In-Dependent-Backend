@@ -8,4 +8,6 @@ import java.util.List;
 public interface IEventService {
     List<RecentEventVO> getRecentEvents(int page, int size);
     EventVO getEventById(Long id);
+    void registerEvent(Long id);
+    void unregisterEvent(Long id);
 }

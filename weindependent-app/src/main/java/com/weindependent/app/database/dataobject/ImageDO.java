@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ImageDO {
-    private String id;
+    private Long id;
     private String category;
     private String fileName;
     private String fileKey;

@@ -11,4 +11,6 @@ import java.util.List;
 public interface EventMapper {
     List<RecentEventVO> getRecent(@Param("size") int size, @Param("offset") int offset);
     EventVO getById(Long id);
+    int register(Long id, Integer userId);
+    int unregister(Long id, Integer userId);
 }
