@@ -48,4 +48,6 @@ public interface BlogArticleListMapper {
         @Param("tagIdList") List<Integer> tagIdList,
         @Param("excludeArticleId") Integer excludeArticleId
     );
+
+    List<BlogArticleCardQry> searchByKeywords(@Param("query") BlogArticleListQry query, @Param("keyword") String keyword);
 }

@@ -17,8 +17,8 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import cn.dev33.satoken.stp.StpUtil;
 /**
  * @author Elly
+ * @apiNote all under api/saves must have token in request header
  * 2025-04-17
- * IMPORTANT NOTE: all need to pass token in header
  */
 @RestController
 @RequestMapping(value = "/api/saves")
@@ -27,6 +27,12 @@ public class SaveController {
     @Autowired
     private SaveService saveService;
 
+    /**
+     * Save an article. token should be passed through header
+     * @param blogId placed on url path.
+     * @param saveBlogQry optionally contains a listId, if user want to save a blog into a specific list
+     * @throws Exception
+     */
     @Operation(summary = "将文章储存到收藏夹")
     @PostMapping("/blogs/{blogId}")
     public void saveBlog(@PathVariable int blogId, @RequestBody SaveListQry saveBlogQry) throws Exception{
@@ -48,6 +54,11 @@ public class SaveController {
         }
     }
 
+    /**
+     * Similar to save an article. Token must be in request header.
+     * @param blogId
+     * @param saveBlogQry
+     */
     @Operation(summary = "将文章从收藏夹删除")
     @DeleteMapping("/blogs/{blogId}")
     public void unsaveBlog(@PathVariable int blogId, @RequestBody SaveListQry saveBlogQry) {
@@ -65,6 +76,11 @@ public class SaveController {
         }
     }
 
+
+    /**
+     * Save an event. Token must be in request header.
+     * @param eventId
+     */
     @Operation(summary = "收藏活动")
     @PostMapping("/events/{eventId}")
     public void saveEvent(@PathVariable int eventId){

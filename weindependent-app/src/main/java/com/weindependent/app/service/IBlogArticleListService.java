@@ -10,6 +10,7 @@ import com.weindependent.app.dto.BlogArticleCardQry;
 import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.dto.BlogArticleSinglePageQry;
+import com.weindependent.app.vo.BlogArticleVO;
 
 /**
  * 博客文章 Service 接口
@@ -31,4 +32,6 @@ public interface IBlogArticleListService {
     BlogArticleSinglePageQry getArticleDetailById(Integer id, Integer pageNum, Integer pageSize);
     //For related blog card controller
     List<BlogArticleCardQry> getArticlesByCategoryOrTagsExcludeSelf(Integer categoryId, List<Integer> tagIdList, int excludeArticleId);
+
+    PageInfo<BlogArticleCardQry> searchByKeywords(BlogArticleListQry query, String keyword);
 }

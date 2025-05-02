@@ -104,5 +104,54 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         LIMIT 10
     </select>
 
+    <!-- Boolean Mode -->
+    <select id="searchByKeywords"
+            resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            "We Independent" AS author,
+            i.file_path AS imageUrl,
+            CASE 
+                WHEN a.content IS NULL THEN 0
+                ELSE CEIL((CHAR_LENGTH(a.content) - CHAR_LENGTH(REPLACE(a.content, ' ', '')) + 1) / 200) 
+            END AS readingTime,
+            CASE 
+                WHEN ep.id IS NOT NULL AND ep.status = 1 THEN TRUE
+                ELSE FALSE
+            END AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM blog_article a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        LEFT JOIN editor_picks ep ON a.id = ep.article_id
+        WHERE a.is_deleted = 0
+          AND a.article_status = 'published'
+            <if test="query.categoryId != null">
+                and a.category_id = #{query.categoryId}
+            </if>
+        <choose>
+            <!-- F1 (short codes) -->
+            <when test="keyword != null and keyword.length() &lt; 4">
+                AND (
+                title   LIKE CONCAT('%', #{keyword}, '%')
+                OR  content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </when>
+
+            <otherwise>
+                AND MATCH(title, content)
+                AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
+            </otherwise>
+        </choose>
+    </select>
+
+
 
 </mapper>
