@@ -78,6 +78,15 @@
         AND blog_article.is_deleted = 0
     </select>
 
+    <select id="selectTagVOList" resultMap="TagVOResult">
+        SELECT tag.id,
+               name
+        FROM tag_article_relation left join tag on tag_article_relation.tag_id = tag.id
+        WHERE tag_article_relation.article_id = #{id}
+          AND tag.is_deleted = 0
+          AND tag_article_relation.is_deleted = 0
+    </select>
+
     <select id="findTopSavedBlogs" parameterType="int" resultType="com.weindependent.app.dto.BlogArticleCardQry">
         SELECT
             ba.id AS id,
