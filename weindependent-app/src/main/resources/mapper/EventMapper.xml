@@ -39,4 +39,14 @@
         WHERE event_id = #{id} AND user_id = #{userId}
     </delete>
 
+    <insert id="bookmark">
+        INSERT INTO event_user_bookmark (event_id, user_id)
+        VALUES (#{id}, #{userId})
+    </insert>
+
+    <delete id="unbookmark">
+        DELETE FROM event_user_bookmark
+        WHERE event_id = #{id} AND user_id = #{userId}
+    </delete>
+
 </mapper>

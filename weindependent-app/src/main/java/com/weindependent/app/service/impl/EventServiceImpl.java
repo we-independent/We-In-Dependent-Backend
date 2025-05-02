@@ -40,7 +40,7 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public void registerEvent(Long id) {
+    public void register(Long id) {
         int userId = StpUtil.getLoginIdAsInt();
         int affectedRow = 0;
         try {
@@ -60,10 +60,38 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public void unregisterEvent(Long id) {
+    public void unregister(Long id) {
         int userId = StpUtil.getLoginIdAsInt();
         if (eventMapper.unregister(id, userId) == 0) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Event not found or user not registered");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Event not found or user not registered for this event");
+        }
+    }
+
+    @Override
+    public void bookmark(Long id) {
+        int userId = StpUtil.getLoginIdAsInt();
+        int affectedRow = 0;
+        try {
+            affectedRow = eventMapper.bookmark(id, userId);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof java.sql.SQLIntegrityConstraintViolationException &&
+                    cause.getMessage() != null &&
+                    cause.getMessage().contains("Duplicate entry")) {
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "User already bookmark this event");
+            }
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot bookmark event");
+        }
+        if(affectedRow == 0){
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Cannot find event");
+        }
+    }
+
+    @Override
+    public void unbookmark(Long id) {
+        int userId = StpUtil.getLoginIdAsInt();
+        if (eventMapper.unbookmark(id, userId) == 0) {
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Event not found or user not bookmark this event");
         }
     }
 

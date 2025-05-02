@@ -18,4 +18,5 @@ public interface IDashboardEventService {
     void update(Long id, EventQry eventQry);
     ImageDO insertEventBanner(MultipartFile file);
     List<UserDO> getRegisteredUsers(Long id, Integer page, Integer offset);
+    List<UserDO> getBookmarkedUsers(Long id, Integer page, Integer offset);
 }

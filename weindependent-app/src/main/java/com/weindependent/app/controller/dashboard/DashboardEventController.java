@@ -83,4 +83,14 @@ public class DashboardEventController {
                                            @RequestParam(defaultValue = "10") int size) {
         return IDashboardEventService.getRegisteredUsers(id, page, size);
     }
+
+    @Operation(summary = "Get all user that bookmarked this event")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/user/bookmark/{id}")
+    public List<UserDO> getBookmarkedUsers(@PathVariable Long id,
+                                           @RequestParam(defaultValue = "1") int page,
+                                           @RequestParam(defaultValue = "10") int size) {
+        return IDashboardEventService.getBookmarkedUsers(id, page, size);
+    }
 }

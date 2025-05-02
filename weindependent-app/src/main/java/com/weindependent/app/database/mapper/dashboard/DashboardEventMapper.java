@@ -30,6 +30,8 @@ public interface DashboardEventMapper {
     List<DashboardEventVO> getAll();
 
     List<UserDO> getRegisteredUsers(Long id, Integer size, Integer offset);
+
+    List<UserDO> getBookmarkedUsers(Long id, Integer size, Integer offset);
 }
 
 
