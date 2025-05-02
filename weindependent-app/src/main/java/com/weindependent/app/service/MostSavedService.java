@@ -20,5 +20,7 @@ public interface MostSavedService {
 
     List<BlogArticleCardQry> getMostSavedArticlesExcludeList(@Param("excludeArticleId") List<Integer> excludeIds, @Param("needed") int needed);
 
+    int setMostSavedEveryTwoWeeks();
+
 
 }
