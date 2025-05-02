@@ -4,8 +4,8 @@ import com.weindependent.app.database.dataobject.SavedCountDO;
 import org.apache.ibatis.annotations.Param;
 import com.weindependent.app.database.dataobject.EditorPickDO;
 import com.weindependent.app.vo.BlogHomePageHeroVO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import com.weindependent.app.dto.BlogArticleCardQry;
 
@@ -28,4 +28,9 @@ public interface MostSavedMapper {
 
     List<BlogArticleCardQry> getMostSavedArticlesExcludeList(List<Integer> excludeArticleId, int needed);
 
+    List<EditorPickDO> getMostSavedSince(LocalDateTime lastUpdateTime);
+
+    int setAllMostSavedAsInvalid();
+
+    int AddNewMostSaved();
 }
