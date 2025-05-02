@@ -1,6 +1,5 @@
 package com.weindependent.app.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventVO;
@@ -42,11 +41,21 @@ public class EventController {
     @Operation(summary = "Register an event by ID")
     @SignatureAuth
     @PostMapping("/register/{id}")
-    public void register(@PathVariable Long id) {IEventService.registerEvent(id);}
+    public void register(@PathVariable Long id) {IEventService.register(id);}
 
     @Operation(summary = "Unregister an event by ID")
     @SignatureAuth
     @DeleteMapping("/register/{id}")
-    public void unregister(@PathVariable Long id) {IEventService.unregisterEvent(id);}
+    public void unregister(@PathVariable Long id) {IEventService.unregister(id);}
+
+    @Operation(summary = "Bookmark an event by ID")
+    @SignatureAuth
+    @PostMapping("/bookmark/{id}")
+    public void bookmark(@PathVariable Long id) {IEventService.bookmark(id);}
+
+    @Operation(summary = "Unbookmark an event by ID")
+    @SignatureAuth
+    @DeleteMapping("/bookmark/{id}")
+    public void unbookmark(@PathVariable Long id) {IEventService.unbookmark(id);}
 
 }

@@ -102,5 +102,11 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         return dashboardEventMapper.getRegisteredUsers(id,size,offset);
     }
 
+    @Override
+    public List<UserDO> getBookmarkedUsers(Long id, Integer page, Integer size) {
+        Integer offset = (page - 1) * size;
+        return dashboardEventMapper.getBookmarkedUsers(id,size,offset);
+    }
+
 
 }

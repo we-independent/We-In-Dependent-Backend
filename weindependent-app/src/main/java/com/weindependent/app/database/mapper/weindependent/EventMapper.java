@@ -13,4 +13,6 @@ public interface EventMapper {
     EventVO getById(Long id);
     int register(Long id, Integer userId);
     int unregister(Long id, Integer userId);
+    int bookmark(Long id, Integer userId);
+    int unbookmark(Long id, Integer userId);
 }
