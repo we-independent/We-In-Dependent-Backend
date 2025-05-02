@@ -29,4 +29,14 @@
         WHERE e.id = #{id} AND e.is_deleted = 0
     </select>
 
+    <insert id="register">
+        INSERT INTO event_user_register (event_id, user_id)
+        VALUES (#{id}, #{userId})
+    </insert>
+
+    <delete id="unregister">
+        DELETE FROM event_user_register
+        WHERE event_id = #{id} AND user_id = #{userId}
+    </delete>
+
 </mapper>

@@ -5,8 +5,10 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
+import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IDashboardEventService;
+import com.weindependent.app.vo.UserVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -69,5 +71,16 @@ public class DashboardEventController {
     @DeleteMapping("/{ids}")
     public void delete(@PathVariable @Valid List<Long> ids)  {
         IDashboardEventService.delete(ids);
+    }
+
+
+    @Operation(summary = "Get all user that registered for an event")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/user/registered/{id}")
+    public List<UserDO> getRegisteredUsers(@PathVariable Long id,
+                                           @RequestParam(defaultValue = "1") int page,
+                                           @RequestParam(defaultValue = "10") int size) {
+        return IDashboardEventService.getRegisteredUsers(id, page, size);
     }
 }

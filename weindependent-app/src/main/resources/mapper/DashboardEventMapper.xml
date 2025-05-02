@@ -23,6 +23,15 @@
         LEFT JOIN t_system_user su ON e.speaker_user_id = su.id
     </select>
 
+    <select id="getRegisteredUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT
+          u.id, u.account, u.email,u.real_name
+        FROM event_user_register eur
+        JOIN t_system_user u ON eur.user_id = u.id
+        WHERE eur.event_id = #{id}
+        ORDER BY eur.create_time DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
 
     <update id="delete" parameterType="java.util.List">
         UPDATE event e

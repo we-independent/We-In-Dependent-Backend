@@ -4,9 +4,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.convertor.EventConverter;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
+import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
-import com.weindependent.app.database.mapper.weindependent.EventMapper;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.management.relation.RelationServiceNotRegisteredException;
 import java.util.List;
 
 @Service
@@ -96,5 +95,12 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         }
         return imageDo;
     }
+
+    @Override
+    public List<UserDO> getRegisteredUsers(Long id, Integer page, Integer size) {
+        Integer offset = (page - 1) * size;
+        return dashboardEventMapper.getRegisteredUsers(id,size,offset);
+    }
+
 
 }
