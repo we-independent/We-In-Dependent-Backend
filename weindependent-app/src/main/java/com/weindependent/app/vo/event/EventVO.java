@@ -11,9 +11,13 @@ public class EventVO {
     private String title;
     private String content;
     private LocalDateTime eventTime;
+    private String link;
+    private Integer categoryId;
+    private String categoryName;
     private String location;
     private Integer speakerId;
     private String speakerName;
     private Long bannerId;
     private String bannerUrl;
+    private boolean isBookMarked;
 }

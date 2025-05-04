@@ -23,6 +23,10 @@ public class EventQry {
     @NotBlank(message = "location is mandatory")
     private String location;
 
+    private String link;
+
+    private Integer categoryId;
+
     @NotNull(message = "speakerUserId is mandatory")
     private Long speakerUserId;
 
