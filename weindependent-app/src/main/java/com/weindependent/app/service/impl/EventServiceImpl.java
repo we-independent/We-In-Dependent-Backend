@@ -20,19 +20,21 @@ public class EventServiceImpl implements IEventService {
 
     @Override
     public List<RecentEventVO> getRecentEvents(int page, int size) {
+        int userId = StpUtil.getLoginIdAsInt();
         int offset = (page - 1) * size;
-        List<RecentEventVO> recentEventVOS = eventMapper.getRecent(offset, size);
+        List<RecentEventVO> recentEventVOS = eventMapper.getRecent(offset, size,userId);
         if(recentEventVOS == null ){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
-        return eventMapper.getRecent(size, offset);
+        return recentEventVOS;
     }
 
 
 
     @Override
     public EventVO getEventById(Long id) {
-        EventVO eventDO= eventMapper.getById(id);
+        int userId = StpUtil.getLoginIdAsInt();
+        EventVO eventDO= eventMapper.getById(id,userId);
         if (eventDO == null) {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
         }

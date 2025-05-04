@@ -18,6 +18,9 @@ public class DashboardEventVO {
     private Long bannerId;
     private String bannerFilePath;
     private boolean isDeleted;
+    private String link;
+    private Integer categoryId;
+    private String categoryName;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private Long createUserId;

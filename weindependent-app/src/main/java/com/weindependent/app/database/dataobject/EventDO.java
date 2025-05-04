@@ -18,6 +18,8 @@ public class EventDO {
     private LocalDateTime eventTime;
     private String location;
     private Long speakerUserId;
+    private Integer categoryId;
+    private String link;
     private Long bannerId;
     private boolean isDeleted;
     private LocalDateTime createTime;

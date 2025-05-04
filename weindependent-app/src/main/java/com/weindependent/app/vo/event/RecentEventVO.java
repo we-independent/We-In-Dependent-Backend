@@ -9,4 +9,5 @@ public class RecentEventVO {
     private String summary;
     private String eventTime;
     private String bannerUrl;
+    boolean isBookmarked;
 }
