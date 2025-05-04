@@ -59,6 +59,45 @@
         where article_id = #{articleId}
     </update>
 
+    <!-- Hurely 只删除这次没有保留的标签 -->
+    <update id="deleteByArticleIdExcludeTags">
+        UPDATE tag_article_relation
+        SET is_deleted = 1,
+            update_user_id = #{userId},
+            update_time = NOW()
+        WHERE article_id = #{articleId}
+        <if test="tagIdList != null and tagIdList.size() > 0">
+            AND tag_id NOT IN
+            <foreach collection="tagIdList" item="tagId" open="(" separator="," close=")">
+                #{tagId}
+            </foreach>
+        </if>
+    </update>
+
+    <!-- Hurely 批量 upsert 插入/恢复标签 -->
+    <insert id="updateAndInsertTagArticleRelations" parameterType="java.util.List">
+        INSERT INTO tag_article_relation (
+            article_id, tag_id, is_deleted,
+            create_user_id, create_time,
+            update_user_id, update_time
+        )
+        VALUES
+        <foreach collection="list" item="relation" separator=",">
+            (#{relation.articleId}, #{relation.tagId}, 0,
+            #{relation.createUserId}, #{relation.createTime},
+            #{relation.updateUserId}, #{relation.createTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            is_deleted = 0,
+            update_user_id = VALUES(update_user_id),
+            update_time = VALUES(update_time)
+    </insert>
+
+    <select id="debug" resultType="map">
+        SELECT * FROM tag_article_relation WHERE article_id = 1327
+    </select>
+
+
     <update id="recoverById" parameterType="Integer">
         update tag_article_relation
         set is_deleted = 0,

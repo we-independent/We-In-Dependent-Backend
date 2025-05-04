@@ -4,6 +4,7 @@ import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 博客文章Mapper接口
@@ -45,6 +46,7 @@ public interface DashboardBlogArticleMapper {
      * @return 结果
      */
     int updateBlogArticle(BlogArticleDO blogArticle);
+    int updateBlogArticleWithBanner(BlogArticleDO blogArticleDO); //Hurely
 
     /**
      * 删除博客文章 , 软删除
@@ -61,6 +63,7 @@ public interface DashboardBlogArticleMapper {
      * @return 结果
      */
     int deleteBlogArticleByIds(Integer[] ids, int updateUserId);
+    int deleteBlogArticleWithRelations(@Param("ids") List<Integer> ids, @Param("updateUserId") Integer updateUserId); //Hurely
 
 
     /**

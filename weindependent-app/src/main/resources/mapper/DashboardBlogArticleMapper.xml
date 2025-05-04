@@ -138,6 +138,48 @@
         </foreach>
     </update>
 
+    <!-- Hurely simplify query -->
+    <update id="deleteBlogArticleWithRelations" parameterType="map">
+        UPDATE blog_article a
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        LEFT JOIN tag_article_relation r ON a.id = r.article_id
+        SET
+            a.is_deleted = 1,
+            a.update_user_id = #{updateUserId},
+            a.update_time = NOW(),
+            i.is_deleted = 1,
+            r.is_deleted = 1,
+            r.update_user_id = #{updateUserId},
+            r.update_time = NOW()
+        WHERE a.id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateBlogArticleWithBanner" parameterType="BlogArticleDO">
+        UPDATE blog_article a
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        SET
+            a.article_source_type = #{articleSourceType},
+            a.source_url = #{sourceUrl},
+            a.author_id = #{authorId},
+            a.banner_img_id = #{bannerImgId},
+            a.summary = #{summary},
+            a.title = #{title},
+            a.content = #{content},
+            a.article_status = #{articleStatus},
+            a.category_id = #{categoryId},
+            a.update_user_id = #{updateUserId},
+            a.update_time = NOW(),
+            i.is_deleted = CASE
+                WHEN a.banner_img_id != #{bannerImgId} THEN 1
+                ELSE i.is_deleted
+            END
+        WHERE a.id = #{id}
+    </update>
+
+
     <!-- Natural Language Mode -->
     <select id="searchByContent"
             parameterType="String"
@@ -186,5 +228,6 @@
         left join blog_image bi on a.banner_img_id = bi.id and bi.is_deleted = 0
         where a.id = #{id}
     </select>
+
 
 </mapper>
