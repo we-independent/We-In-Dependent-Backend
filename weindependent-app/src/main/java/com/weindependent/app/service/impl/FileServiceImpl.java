@@ -158,4 +158,14 @@ public class FileServiceImpl implements FileService {
         return new HttpCredentialsAdapter(credentials);
     }
 
+
+    /**
+     * 暴露接口查重
+     */
+
+    @Override
+    public Drive getDrive() {
+        return this.drive;
+    }
+
 }

@@ -1,32 +1,35 @@
 package com.weindependent.app.service.impl;
 
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
 import com.weindependent.app.database.dataobject.BlogPdfDownloadLogDO;
-import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
-import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfDownloadLogMapper;
+import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
 import com.weindependent.app.service.FileService;
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.mock.web.MockMultipartFile;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-//user download PDF storage in google drive
 @Slf4j
 @Service("blogPdfDriverManagerService")
-public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerService{
-    
+public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerService {
+
+    @Value("${google.drive.folder.blog-pdf}")
+    private String blogPdfFolderId;
+
     @Autowired
     private FileService fileService;
 
@@ -35,165 +38,137 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
 
     @Autowired
     private BlogPdfDownloadLogMapper blogPdfDownloadLogMapper;
-    /**
-     * 统一处理 PDF 下载请求：
-     * - 记录下载日志到blog_pdf_download_logs表
-     * - 下载次数 >=5 时，上传 PDF 到 Google Drive，并插入 blog_pdf 表
-     * - 如果 dashboard blog_pdf 已有记录，则更新时间并返回链接
-     *
-     * @param blogId 博客文章ID
-     * @param pdfBytes PDF内容
-     * @param userId 当前用户ID
-     * @param downloadCount 当前下载次数
-     * @param now 当前时间戳
-     * @return Google Drive 下载链接，如果没有则返回 null（继续返回本地 PDF）
-     */
-    @Override
-    public String handlePdfDownload(Integer blogId, byte[] pdfBytes, Integer userId,int downloadCount, LocalDateTime now){
-        //1. 日志记录
-        BlogPdfDownloadLogDO downloadLog = new BlogPdfDownloadLogDO();
-        downloadLog.setBlogId(blogId);
-        downloadLog.setUserId(userId.longValue());
-        downloadLog.setDownloadTime(now);
-        downloadLog.setIsDeleted(0);
-        downloadLog.setUpdateUserId(userId.longValue());
-        downloadLog.setUpdateTime(now);
-        blogPdfDownloadLogMapper.insertLog(downloadLog);
 
-        //2: 是否已有 Drive 链接
+    @Override
+    public String handlePdfDownload(Integer blogId, byte[] pdfBytes, Integer userId, int downloadCount, LocalDateTime now, boolean forceUpload) {
         BlogPdfDO existing = blogPdfExportMapper.selectByArticleIdIgnoreDeleted(blogId);
-        if (existing != null && existing.getDownloadUrl() != null) {
-            String existingUrl = existing.getDownloadUrl();
-            if (existingUrl.contains("/file/d/")) {
-                String fileId = extractDriveFieldId(existingUrl);
-                if (fileId != null) {
-                    String downloadUrl = buildDownloadUrlFromDriveView(fileId);
-                    existing.setDownloadUrl(downloadUrl);
-                    existing.setUpdateUserId(userId);
-                    existing.setUpdateTime(now);
-                    blogPdfExportMapper.updateById(existing);
-                    return existing.getDownloadUrl();
+
+        // 优先返回已有有效链接
+        if (!forceUpload && existing != null && existing.getDownloadUrl() != null) {
+            String url = existing.getDownloadUrl();
+            if (isValidDriveDownloadLink(url)) {
+                if (downloadCount >= 5) {
+                    insertDownloadLog(blogId, userId, now, url);
+                    log.info("✅ 已存在有效 Drive 下载链接，跳过上传: {}", url);
+                    return url;
+                } else {
+                    log.info("📌 已存在 Drive 下载链接，但未达下载门槛 ({} 次)，不返回链接", downloadCount);
                 }
             }
-            // 如果本来就是 drive.usercontent 的下载链接，则直接返回
-            if (existingUrl.contains("drive.usercontent.google.com") && existingUrl.contains("export=download")) {
-                return existingUrl;
+            // view 链接，转换并更新
+            String fileId = extractDriveFieldId(url);
+            if (fileId != null) {
+                String newUrl = buildDownloadUrlFromDriveView(fileId);
+                existing.setDownloadUrl(newUrl);
+                existing.setUpdateUserId(userId);
+                existing.setUpdateTime(now);
+                blogPdfExportMapper.updateById(existing);
+                insertDownloadLog(blogId, userId, now, newUrl);
+                return newUrl;
             }
         }
-        log.info("是否已存在：{}", existing != null);
-        log.info("📄 pdfBytes 是否为null: {}, 长度为: {}", (pdfBytes == null), (pdfBytes != null ? pdfBytes.length : 0));
 
-        //3.当达到阈值，将生成的pdf上传到Google drive中
-        if (downloadCount >= 5 && pdfBytes != null && pdfBytes.length > 0) {
+        Drive drive = ((FileServiceImpl) fileService).getDrive();
+
+        // 检查 Drive 中是否已存在同名文件（仅当数据库中无记录，且下载次数达标）
+        if (!forceUpload && existing == null && downloadCount >= 5) {
             try {
-                // 生成临时文件
                 String fileName = "WeIndependent_blog_" + blogId + ".pdf";
-                Date generationTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
-                MultipartFile file = new MockMultipartFile(
-                        fileName, // fileName
-                        fileName, // originalFilename
-                        "application/pdf",
-                        pdfBytes  // file content
-                );
+                String query = String.format("name = '%s' and trashed = false and '%s' in parents", fileName, blogPdfFolderId);
+                FileList result = drive.files().list()
+                        .setQ(query)
+                        .setSpaces("drive")
+                        .setFields("files(id, name)")
+                        .execute();
+                List<com.google.api.services.drive.model.File> files = result.getFiles();
 
-
-                UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, "blog-pdf");
-
-                // log.info("🎯 fileId from UploadPdfVO = {}", uploadedFileVo.getFileKey());
-                // log.info("Google Drive 上传返回链接: {}", uploadedFileVo.getFilePath());
-
-
-                String viewUrl = uploadedFileVo.getFilePath();
-                log.info("拿到的链接是: {}", viewUrl);
-
-                //上传后，保护 downloadUrl
-                if (viewUrl == null || viewUrl.isEmpty()) {
-                    throw new RuntimeException("Google Drive 上传成功但返回了空链接！");
+                if (files != null && !files.isEmpty()) {
+                    String downloadUrl = buildDownloadUrlFromDriveView(files.get(0).getId());
+                    log.info("Drive 中已存在同名文件，跳过上传: {}", downloadUrl);
+                    insertDownloadLog(blogId, userId, now, downloadUrl);
+                    return downloadUrl;
                 }
+            } catch (Exception e) {
+                log.warn("Drive 查询失败，准备上传: {}", e.getMessage());
+            }
+        }
+
+        // 满足上传条件或强制上传
+        if ((downloadCount >= 5 || forceUpload) && pdfBytes != null && pdfBytes.length > 0) {
+            try {
+                String fileName = "WeIndependent_blog_" + blogId + ".pdf";
+                MultipartFile file = new MockMultipartFile(fileName, fileName, "application/pdf", pdfBytes);
+                UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, "blog-pdf");
+                String viewUrl = uploadedFileVo.getFilePath();
+                if (viewUrl == null || viewUrl.isEmpty()) throw new RuntimeException("上传成功但返回空链接");
                 String fileId = extractDriveFieldId(viewUrl);
                 String downloadUrl = fileId != null ? buildDownloadUrlFromDriveView(fileId) : viewUrl;
-                log.info("🎯 生成最终 downloadUrl: {}", downloadUrl);
+                log.info("📦 上传成功，downloadUrl: {}", downloadUrl);
 
+                Date generationTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 
-                // 插入或更新 blog_pdf 表
+                BlogPdfDO newPdf = new BlogPdfDO();
+                newPdf.setArticleId(blogId.longValue());
+                newPdf.setFileName(fileName);
+                newPdf.setDownloadUrl(downloadUrl);
+                newPdf.setFilePath(null);
+                newPdf.setPdfFileGenerationTime(generationTime);
+                newPdf.setIsDeleted(0);
+                newPdf.setUpdateTime(now);
+                newPdf.setUpdateUserId(userId);
+
                 if (existing != null) {
-                    // 执行更新
-                    BlogPdfDO newPdf = new BlogPdfDO();
-                    newPdf.setId(existing.getId()); // 必须 setId，否则 updateById 会变 insert
-                    newPdf.setArticleId(blogId.longValue());
-                    newPdf.setFileName(fileName);
-                    newPdf.setDownloadUrl(downloadUrl);
-                    newPdf.setFilePath(null);
-                    newPdf.setPdfFileGenerationTime(generationTime);
+                    newPdf.setId(existing.getId());
                     newPdf.setCreateUserId(existing.getCreateUserId());
                     newPdf.setCreateTime(existing.getCreateTime());
-                    newPdf.setUpdateUserId(userId);
-                    newPdf.setUpdateTime(now);
-                    newPdf.setIsDeleted(0);
-                    blogPdfExportMapper.updateById(newPdf); // 更新而不是插入
+                    blogPdfExportMapper.updateById(newPdf);
                 } else {
-                    // 执行插入
-                    BlogPdfDO newPdf = new BlogPdfDO();
-                    newPdf.setArticleId(blogId.longValue());
-                    newPdf.setFileName(fileName);
-                    newPdf.setDownloadUrl(downloadUrl);
-                    newPdf.setFilePath(null);
-                    newPdf.setPdfFileGenerationTime(generationTime);
                     newPdf.setCreateUserId(userId);
                     newPdf.setCreateTime(now);
-                    newPdf.setUpdateUserId(userId);
-                    newPdf.setUpdateTime(now);
-                    newPdf.setIsDeleted(0);
-                    blogPdfExportMapper.insertPdf(newPdf); // 插入
+                    blogPdfExportMapper.insertPdf(newPdf);
                 }
-                
-                // 插入或更新 blog_pdf_storage 表
-                BlogPdfStorageDO storage = blogPdfExportMapper.selectStorageByBlogId(blogId);
-                if (storage != null) {
-                    storage.setPdfContent(pdfBytes);
-                    storage.setFileName(fileName);
-                    storage.setUpdateUserId(userId);
-                    storage.setUpdateTime(now);
-                    blogPdfExportMapper.updateStorageByBlogId(storage);
-                } else {
-                    BlogPdfStorageDO newStorage = new BlogPdfStorageDO();
-                    newStorage.setBlogId(blogId);
-                    newStorage.setPdfContent(pdfBytes);
-                    newStorage.setFileName(fileName);
-                    newStorage.setPdfGenerationTime(generationTime);
-                    newStorage.setIsDeleted(0);
-                    newStorage.setCreateUserId(userId);
-                    newStorage.setCreateTime(now);
-                    newStorage.setUpdateUserId(userId);
-                    newStorage.setUpdateTime(now);
-                    blogPdfExportMapper.insertStorage(newStorage);
-                }
-                log.info("最终 downloadUrl：{}", downloadUrl);
+
+                insertDownloadLog(blogId, userId, now, downloadUrl);
                 return downloadUrl;
-            }catch (Exception e) {
-                throw new RuntimeException("Google Drive 上传失败", e);
+
+            } catch (Exception e) {
+                log.error("❌ PDF 上传失败", e);
+                throw new RuntimeException("上传失败", e);
             }
-        }else if (downloadCount >= 5 && (pdfBytes == null || pdfBytes.length == 0)) {
-            log.warn("⚠️ PDF 内容为空，跳过上传 Google Drive");
+        } else {
+            log.warn("⚠️ 条件不满足，未上传 PDF");
         }
 
-        //4: 返回 null，控制层将继续返回本地字节流
+        // 未满足上传，返回 null
+        insertDownloadLog(blogId, userId, now, null);
         return null;
+    }
+    @Override
+    public int getDownloadCount(Long blogId) {
+        return blogPdfDownloadLogMapper.getDownloadCount(blogId);
+    }
+    private void insertDownloadLog(Integer blogId, Integer userId, LocalDateTime now, String downloadUrl) {
+        BlogPdfDownloadLogDO logDO = new BlogPdfDownloadLogDO();
+        logDO.setBlogId(blogId);
+        logDO.setUserId(userId.longValue());
+        logDO.setDownloadTime(now);
+        logDO.setDownloadUrl(downloadUrl);
+        logDO.setIsDeleted(0);
+        logDO.setUpdateUserId(userId.longValue());
+        logDO.setUpdateTime(now);
+        blogPdfDownloadLogMapper.insertLog(logDO);
+    }
 
+    private String extractDriveFieldId(String url) {
+        Matcher matcher = Pattern.compile("file/d/([^/?]+)").matcher(url);
+        return matcher.find() ? matcher.group(1) : null;
+    }
+
+    private boolean isValidDriveDownloadLink(String url) {
+        return url != null && url.contains("drive.usercontent.google.com") && url.contains("export=download");
     }
 
     private String buildDownloadUrlFromDriveView(String fileId) {
         return "https://drive.usercontent.google.com/uc?id=" + fileId + "&export=download";
     }
-
-    private String extractDriveFieldId(String url){
-        // 提取 https://drive.google.com/file/d/FILE_ID/view 的 FILE_ID
-        Pattern pattern = Pattern.compile("file/d/([^/?]+)");
-        Matcher matcher = pattern.matcher(url);
-        if (matcher.find()) {
-            return matcher.group(1); // group(1) 就是 fileId
-        }
-        return null;
-    }
-
 }

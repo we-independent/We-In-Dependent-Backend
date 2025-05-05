@@ -103,7 +103,7 @@
             LEFT JOIN category c ON ba.category_id = c.id
             LEFT JOIN editor_picks ep ON ba.id = ep.article_id AND ep.status = 1
         WHERE ba.is_deleted = 0
-        ORDER BY savedCount DESC
+        ORDER BY savedCount DESC, ba.update_time DESC
             LIMIT #{topN}
     </select>
 
