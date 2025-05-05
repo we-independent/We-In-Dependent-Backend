@@ -11,6 +11,12 @@ import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,10 +92,10 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章")
-    @PutMapping
-    public boolean edit(@RequestBody BlogArticleEditQry blogArticle) {
+    @PutMapping("/{id}")
+    public boolean edit(@PathVariable("id") Integer id, @RequestBody @Valid BlogArticleEditQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
-
+        blogArticle.setId(id);
         return blogArticleService.updateBlogArticle(blogArticle, userId) > 0;
     }
 
@@ -99,8 +105,12 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除博客文章")
-    @DeleteMapping("/{ids}")
-    public boolean remove(@PathVariable Integer[] ids) {
+@DeleteMapping("/{ids}")
+public boolean remove(@PathVariable @Valid List<Integer> ids) {
+    // List<Integer> idList = Arrays.stream(ids.split(","))
+    //                              .map(Integer::parseInt)
+    //                              .collect(Collectors.toList());
+
         int updateUserId = StpUtil.getLoginIdAsInt();
         return blogArticleService.deleteBlogArticleByIds(ids, updateUserId) > 0;
     }

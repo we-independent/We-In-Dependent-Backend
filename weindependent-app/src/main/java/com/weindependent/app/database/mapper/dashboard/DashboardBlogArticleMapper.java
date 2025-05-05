@@ -62,7 +62,7 @@ public interface DashboardBlogArticleMapper {
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    int deleteBlogArticleByIds(Integer[] ids, int updateUserId);
+    int deleteBlogArticleByIds(List<Integer> ids, int updateUserId);
     int deleteBlogArticleWithRelations(@Param("ids") List<Integer> ids, @Param("updateUserId") Integer updateUserId); //Hurely
 
 

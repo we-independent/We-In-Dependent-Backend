@@ -63,8 +63,7 @@
     <update id="deleteByArticleIdExcludeTags">
         UPDATE tag_article_relation
         SET is_deleted = 1,
-            update_user_id = #{userId},
-            update_time = NOW()
+            update_user_id = #{userId}
         WHERE article_id = #{articleId}
         <if test="tagIdList != null and tagIdList.size() > 0">
             AND tag_id NOT IN
@@ -78,24 +77,23 @@
     <insert id="updateAndInsertTagArticleRelations" parameterType="java.util.List">
         INSERT INTO tag_article_relation (
             article_id, tag_id, is_deleted,
-            create_user_id, create_time,
-            update_user_id, update_time
+            create_user_id,
+            update_user_id
         )
         VALUES
         <foreach collection="list" item="relation" separator=",">
             (#{relation.articleId}, #{relation.tagId}, 0,
-            #{relation.createUserId}, #{relation.createTime},
-            #{relation.updateUserId}, #{relation.createTime})
+            #{relation.createUserId}, 
+            #{relation.updateUserId})
         </foreach>
         ON DUPLICATE KEY UPDATE
-            is_deleted = 0,
-            update_user_id = VALUES(update_user_id),
-            update_time = VALUES(update_time)
+            is_deleted = IF(is_deleted = 1, 0, is_deleted),
+            update_user_id = IF(is_deleted = 1, VALUES(update_user_id),update_user_id)
     </insert>
 
-    <select id="debug" resultType="map">
+    <!-- <select id="debug" resultType="map">
         SELECT * FROM tag_article_relation WHERE article_id = 1327
-    </select>
+    </select> -->
 
 
     <update id="recoverById" parameterType="Integer">

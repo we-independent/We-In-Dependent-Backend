@@ -2,6 +2,7 @@ package com.weindependent.app.service.impl.dashboard;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -129,24 +130,42 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
         blogArticleDO.setCreateUserId(userId);
         blogArticleDO.setUpdateUserId(userId);
-        blogArticleDO.setCreateTime(LocalDateTime.now());
 
         if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
-            throw new RuntimeException("Failed to add Article to database");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ blogArticle.getId());
         }
 
-        //2. 新增 tag article relation
-        for ( Integer tagId : blogArticle.getTags()) {
+        // //2. 新增 tag article relation
+        // for ( Integer tagId : blogArticle.getTags()) {
+        //     TagArticleRelationDO relation = new TagArticleRelationDO();
+        //     relation.setArticleId(blogArticleDO.getId());
+        //     relation.setTagId(tagId);
+        //     relation.setCreateUserId(userId);
+        //     // relation.setCreateTime(LocalDateTime.now());
+        //     relation.setUpdateUserId(userId);
+
+        //     if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
+        //         throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to add TagArticleRelation to database, tagName: " + tagId + ", articleId: " + blogArticleDO.getId());
+        //     }
+        // }
+
+        //Hurely change to batch insert function
+        // 2. 批量构造 tag article relation 对象
+        List<TagArticleRelationDO> tagRelations = blogArticle.getTags().stream().map(tagId -> {
             TagArticleRelationDO relation = new TagArticleRelationDO();
             relation.setArticleId(blogArticleDO.getId());
             relation.setTagId(tagId);
             relation.setCreateUserId(userId);
-            relation.setCreateTime(LocalDateTime.now());
             relation.setUpdateUserId(userId);
+            return relation;
+        }).collect(Collectors.toList());
 
-            if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
-                throw new RuntimeException("Failed to add TagArticleRelation to database, tagName: " + tagId + ", articleId: " + blogArticleDO.getId());
-            }
+        // 3. 批量插入或更新
+        if (!tagRelations.isEmpty()) {
+            int upserted = dashboardTagArticleRelationMapper.updateAndInsertTagArticleRelations(tagRelations);
+            if (upserted == 0) {
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to add TagArticleRelation to database, tagName: " + blogArticle.getTags() + ", articleId: " + blogArticleDO.getId());
+             }
         }
 
         return 1;
@@ -235,16 +254,12 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 
     @Override
     public int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
-        System.out.println("🟠 前端传入 tags = " + blogArticle.getTags());
-
-        if (blogArticle.getId() == null) {
-            throw new IllegalArgumentException("Blog ID can not be null!");
-        }
+        System.out.println("前端传入 tags = " + blogArticle.getTags());
+        
         // 1. 修改blogArticle信息
         BlogArticleDO blogArticleDO = new BlogArticleDO();
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
         blogArticleDO.setUpdateUserId(userId);
-        blogArticleDO.setUpdateTime(LocalDateTime.now());
     
         // 2. 更新文章和 banner（旧 banner 自动逻辑软删除）
         int result = blogArticleMapper.updateBlogArticleWithBanner(blogArticleDO);
@@ -256,26 +271,24 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         dashboardTagArticleRelationMapper.deleteByArticleIdExcludeTags(blogArticle.getId(), tagList, userId);
         
         // 4. 构造需要 upsert 的标签关系对象
-        List<TagArticleRelationDO> tagRelations = blogArticle.getTags().stream().map(tagId -> {
+        List<TagArticleRelationDO> tagRelations = tagList.stream().map(tagId -> {
             TagArticleRelationDO relation = new TagArticleRelationDO();
             relation.setArticleId(blogArticle.getId());
             relation.setTagId(tagId);
             relation.setCreateUserId(userId);
-            relation.setCreateTime(LocalDateTime.now());
             relation.setUpdateUserId(userId);
-            relation.setUpdateTime(LocalDateTime.now());
             return relation;
         }).collect(Collectors.toList());
 
         // 5. 批量update and insert 
-        System.out.println("🟡 即将 upsert tag relations = " + JSON.toJSONString(tagRelations));
+        System.out.println("即将 upsert tag relations = " + JSON.toJSONString(tagRelations));
         if(!tagRelations.isEmpty()){
             int upserted = dashboardTagArticleRelationMapper.updateAndInsertTagArticleRelations(tagRelations);
             if(upserted == 0){
                 throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to upsert tag-article relations for articleId = " + blogArticle.getId());
             }
         }
-        System.out.println("💡 tagRelations = " + JSON.toJSONString(tagRelations));
+        System.out.println("tagRelations = " + JSON.toJSONString(tagRelations));
 
         return 1;
     }
@@ -298,16 +311,16 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     // }
     //Hurely change to single query verion
     @Override
-    public int deleteBlogArticleByIds(Integer[] ids, int updateUserId) {
-        if (ids == null || ids.length == 0) {
+    public int deleteBlogArticleByIds(List<Integer> ids, int updateUserId) {
+        if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("Blog ID can not be null!");
         }
-        List<Integer> idList = Arrays.stream(ids).collect(Collectors.toList());
+        // List<Integer> idList = Arrays.stream(ids).collect(Collectors.toList());
 
-        int result = blogArticleMapper.deleteBlogArticleWithRelations(idList, updateUserId);
+        int result = blogArticleMapper.deleteBlogArticleWithRelations(ids, updateUserId);
 
         if (result == 0) {
-            throw new RuntimeException("删除博客文章失败（未更新任何记录）");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ ids);
         }
 
         return result;
@@ -328,12 +341,12 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
 
     //Hurely change to single query version
     @Override
-    public int deleteBlogArticleById(Integer id) {
+    public int deleteBlogArticleById(List<Integer> id) {
         if (id == null) {
             throw new IllegalArgumentException("博客 ID 不能为空");
         }
-        Long userId = StpUtil.getLoginIdAsLong(); // 动态获取当前登录用户
-        return deleteBlogArticleByIds(new Integer[]{id}, userId.intValue());
+        int userId = StpUtil.getLoginIdAsInt(); // 动态获取当前登录用户
+        return deleteBlogArticleByIds(id, userId);
     }
 
     /**
