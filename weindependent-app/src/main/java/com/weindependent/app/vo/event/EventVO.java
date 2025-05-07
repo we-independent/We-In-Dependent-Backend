@@ -1,6 +1,5 @@
 package com.weindependent.app.vo.event;
 
-import com.weindependent.app.vo.UserVO;
 import lombok.Data;
 
 import java.time.LocalDateTime;

@@ -6,10 +6,11 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IDashboardEventService;
-import com.weindependent.app.vo.UserVO;
-import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
+import com.weindependent.app.vo.event.dashboard.DashboardEventVOs;
+import com.weindependent.app.vo.user.UserVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -41,9 +42,8 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @SignatureAuth
     @PostMapping("/list")
-    public List<DashboardEventVO> list()  {
-        int userId = StpUtil.getLoginIdAsInt();
-        return IDashboardEventService.getAll();
+    public DashboardEventVOs list(@Valid @RequestBody EventListQry eventListQry)  {
+        return IDashboardEventService.list(eventListQry);
     }
 
     /**
@@ -78,7 +78,7 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @SignatureAuth
     @GetMapping("/user/registered/{id}")
-    public List<UserDO> getRegisteredUsers(@PathVariable Long id,
+    public UserVOs getRegisteredUsers(@PathVariable Long id,
                                            @RequestParam(defaultValue = "1") int page,
                                            @RequestParam(defaultValue = "10") int size) {
         return IDashboardEventService.getRegisteredUsers(id, page, size);
@@ -88,9 +88,9 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @SignatureAuth
     @GetMapping("/user/bookmark/{id}")
-    public List<UserDO> getBookmarkedUsers(@PathVariable Long id,
-                                           @RequestParam(defaultValue = "1") int page,
-                                           @RequestParam(defaultValue = "10") int size) {
+    public UserVOs getBookmarkedUsers(@PathVariable Long id,
+                                      @RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
         return IDashboardEventService.getBookmarkedUsers(id, page, size);
     }
 }

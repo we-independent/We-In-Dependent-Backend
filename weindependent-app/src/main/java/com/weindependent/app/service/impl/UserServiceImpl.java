@@ -2,15 +2,13 @@ package com.weindependent.app.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.convertor.UserConvertor;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
-import com.weindependent.app.service.EmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
-import com.weindependent.app.vo.UserVO;
+import com.weindependent.app.vo.user.UserVO;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 

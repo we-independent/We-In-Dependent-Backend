@@ -27,4 +27,5 @@ public class DashboardEventVO {
     private String createUserName;
     private Long updateUserId;
     private String updateUserName;
+    private Integer pages;
 }
