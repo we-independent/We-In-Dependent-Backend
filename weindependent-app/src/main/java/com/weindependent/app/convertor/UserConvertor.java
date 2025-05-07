@@ -2,7 +2,7 @@ package com.weindependent.app.convertor;
 
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.GoogleUserDTO;
-import com.weindependent.app.vo.UserVO;
+import com.weindependent.app.vo.user.UserVO;
 
 public class UserConvertor {
 

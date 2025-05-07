@@ -2,8 +2,6 @@ package com.weindependent.app.convertor;
 
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.dto.EventQry;
-import com.weindependent.app.vo.event.EventVO;
-import com.weindependent.app.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 
 public class EventConverter {

@@ -3,6 +3,7 @@ package com.weindependent.app.database.mapper.dashboard;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,11 +28,11 @@ public interface DashboardEventMapper {
 
     int delete(@Param("ids") List<Long> ids, @Param("updateUserId") Long updateUserId);
 
-    List<DashboardEventVO> getAll();
+    List<DashboardEventVO> list(EventListQry eventListQry);
 
-    List<UserDO> getRegisteredUsers(Long id, Integer size, Integer offset);
+    List<UserDO> getRegisteredUsers(Long id);
 
-    List<UserDO> getBookmarkedUsers(Long id, Integer size, Integer offset);
+    List<UserDO> getBookmarkedUsers(Long id);
 }
 
 
