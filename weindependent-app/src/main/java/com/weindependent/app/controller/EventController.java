@@ -32,6 +32,7 @@ public class EventController {
 
 
     @Operation(summary = "Get event by ID")
+    @SignatureAuth
     @GetMapping("/{id}")
     public EventVO getEventById(@PathVariable Long id) {
         return IEventService.getEventById(id);
