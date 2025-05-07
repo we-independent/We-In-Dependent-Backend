@@ -9,9 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface EventMapper {
-    List<RecentEventVO> getRecent(@Param("offset") int offset,
-                                  @Param("size") int size,
-                                  @Param("userId") int userId);
+    List<RecentEventVO> getRecent(Integer userId);
 
     EventVO getById(@Param("id") Long id,
                     @Param("userId") Integer userId);

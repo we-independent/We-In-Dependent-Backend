@@ -1,12 +1,16 @@
 package com.weindependent.app.service.impl.dashboard;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.EventConverter;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
+import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
@@ -15,6 +19,8 @@ import com.weindependent.app.service.IDashboardEventService;
 import com.weindependent.app.utils.ImageResizeUtil;
 import com.weindependent.app.vo.UploadedFileVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
+import com.weindependent.app.vo.event.dashboard.DashboardEventVOs;
+import com.weindependent.app.vo.user.UserVOs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,8 +43,13 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     private DashboardEventMapper dashboardEventMapper;
 
     @Override
-    public List<DashboardEventVO> getAll() {
-        return dashboardEventMapper.getAll();
+    public DashboardEventVOs list(EventListQry eventListQry) {
+        Page page = PageHelper.startPage(eventListQry.getPageNum(), eventListQry.getPageSize());
+        List<DashboardEventVO> events= dashboardEventMapper.list(eventListQry);
+        DashboardEventVOs dashboardEventVOs = new DashboardEventVOs();
+        dashboardEventVOs.setEvents(events);
+        dashboardEventVOs.setPages(page.getPages());
+        return dashboardEventVOs;
     }
 
 
@@ -97,15 +108,23 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     }
 
     @Override
-    public List<UserDO> getRegisteredUsers(Long id, Integer page, Integer size) {
-        Integer offset = (page - 1) * size;
-        return dashboardEventMapper.getRegisteredUsers(id,size,offset);
+    public UserVOs getRegisteredUsers(Long id, Integer page, Integer size) {
+        Page p = PageHelper.startPage(page,size);
+        List<UserDO> userDOs = dashboardEventMapper.getRegisteredUsers(id);
+        UserVOs userVOs = new UserVOs();
+        userVOs.setUsers(userDOs);
+        userVOs.setPages(p.getPages());
+        return userVOs;
     }
 
     @Override
-    public List<UserDO> getBookmarkedUsers(Long id, Integer page, Integer size) {
-        Integer offset = (page - 1) * size;
-        return dashboardEventMapper.getBookmarkedUsers(id,size,offset);
+    public UserVOs getBookmarkedUsers(Long id, Integer page, Integer size) {
+        Page p = PageHelper.startPage(page,size);
+        List<UserDO> userDOs =  dashboardEventMapper.getBookmarkedUsers(id);
+        UserVOs userVOs = new UserVOs();
+        userVOs.setUsers(userDOs);
+        userVOs.setPages(p.getPages());
+        return userVOs;
     }
 
 
