@@ -10,13 +10,21 @@
             e.summary,
             e.event_time,
             f.file_path AS bannerUrl,
-            CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            <choose>
+                <when test="userId != null">
+                    CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+                </when>
+                <otherwise>
+                    false AS isBookMarked
+                </otherwise>
+            </choose>
         FROM event e
-                 LEFT JOIN event_image f ON e.banner_id = f.id
+             LEFT JOIN event_image f ON e.banner_id = f.id
+             <if test="userId != null">
                  LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
+             </if>
         WHERE e.is_deleted = 0
         ORDER BY e.event_time DESC
-        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.vo.event.EventVO">
