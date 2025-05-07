@@ -1,5 +1,6 @@
 package com.weindependent.app.service.impl;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageHelper;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
@@ -21,7 +22,10 @@ public class EventServiceImpl implements IEventService {
 
     @Override
     public List<RecentEventVO> getRecentEvents(int page, int size) {
-        int userId = StpUtil.getLoginIdAsInt();
+        Integer userId =null;
+        if(StpUtil.isLogin()){
+            userId=StpUtil.getLoginIdAsInt();
+        }
         PageHelper.startPage(page, size);
         List<RecentEventVO> recentEventVOS = eventMapper.getRecent(userId);
         if(recentEventVOS == null ){
@@ -34,7 +38,10 @@ public class EventServiceImpl implements IEventService {
 
     @Override
     public EventVO getEventById(Long id) {
-        int userId = StpUtil.getLoginIdAsInt();
+        Integer userId =null;
+        if(StpUtil.isLogin()){
+            userId=StpUtil.getLoginIdAsInt();
+        }
         EventVO eventDO= eventMapper.getById(id,userId);
         if (eventDO == null) {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
