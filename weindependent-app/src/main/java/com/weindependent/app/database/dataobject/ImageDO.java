@@ -5,8 +5,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class BlogImageDO {
-    private String id;
+public class ImageDO {
+    private Long id;
     private String category;
     private String fileName;
     private String fileKey;

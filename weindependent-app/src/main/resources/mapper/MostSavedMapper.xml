@@ -103,12 +103,12 @@
             LEFT JOIN category c ON ba.category_id = c.id
             LEFT JOIN editor_picks ep ON ba.id = ep.article_id AND ep.status = 1
         WHERE ba.is_deleted = 0
-        ORDER BY savedCount DESC
+        ORDER BY savedCount DESC, ba.update_time DESC
             LIMIT #{topN}
     </select>
 
     <select id="getMostSavedArticlesExcludeList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
-        SELECT 
+        SELECT
             a.id,
             a.title,
             a.update_time AS time,
@@ -128,16 +128,32 @@
         WHERE a.is_deleted = 0
             AND a.article_status = 'published'
             AND COALESCE(s.savedCount, 0) > 0
-            AND a.category_id IN ("1","2","3","4","7") 
+            AND a.category_id IN ("1","2","3","4","7")
         <if test="excludeArticleId != null and excludeArticleId.size() > 0">
             AND a.id NOT IN
             <foreach collection="excludeArticleId" item="id" open="(" separator="," close=")">
                 #{id}
             </foreach>
         </if>
-        ORDER BY savedCount DESC, a.update_time DESC 
+        ORDER BY savedCount DESC, a.update_time DESC
         LIMIT #{needed}
     </select>
+    <select id="getMostSavedSince"
+            resultType="com.weindependent.app.database.dataobject.EditorPickDO">
+        select id, article_id, create_time, create_user_id, status
+            from we_independent_local.most_saved
+        where create_time > #{lastUpdateTime}
+    </select>
 
+    <update id="setAllMostSavedAsInvalid">
+        UPDATE  most_saved set status = 0 where status = 1;
+    </update>
 
+    <insert id="AddNewMostSaved">
+        insert into most_saved(`article_id`,`create_user_id`) select article_id, 1
+        from save_list_article
+        group by article_id
+        ORDER BY COUNT(*) DESC
+        LIMIT 2
+    </insert>
 </mapper>

@@ -7,7 +7,9 @@ import java.util.List;
 
 @Data
 public class BlogArticleEditQry {
+
     /** 文章ID */
+    @NotNull(message = "Blog ID can not be null")
     private Integer id;
 
     /** 文章来源类型 */
@@ -38,11 +40,11 @@ public class BlogArticleEditQry {
     private String articleStatus;
 
     /** 文章分类 */
-    @NotNull
+    @NotNull(message = "分类 ID（categoryId）不能为空")
     private Integer categoryId;
 
     /** 0-未删除, 1-已删除 */
-    @NotNull
+    // @NotNull(message = "是否删除（isDeleted）不能为空")
     private Boolean isDeleted;
 
     private List<Integer>  tags;

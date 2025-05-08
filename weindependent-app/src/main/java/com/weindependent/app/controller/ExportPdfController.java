@@ -1,16 +1,13 @@
 package com.weindependent.app.controller;
-import com.weindependent.app.service.IBlogPdfDownloadService;
+
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.service.IBlogPdfExportService;
-import com.weindependent.app.database.dataobject.BlogPdfStorageDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.exception.ResponseException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-
-import com.weindependent.app.service.IBlogPdfStorageService;
 import com.weindependent.app.service.UserService;
 
 import java.time.LocalDateTime;
@@ -24,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-
 import cn.dev33.satoken.stp.StpUtil;
 
 @Slf4j
@@ -37,14 +32,6 @@ public class ExportPdfController {
     //生成PDF（动态生成)    
     @Autowired
     private IBlogPdfExportService blogPdfExportService;
-
-    // 用于操作数据库中PDF存储记录，存入BLOB字段
-    @Autowired
-    private IBlogPdfStorageService blogPdfStorageService;
-
-    // 用于记录每次下载操作的日志（保存下载用户、下载时间等）
-    @Autowired
-    private IBlogPdfDownloadService blogPdfDownloadService;
 
     @Autowired
     private UserService userService;    
@@ -84,6 +71,7 @@ public class ExportPdfController {
         }
 
         LocalDateTime now = LocalDateTime.now(); // 当前时间
+        int downloadCount = blogPdfDriveManagerService.getDownloadCount(blogId.longValue());
 
         // // 测试时可使用写死的userid
         // Long userId = 1L;
@@ -92,10 +80,18 @@ public class ExportPdfController {
 
         //Step 2 After user login, now handling pdf download request 
         byte[] pdfBytes = blogPdfExportService.generatePdf(blogId);
-        int downloadCount = blogPdfDownloadService.getDownloadCount(blogId.longValue());
         //Step 2.2 Check if blog already in google drive
-        String existingDriveUrl = blogPdfDriveManagerService.handlePdfDownload(blogId, pdfBytes, userId.intValue(), downloadCount, now);
+        String existingDriveUrl = blogPdfDriveManagerService.handlePdfDownload(blogId, pdfBytes, userId.intValue(), downloadCount, now, false);
         log.info("📂 existingDriveUrl = {}", existingDriveUrl);
+
+        if (existingDriveUrl == null || !isValidDriveUrl(existingDriveUrl)) {
+            if (downloadCount >= 5) {
+                byte[] regenerated = blogPdfExportService.generatePdf(blogId);
+                existingDriveUrl = blogPdfDriveManagerService.handlePdfDownload(
+                    blogId, regenerated, userId.intValue(), downloadCount, now, true
+                );
+            }
+        }
 
         if (existingDriveUrl != null && isValidDriveUrl(existingDriveUrl)) {
             Map<String, String> result = new HashMap<>();
@@ -103,10 +99,11 @@ public class ExportPdfController {
             return result;
         }
 
+        byte[] finalPdf = (pdfBytes != null) ? pdfBytes : blogPdfExportService.generatePdf(blogId);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=WeIndependent_blog_" + blogId + ".pdf")
                 .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
-                .body(pdfBytes);
+                .body(finalPdf);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

@@ -1,7 +1,6 @@
-package com.weindependent.app.vo;
+package com.weindependent.app.vo.user;
 
 import lombok.Data;
-import org.springframework.core.annotation.AliasFor;
 
 @Data
 public class UserVO {

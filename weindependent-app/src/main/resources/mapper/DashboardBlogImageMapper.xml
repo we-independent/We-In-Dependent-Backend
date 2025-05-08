@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper">
-    <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.BlogImageDO">
+    <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.ImageDO">
         SELECT * FROM blog_image
       <where>
           <if test="category!=null and category!=''">
@@ -28,7 +28,7 @@
 
     </select>
 
-    <select id="findById" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogImageDO">
+    <select id="findById" parameterType="int" resultType="com.weindependent.app.database.dataobject.ImageDO">
         SELECT * FROM blog_image WHERE id = #{id}
     </select>
 
@@ -36,12 +36,12 @@
         SELECT * FROM blog_image
     </select>
 
-    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.BlogImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.ImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO blog_image (category, file_name,file_key, file_type, file_path)
         VALUES (#{category}, #{fileName},#{fileKey}, #{fileType}, #{filePath})
     </insert>
 
-    <update id="update" parameterType="com.weindependent.app.database.dataobject.BlogImageDO">
+    <update id="update" parameterType="com.weindependent.app.database.dataobject.ImageDO">
         UPDATE blog_image
         <set>
             <if test="category != null">category = #{category},</if>

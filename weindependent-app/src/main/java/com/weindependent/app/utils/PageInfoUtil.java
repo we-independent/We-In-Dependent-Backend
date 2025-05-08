@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.UserConvertor;
 import com.weindependent.app.database.dataobject.UserDO;
-import com.weindependent.app.vo.UserVO;
+import com.weindependent.app.vo.user.UserVO;
 
 import java.util.HashMap;
 import java.util.List;

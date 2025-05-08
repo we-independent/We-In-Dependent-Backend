@@ -6,7 +6,6 @@ import com.weindependent.app.database.dataobject.EditorPickDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleMapper;
 import com.weindependent.app.database.mapper.weindependent.EditorPickMapper;
 import com.weindependent.app.database.mapper.weindependent.MostSavedMapper;
-import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.MostSavedService;
@@ -16,12 +15,14 @@ import com.weindependent.app.dto.BlogArticleCardQry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.weindependent.app.utils.CommonUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MostSavedServiceImpl implements MostSavedService {
@@ -103,6 +104,31 @@ public class MostSavedServiceImpl implements MostSavedService {
     public List<BlogArticleCardQry> getMostSavedArticlesExcludeList(List<Integer> excludeIds, int needed) {
         return mostSavedMapper.getMostSavedArticlesExcludeList(excludeIds, needed);
     }
+
+    /**
+     *   <p>更新MostSaved，每个月的1号和15号 00：01 由spring scheduling 定时任务调用</p>
+     *   方法内步骤：
+     *   1. 查询数据库上次更新日期后是否有mostsave更新，时区需要统一为数据库时间。
+     *   2. 如果没有mostsave更新，计算并更新mostsave。
+     */
+    @Override
+    @Transactional()
+    public int setMostSavedEveryTwoWeeks() {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+        LocalDateTime lastUpdateTime = LocalDateTime.of(
+                now.getMonth() == Month.JANUARY && now.getDayOfMonth() == 1 ? now.getYear() - 1 : now.getYear()
+                , now.getDayOfMonth() == 1 ? now.getMonth().minus(1) : now.getMonth()
+                , now.getDayOfMonth() == 1 ? 15 : 1, 1, 0);
+
+        List<EditorPickDO> recentMostSaveList = mostSavedMapper.getMostSavedSince(lastUpdateTime);
+
+        if (recentMostSaveList == null || recentMostSaveList.isEmpty()) {
+            mostSavedMapper.setAllMostSavedAsInvalid();
+           return mostSavedMapper.AddNewMostSaved();
+        }
+        return -1;
+    }
+
 
     @Override
     public List<EditorPickVO> getCurrentMostSavedEditorPickVO()  {

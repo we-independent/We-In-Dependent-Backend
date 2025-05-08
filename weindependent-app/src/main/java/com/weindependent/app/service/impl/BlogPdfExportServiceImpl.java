@@ -23,14 +23,14 @@ import org.thymeleaf.context.Context;
 @Service("blogPdfExportServiceImpl")
 public class BlogPdfExportServiceImpl implements IBlogPdfExportService  {
     @Autowired
-    private BlogPdfExportMapper blogpdfMapper;
+    private BlogPdfExportMapper blogpdfExpMapper;
 
     @Autowired
     private TemplateEngine templateEngine;
 
     @Override
     public byte[] generatePdf(Integer id) {
-        BlogArticleDO blog = blogpdfMapper.selectBlogPdfExpById(id);
+        BlogArticleDO blog = blogpdfExpMapper.selectBlogPdfExpById(id);
         if (blog == null) {
             throw new RuntimeException("Blog not found. ID=" + id);
         }
