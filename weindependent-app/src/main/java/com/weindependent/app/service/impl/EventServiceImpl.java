@@ -50,7 +50,7 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public void register(Long id) {
+    public String register(Long id) {
         int userId = StpUtil.getLoginIdAsInt();
         int affectedRow = 0;
         try {
@@ -67,6 +67,8 @@ public class EventServiceImpl implements IEventService {
         if(affectedRow == 0){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Cannot find event");
         }
+        EventVO eventVO =eventMapper.getById(id,null);
+        return eventVO.getLink();
     }
 
     @Override

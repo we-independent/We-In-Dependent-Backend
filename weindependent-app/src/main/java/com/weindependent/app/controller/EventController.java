@@ -41,7 +41,7 @@ public class EventController {
     @Operation(summary = "Register an event by ID")
     @SignatureAuth
     @PostMapping("/register/{id}")
-    public void register(@PathVariable Long id) {IEventService.register(id);}
+    public String register(@PathVariable Long id) { return IEventService.register(id);}
 
     @Operation(summary = "Unregister an event by ID")
     @SignatureAuth
