@@ -61,6 +61,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 String newUrl = buildDownloadUrlFromDriveView(fileId);
                 existing.setDownloadUrl(newUrl);
                 existing.setUpdateUserId(userId);
+                existing.setFileKey(fileId);
                 existing.setUpdateTime(now);
                 blogPdfExportMapper.updateById(existing);
                 insertDownloadLog(blogId, userId, now, newUrl);
@@ -101,9 +102,10 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, "blog-pdf");
                 String viewUrl = uploadedFileVo.getFilePath();
                 if (viewUrl == null || viewUrl.isEmpty()) throw new RuntimeException("上传成功但返回空链接");
-                String fileId = extractDriveFieldId(viewUrl);
+                // String fileId = extractDriveFieldId(viewUrl);
+                String fileId = uploadedFileVo.getFileKey();
                 String downloadUrl = fileId != null ? buildDownloadUrlFromDriveView(fileId) : viewUrl;
-                log.info("📦 上传成功，downloadUrl: {}", downloadUrl);
+                log.info("📦 上传成功, downloadUrl: {}", downloadUrl);
 
                 Date generationTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 
@@ -112,6 +114,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 newPdf.setFileName(fileName);
                 newPdf.setDownloadUrl(downloadUrl);
                 newPdf.setFilePath(null);
+                newPdf.setFileKey(fileId);
                 newPdf.setPdfFileGenerationTime(generationTime);
                 newPdf.setIsDeleted(0);
                 newPdf.setUpdateTime(now);
