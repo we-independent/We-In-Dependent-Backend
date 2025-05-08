@@ -9,6 +9,7 @@ import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IDashboardEventService;
+import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVOs;
 import com.weindependent.app.vo.user.UserVOs;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,6 +45,14 @@ public class DashboardEventController {
     @PostMapping("/list")
     public DashboardEventVOs list(@Valid @RequestBody EventListQry eventListQry)  {
         return IDashboardEventService.list(eventListQry);
+    }
+
+    @Operation(summary = "get an event by id")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/{id}")
+    public EventDO getById(@PathVariable Long id)  {
+        return IDashboardEventService.getById(id);
     }
 
     /**

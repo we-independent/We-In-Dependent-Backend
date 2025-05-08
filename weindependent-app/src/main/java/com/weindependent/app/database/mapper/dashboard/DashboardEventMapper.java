@@ -33,6 +33,8 @@ public interface DashboardEventMapper {
     List<UserDO> getRegisteredUsers(Long id);
 
     List<UserDO> getBookmarkedUsers(Long id);
+
+    EventDO getById(Long id);
 }
 
 

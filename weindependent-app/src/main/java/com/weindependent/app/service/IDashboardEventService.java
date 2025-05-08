@@ -23,4 +23,5 @@ public interface IDashboardEventService {
     ImageDO insertSpeakerBanner(MultipartFile file);
     UserVOs getRegisteredUsers(Long id, Integer page, Integer size);
     UserVOs getBookmarkedUsers(Long id, Integer page, Integer size);
+    EventDO getById(Long id);
 }
