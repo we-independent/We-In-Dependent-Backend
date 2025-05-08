@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.EventSpeakerMapper">
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO">
+        INSERT INTO event_speaker (
+            user_id, title, background, description, banner_id, create_time, update_time
+        ) VALUES (
+            #{userId}, #{title}, #{background}, #{description}, #{bannerId}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO">
+        UPDATE event_speaker
+        SET title = #{title},
+            background = #{background},
+            description = #{description},
+            banner_id = #{bannerId},
+            update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="getByUserId" resultType="com.weindependent.app.database.dataobject.EventSpeakerDO">
+        SELECT * FROM event_speaker WHERE user_id = #{userId}
+    </select>
+
+    <select id="getById" resultType="com.weindependent.app.database.dataobject.EventSpeakerDO">
+        SELECT * FROM event_speaker WHERE id = #{id}
+    </select>
+
+</mapper>
