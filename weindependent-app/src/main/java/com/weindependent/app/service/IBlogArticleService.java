@@ -9,6 +9,8 @@ import com.weindependent.app.dto.BlogArticleEditQry;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -73,7 +75,7 @@ public interface IBlogArticleService {
      * @param ids 需要删除的博客文章主键集合
      * @return 结果
      */
-    int deleteBlogArticleByIds(Integer[] ids, int updateUserId);
+    int deleteBlogArticleByIds(List<Integer> ids, int updateUserId);
 
     /**
      * 删除博客文章信息
@@ -81,7 +83,7 @@ public interface IBlogArticleService {
      * @param id 博客文章主键
      * @return 结果
      */
-    int deleteBlogArticleById(Integer id);
+    int deleteBlogArticleById(List<Integer> id);
 
     /**
      * 全文搜索
@@ -98,4 +100,6 @@ public interface IBlogArticleService {
      * @return 结果
      */
     List<BlogArticleVO> searchByExactKeywords(String keyword);
+
+
 }
