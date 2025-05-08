@@ -176,5 +176,10 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         return userVOs;
     }
 
+    @Override
+    public EventDO getById(Long id) {
+        return dashboardEventMapper.getById(id);
+    }
+
 
 }
