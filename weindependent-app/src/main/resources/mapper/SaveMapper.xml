@@ -18,19 +18,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT 1 FROM blog_article WHERE id = #{blogId} LIMIT 1
     </select>
 
-    <!-- <insert id="saveEvent">
-        INSERT IGNORE INTO save_event (user_id, event_id)
-        VALUES (#{userId}, #{eventId})
+    <insert id="saveEvent">
+        INSERT IGNORE INTO save_event (event_id, user_id)
+        SELECT e.id, #{userId}
+        FROM event e
+        WHERE e.id = #{eventId} AND e.is_deleted = 0;
     </insert>
 
     <delete id="unsaveEvent">
-        DELETE FROM save_event
+        DELETE IGNORE FROM save_event
         WHERE user_id = #{userId} AND event_id = #{eventId}
     </delete>
 
    <select id = "existEventId" resultType="boolean">
         SELECT 1 FROM event WHERE id = #{eventId} LIMIT 1
-    </select> -->
+    </select>
 
 
 </mapper>
