@@ -57,6 +57,14 @@ public class DashboardEventController {
         return IDashboardEventService.insertEventBanner(file);
     }
 
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "上傳講者圖片")
+    @PostMapping(value = "/speaker/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImageDO uploadSpeakerBanner(@RequestParam("file") MultipartFile file) {
+        return IDashboardEventService.insertSpeakerBanner(file);
+    }
+
     @Operation(summary = "Update an existing event")
     @SaCheckRole("admin")
     @SignatureAuth
