@@ -4,6 +4,7 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
+import io.swagger.annotations.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,10 @@ public class EventController {
         return IEventService.getEventById(id);
     }
 
-    @Operation(summary = "Register an event by ID")
+    @Operation(
+        summary = "Register an event by ID",
+        description = "Returns an link of the event"
+    )
     @SignatureAuth
     @PostMapping("/register/{id}")
     public String register(@PathVariable Long id) { return IEventService.register(id);}
