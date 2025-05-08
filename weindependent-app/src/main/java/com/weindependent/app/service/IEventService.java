@@ -8,7 +8,7 @@ import java.util.List;
 public interface IEventService {
     List<RecentEventVO> getRecentEvents(int page, int size);
     EventVO getEventById(Long id);
-    void register(Long id);
+    String register(Long id);
     void unregister(Long id);
     void bookmark(Long id);
     void unbookmark(Long id);
