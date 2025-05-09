@@ -1,7 +1,9 @@
 package com.weindependent.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,6 +76,13 @@ public class SaveController {
         else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
             throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
         }
+    }
+
+    @Operation(summary = "用户登录后检查blog是否被该用户收藏")
+    @GetMapping("blog-is-saved/{blogId}")
+    public boolean blogIsSaved(@PathVariable int blogId){
+        int userId = StpUtil.getLoginIdAsInt();
+        return saveService.blogIsSaved(userId, blogId);
     }
 
 

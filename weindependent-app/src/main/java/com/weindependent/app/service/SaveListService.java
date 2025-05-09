@@ -16,4 +16,7 @@ public interface SaveListService {
     int createDefaultList(int userId);
     /*删除收藏夹 */
     int deleteList(int userId, int listId);
+
+    /* 更新list名字 */
+    int updateListName(int userId, int listId, String name);
 }

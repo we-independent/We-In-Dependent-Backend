@@ -49,6 +49,12 @@ public class SaveListServiceImpl implements SaveListService{
         }
     }
 
+    /* 更新list名字 */
+    public int updateListName(int userId, int listId, String name){
+        if (saveListMapper.updateListName(userId, listId, name)>0) return ErrorCode.SUCCESS.getCode();
+        else return ErrorCode.UPDATE_DB_FAILED.getCode();
+    }
+
     /*helper返回值为新建list id */
     private int createList(int userId, String listName, boolean isDefault){
         SaveListDO list = new SaveListDO();
@@ -61,6 +67,6 @@ public class SaveListServiceImpl implements SaveListService{
 
     /* helper 检查user是否拥有某收藏夹 */
     private boolean checkListOwnership(int userId, int listId){
-        return saveListMapper.checkListOwnership(userId, listId) > 0;
+        return saveListMapper.checkListOwnership(userId, listId);
     }
 }

@@ -14,11 +14,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE list_id = #{listId} AND article_id = #{blogId}
     </delete>
 
+    <select id = "blogIsSaved" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM save_list sl
+            JOIN save_list_article sla ON sl.list_id = sla.list_id
+            WHERE sl.user_id = #{userId} AND sla.article_id = #{blogId}
+        )
+    </select>
+
    <select id = "existBlogId" resultType="boolean">
         SELECT 1 FROM blog_article WHERE id = #{blogId} LIMIT 1
     </select>
 
-    <!-- <insert id="saveEvent">
+    <insert id="saveEvent">
         INSERT IGNORE INTO save_event (user_id, event_id)
         VALUES (#{userId}, #{eventId})
     </insert>
@@ -30,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
    <select id = "existEventId" resultType="boolean">
         SELECT 1 FROM event WHERE id = #{eventId} LIMIT 1
-    </select> -->
+    </select>
 
 
 </mapper>

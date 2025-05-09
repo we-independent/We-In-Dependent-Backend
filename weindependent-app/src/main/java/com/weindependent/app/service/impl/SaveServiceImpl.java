@@ -53,6 +53,10 @@ public class SaveServiceImpl implements SaveService{
         }
     }
 
+    public boolean blogIsSaved(int userId, int blogId){
+        return saveMapper.blogIsSaved(userId, blogId);
+    }
+
     /* 收藏活动 */
     public int saveEvent(int userId, int eventId){
         if(!saveMapper.existEventId(eventId)){
@@ -113,6 +117,6 @@ public class SaveServiceImpl implements SaveService{
 
     /* helper 检查user是否拥有某收藏夹 */
     private boolean checkListOwnership(int userId, int listId){
-        return saveListMapper.checkListOwnership(userId, listId) > 0;
+        return saveListMapper.checkListOwnership(userId, listId);
     }
 }

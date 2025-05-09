@@ -15,6 +15,8 @@ public interface SaveMapper {
     /*取消文章收藏 */
     int unsaveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
 
+    boolean blogIsSaved(@Param("userId")int userId, @Param("blogId") int blogId);
+
     boolean existBlogId(@Param("blogId") int blogId);
 
     boolean existEventId(@Param("eventId") int eventId);

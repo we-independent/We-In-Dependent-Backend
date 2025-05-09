@@ -3,6 +3,7 @@ package com.weindependent.app.database.mapper.weindependent;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.SaveListDO;
@@ -20,6 +21,8 @@ public interface SaveListMapper {
     List<SaveListDO> getSavedList(@Param("userId") int userId);
 
     /*检查user是否拥有某收藏夹 */
-    int checkListOwnership(@Param("userId")int userId, @Param("listId")int listId);
+    boolean checkListOwnership(@Param("userId")int userId, @Param("listId")int listId);
+
+    int updateListName(@Param("userId")int userId, @Param("listId")int listId, @Param("name") String name);
 
 }

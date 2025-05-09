@@ -37,9 +37,9 @@ public class SaveListController {
 
     @Operation(summary = "返回收藏夹下的所有文章")
     @GetMapping("/get-all-articles/{listId}")
-    public ResponseEntity<List<BlogArticleDO>> getSavedBlogs(@PathVariable int listId) {
+    public List<BlogArticleDO> getSavedBlogs(@PathVariable int listId) {
         int userId = StpUtil.getLoginIdAsInt();
-        return ResponseEntity.ok(saveListService.getSavedBlogs(userId, listId));
+        return saveListService.getSavedBlogs(userId, listId);
     }
 
     @Operation(summary = "根据user id和list name建立新收藏夹")
@@ -58,9 +58,9 @@ public class SaveListController {
     }
     @Operation(summary = "返回用户所有收藏夹")
     @GetMapping("get-all-list")
-    public ResponseEntity<List<SaveListDO>> getSavingLists(@RequestBody SaveListQry saveBlogQry) {
+    public List<SaveListDO> getSavingLists(@RequestBody SaveListQry saveBlogQry) {
         int userId = StpUtil.getLoginIdAsInt();
-        return ResponseEntity.ok(saveListService.getSavingList(userId));
+        return saveListService.getSavingList(userId);
     }
 
     @Operation(summary = "删除收藏夹")
@@ -68,6 +68,19 @@ public class SaveListController {
     public void deleteList(@PathVariable int listId){
         int userId = StpUtil.getLoginIdAsInt();
         int resultCode = saveListService.deleteList(userId, listId);
+        if (resultCode ==ErrorCode.SUCCESS.getCode()) return;
+        else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
+            throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
+        }
+    }
+
+    @Operation(summary = "更改收藏夹名字")
+    @PostMapping("update-list-name")
+    public void setListOrder(@RequestBody SaveListQry saveBlogQry){
+        int userId = StpUtil.getLoginIdAsInt();
+        int listId = saveBlogQry.getListId();
+        String name = saveBlogQry.getListName();
+        int resultCode = saveListService.updateListName(userId, listId, name);
         if (resultCode ==ErrorCode.SUCCESS.getCode()) return;
         else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
             throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
