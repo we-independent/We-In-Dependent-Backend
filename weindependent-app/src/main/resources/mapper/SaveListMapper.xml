@@ -27,7 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE list_id = #{listId} AND user_id = #{userId}
     </delete>
 
-    <select id = "getSavedList">
+    <select id = "getSavedList" resultType="com.weindependent.app.database.dataobject.SaveListDO">
         SELECT *
         From save_list
         WHERE user_id = #{userId}
@@ -36,6 +36,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="checkListOwnership" resultType="int">
         SELECT COUNT(*)
         FROM save_list
-        WHERE id = #{listId} AND user_id = #{userId}
-</select>
+        WHERE list_id = #{listId} AND user_id = #{userId}
+    </select>
 </mapper>
