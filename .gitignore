@@ -9,3 +9,4 @@
 .DS_Store
 /weindependent-app/we-in-dependent.iml
 /.vscode/
+/weindependent-app/src/main/resources/application.yaml
