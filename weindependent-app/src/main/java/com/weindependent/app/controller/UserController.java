@@ -46,8 +46,6 @@ public class UserController {
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    private final static String RESET_PASSWORD_SUBJECT = "Reset Your We Independent Password";
-
 
     @SignatureAuth
     @Operation(summary = "用户注册")
