@@ -9,6 +9,8 @@ import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
+import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.convertor.UserConvertor;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
+import cn.dev33.satoken.stp.StpUtil;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -122,6 +125,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDO findUserById(Long userId) {
         return userMapper.findById(userId); 
+    }
+
+    @Override
+    public void updateUser(UpdateUserQry updateUserQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        UserDO userDO = UserConvertor.toUserDO(userId, updateUserQry);
+        userMapper.updateUser(userDO);
     }
 }
 

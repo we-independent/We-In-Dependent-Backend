@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.weindependent.app.dto.UpdateUserQry;
 
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
@@ -195,5 +196,13 @@ public class UserController {
         int pageNum = (int) requestMap.get("pageNum");
         int pageSize = (int) requestMap.get("pageSize");
         return userService.getAllUsers(pageNum, pageSize);
+    }
+
+    @SignatureAuth
+    @Operation(summary = "更新使用者资料")
+    @PutMapping("/")
+    @CrossOrigin(origins = "*")
+    public void updateUser(@RequestBody UpdateUserQry updateUserQry) {
+        userService.updateUser(updateUserQry);
     }
 }
