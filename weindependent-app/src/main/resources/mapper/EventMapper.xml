@@ -49,7 +49,7 @@
         FROM event e
                  LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
                  LEFT JOIN event_speaker s ON s.user_id = u.id
-                 LEFT JOIN event_image img ON s.banner_id = img.id
+                 LEFT JOIN event_speaker_image img ON s.banner_id = img.id
                  LEFT JOIN event_image f ON e.banner_id = f.id
                  LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
                  LEFT JOIN category c on e.category_id = c.id

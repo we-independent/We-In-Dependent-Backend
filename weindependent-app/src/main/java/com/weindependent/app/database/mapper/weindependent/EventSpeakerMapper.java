@@ -1,13 +1,14 @@
 package com.weindependent.app.database.mapper.weindependent;
 
-import com.weindependent.app.database.dataobject.EventSpeakerDO;
+import com.weindependent.app.vo.event.EventSpeakerVO;
+
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface EventSpeakerMapper {
-    int insert(EventSpeakerDO speaker);
-    int update(EventSpeakerDO speaker);
-    EventSpeakerDO getByUserId(@Param("userId") Long userId);
-    EventSpeakerDO getById(@Param("id") Long id);
+    EventSpeakerVO getById(@Param("id") Long id);
+    List<EventSpeakerVO> searchByName(@Param("name") String name);
 }

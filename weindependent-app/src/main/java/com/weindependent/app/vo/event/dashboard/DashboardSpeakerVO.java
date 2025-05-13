@@ -1,21 +1,19 @@
-package com.weindependent.app.database.dataobject;
+package com.weindependent.app.vo.event.dashboard;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class EventSpeakerDO {
+public class DashboardSpeakerVO {
     private Long id;
     private Long userId;
+    private String userName;        // From t_system_user.real_name
     private String title;
     private String background;
     private String description;
     private Long bannerId;
+    private String bannerUrl;       // From event_speaker_image.file_path
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

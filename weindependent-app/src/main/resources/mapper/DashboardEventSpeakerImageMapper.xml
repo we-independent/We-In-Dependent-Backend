@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventSpeakerImageMapper">
+
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.ImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO event_speaker_image (category, file_name,file_key, file_type, file_path)
+        VALUES (#{category}, #{fileName},#{fileKey}, #{fileType}, #{filePath})
+    </insert>
+
+
+    <update id="delete" parameterType="java.util.List">
+        UPDATE event_speaker_image
+        SET is_deleted = 1
+        WHERE id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

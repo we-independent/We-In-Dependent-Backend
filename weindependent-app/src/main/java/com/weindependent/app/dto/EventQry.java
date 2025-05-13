@@ -30,18 +30,6 @@ public class EventQry {
     @NotNull(message = "speakerUserId is mandatory")
     private Long speakerUserId;
 
-    @NotBlank(message = "speakerTitle is mandatory")
-    private String speakerTitle;
-
-    @NotBlank(message = "speakerBackground is mandatory")
-    private String speakerBackground;
-
-    @NotBlank(message = "speakerDescription is mandatory")
-    private String speakerDescription;
-
-    @NotNull(message = "speakerBannerId is mandatory")
-    private Long speakerBannerId;
-
     @NotNull(message = "bannerId is mandatory")
     private Long bannerId;
 }
