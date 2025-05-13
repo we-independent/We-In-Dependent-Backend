@@ -6,6 +6,6 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class SendMailQry {
-    @NotBlank
+    @NotBlank(message = "email is mandatory")
     private String email;
 }
