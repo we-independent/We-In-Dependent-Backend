@@ -9,12 +9,13 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.LoginQry;
 import com.weindependent.app.dto.RegisterQry;
+import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.dto.SendMailQry;
 import com.weindependent.app.dto.ResetPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.SendEmailService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.LoginVO;
 import com.weindependent.app.vo.user.UserVO;
@@ -40,10 +41,12 @@ public class UserController {
     private UserService userService;
 
     @Resource
-    private SendEmailService sendEmailService;
+    private IEmailService emailService;
 
     @Value("${frontend.url}")
     private String frontendUrl;
+
+    private final static String RESET_PASSWORD_SUBJECT = "Reset Your We Independent Password";
 
 
     @SignatureAuth
@@ -181,7 +184,7 @@ public class UserController {
         sendMailParams.put("name", user.getRealName());
         String token = SaTempUtil.createToken(user.getId(), 900);
         sendMailParams.put("link", frontendUrl + "/?reset-password=true&token="+token);
-        return sendEmailService.send(sendMailQry.getTemplateId(), sendMailQry.getEmail(), sendMailParams);
+        return emailService.send(sendMailQry.getEmail(),MailTypeEnum.RESET_PASSWORD, sendMailParams);
     }
 
 

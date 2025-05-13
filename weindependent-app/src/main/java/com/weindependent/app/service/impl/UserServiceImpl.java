@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private ResetUserPasswordEmailServiceImpl resetUserPasswordEmailService;
+    private EmailServiceImpl resetUserPasswordEmailService;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
