@@ -1,7 +1,6 @@
 package com.weindependent.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.weindependent.app.service.EmailService;
 import com.weindependent.app.service.GoogleOAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,7 +1,8 @@
 package com.weindependent.app.service.impl;
 
 import com.weindependent.app.config.EmailConfig;
-import com.weindependent.app.service.EmailService;
+import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.service.IEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -22,23 +23,19 @@ import java.util.Properties;
 
 @Slf4j
 @Service
-public class ResetUserPasswordEmailServiceImpl implements EmailService {
-    private final String RESET_PASSWORD_HTML = "classpath:email/reset-password.html";
+public class EmailServiceImpl implements IEmailService {
     private final String CONTACT_EMAIL = "weindependentweb@gmail.com";
     private final String LOGO = "https://static1.squarespace.com/static/66e0b29d4524895c4ed21106/t/679af0f2c11f19074b350598/1737400680356/";
-
 
     @Autowired
     private EmailConfig emailConfig;
 
 
-    private final static String subject = "Reset Your We Independent Password";
-
     @Autowired
     private ResourceLoader resourceLoader;
 
 
-    public boolean send(String email, Map<String,String> sendMailParams) {
+    public boolean send(String receiverEmail, MailTypeEnum mailTypeEnum, Map<String,String> sendMailParams) {
         try {
             JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
             javaMailSender.setUsername(emailConfig.getUsername());
@@ -57,15 +54,15 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
             sendMailParams.put("logo",LOGO);
             String emailHtml;
             try{
-                emailHtml = getEmailHtml(sendMailParams);
+                emailHtml = getEmailHtml(mailTypeEnum, sendMailParams);
             } catch(IOException e){
                 log.error("Error loading email HTML template", e);
                 return false;
             }
-            MimeMessage mimeMessage = getMimeMessage(email, subject, emailHtml, javaMailSender);
+            MimeMessage mimeMessage = getMimeMessage(receiverEmail, mailTypeEnum.getSubject(), emailHtml, javaMailSender);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            log.error("发往 {} 重置密码邮件发送异常", email, e);
+            log.error("发往 {} 重置密码邮件发送异常", receiverEmail, e);
             return false;
         }
         return true;
@@ -81,8 +78,8 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
         return mimeMessage;
     }
 
-    private String getEmailHtml(Map<String, String> params) throws IOException {
-        Resource resource = resourceLoader.getResource(RESET_PASSWORD_HTML);
+    private String getEmailHtml(MailTypeEnum mailTypeEnum,Map<String, String> sendMailParams) throws IOException {
+        Resource resource = resourceLoader.getResource(mailTypeEnum.getPath());
         try (InputStream inputStream = resource.getInputStream()) {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024]; // 或者其他合适的缓冲区大小
@@ -93,7 +90,7 @@ public class ResetUserPasswordEmailServiceImpl implements EmailService {
 
             String html = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
             // 替換模板中的 {{key}} 為參數值
-            for (Map.Entry<String, String> entry : params.entrySet()) {
+            for (Map.Entry<String, String> entry : sendMailParams.entrySet()) {
                 html = html.replace("{{" + entry.getKey() + "}}", entry.getValue());
             }
             return html;
