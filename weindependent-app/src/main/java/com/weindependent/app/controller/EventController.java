@@ -4,6 +4,7 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
+import com.weindependent.app.vo.event.RecentEventVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -60,5 +61,41 @@ public class EventController {
     @SignatureAuth
     @DeleteMapping("/bookmark/{id}")
     public void unbookmark(@PathVariable Long id) {IEventService.unbookmark(id);}
+
+    @Operation(summary = "List All registered ongoing events 已註冊活動列表")
+    @SignatureAuth
+    @GetMapping("/registered/ongoing")
+    public RecentEventVOs getRegisteredOngoingEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getRegisteredOngoingEvents(page,size);
+    }
+
+    @Operation(summary = "List all registered past events 已參加活動列表")
+    @SignatureAuth
+    @GetMapping("/registered/past")
+    public RecentEventVOs getRegisteredPastEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getRegisteredPastEvents(page,size);
+    }
+
+    @Operation(summary = "List All bookmarked events")
+    @SignatureAuth
+    @GetMapping("/bookmarked")
+    public RecentEventVOs getBookMarkedEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getBookmarkedEvents(page,size);
+    }
+
+    @Operation(summary = "List all viewed  events ")
+    @SignatureAuth
+    @GetMapping("/viewed")
+    public RecentEventVOs getViewedEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getViewedEvents(page,size);
+    }
 
 }
