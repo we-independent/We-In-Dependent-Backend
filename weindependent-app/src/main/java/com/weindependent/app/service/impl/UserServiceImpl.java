@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
+import com.weindependent.app.database.dataobject.ImageDO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -27,8 +29,17 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final Integer RESIZE_WIDTH = 200;
+    private final Integer RESIZE_HEIGHT = 200;
+
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private com.weindependent.app.database.mapper.weindependent.UserImageMapper profileImageMapper;
+
+    @Autowired
+    private com.weindependent.app.service.FileService fileService;
 
     @Autowired
     private EmailServiceImpl resetUserPasswordEmailService;
@@ -132,6 +143,33 @@ public class UserServiceImpl implements UserService {
         Long userId = StpUtil.getLoginIdAsLong();
         UserDO userDO = UserConvertor.toUserDO(userId, updateUserQry);
         userMapper.updateUser(userDO);
+    }
+
+    @Override
+    public ImageDO createProfileImg(MultipartFile file) {
+        MultipartFile resizedFile;
+        try {
+            resizedFile = com.weindependent.app.utils.ImageResizeUtil.resizeImage(file,
+                RESIZE_WIDTH, RESIZE_HEIGHT);
+        } catch (Exception e) {
+            log.error("Failed to resize image before uploading: {}", e.getMessage());
+            throw new RuntimeException("Failed to resize image");
+        }
+
+        // Then upload
+        com.weindependent.app.vo.UploadedFileVO uploadedFileVO =
+            fileService.uploadFile(resizedFile, null, "user-profile-image");
+
+        ImageDO imageDo = new ImageDO();
+        imageDo.setFileName(uploadedFileVO.getFileName());
+        imageDo.setFileKey(uploadedFileVO.getFileKey());
+        imageDo.setFileType(resizedFile.getContentType());
+        imageDo.setFilePath(uploadedFileVO.getFilePath());
+        int affectedRows = profileImageMapper.create(imageDo);
+        if (affectedRows != 1) {
+            throw new com.weindependent.app.exception.ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
+        }
+        return imageDo;
     }
 }
 

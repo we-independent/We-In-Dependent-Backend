@@ -52,6 +52,9 @@ public class FileServiceImpl implements FileService {
     @Value("${google.drive.folder.event-speaker-banner}")
     private String eventSpeakerBannerFolderId;
 
+    @Value("${google.drive.folder.user-profile-image}")
+    private String userProfileImageFolderId;
+
     @Value("${file.upload.tmp-folder}")
     private String tmpFolder;
 
@@ -74,6 +77,7 @@ public class FileServiceImpl implements FileService {
             folderIdMap.put("blog-pdf", blogPdfFolderId);
             folderIdMap.put("event-banner", eventBannerFolderId);
             folderIdMap.put("event-speaker-banner", eventSpeakerBannerFolderId);
+            folderIdMap.put("user-profile-image", userProfileImageFolderId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Google Drive", e);
         }
@@ -127,12 +131,12 @@ public class FileServiceImpl implements FileService {
 
 
         log.info("upload FolderId: {} FileId: {}, FileName: {}", parentFolderId, uploadedFile.getId(), uploadedFile.getName());
-
         UploadedFileVO uploadedFileVO = new UploadedFileVO();
         uploadedFileVO.setFileKey(uploadedFile.getId());
         uploadedFileVO.setFileName(uploadedFile.getName());
         uploadedFileVO.setFilePath(uploadedFile.getWebViewLink());
         fileMetadata.setMimeType(mimeType);
+
         return uploadedFileVO;
     }
 

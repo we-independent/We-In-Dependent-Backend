@@ -26,6 +26,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.database.dataobject.ImageDO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
@@ -204,5 +206,16 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public void updateUser(@RequestBody UpdateUserQry updateUserQry) {
         userService.updateUser(updateUserQry);
+    }
+
+    /**
+     * 新增profile图片
+     */
+    @SignatureAuth
+    @Operation(summary = "新增个人头像图片")
+    @PostMapping(value = "/profile/img/upload", consumes =
+        org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public  ImageDO createProfileImg(@RequestParam("file")  MultipartFile file) {
+        return userService.createProfileImg(file);
     }
 }

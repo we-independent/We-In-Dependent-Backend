@@ -5,10 +5,12 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class UpdateUserQry {
-  @NotBlank(message = "Username is required")
+  @NotBlank(message = "realName is required")
   private String realName;
-  @NotBlank(message = "Username is required")
+  @NotBlank(message = "language is required")
   private String language;
-  @NotBlank(message = "Username is required")
+  @NotBlank(message = "VisaType is required")
   private String visaType;
+  @NotBlank(message = "imgId is required")
+  private long imgId;
 }
