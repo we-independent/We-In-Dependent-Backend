@@ -77,4 +77,77 @@
         WHERE event_id = #{id} AND user_id = #{userId}
     </delete>
 
+    <select id="getRegisteredOngoingEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            f.file_path AS bannerUrl
+        FROM event_user_register r
+                 JOIN event e ON r.event_id = e.id
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE r.user_id = #{userId}
+          AND e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) > NOW()
+        ORDER BY e.event_time ASC
+    </select>
+
+    <select id="getRegisteredPastEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            f.file_path AS bannerUrl
+        FROM event_user_register r
+                 JOIN event e ON r.event_id = e.id
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE r.user_id = #{userId}
+          AND e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &lt;= NOW()
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="getViewedEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            f.file_path AS bannerUrl
+        FROM event_user_viewed v
+                 JOIN event e ON v.event_id = e.id
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE v.user_id = #{userId}
+          AND e.is_deleted = 0
+        ORDER BY v.create_time DESC
+    </select>
+
+    <select id="getBookmarkedEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            f.file_path AS bannerUrl
+        FROM event_user_bookmark b
+                 JOIN event e ON b.event_id = e.id
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE b.user_id = #{userId}
+          AND e.is_deleted = 0
+        ORDER BY b.create_time DESC
+    </select>
+
+
+
+
+    <insert id="recordUserViewEvent">
+        INSERT INTO event_user_viewed (user_id, event_id)
+        VALUES (#{userId}, #{eventId})
+    </insert>
+
+
+
+
 </mapper>
