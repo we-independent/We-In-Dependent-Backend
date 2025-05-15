@@ -13,7 +13,7 @@ public interface EventMapper {
     void recordUserViewEvent(Integer userId, Long eventId);
     EventVO getById(@Param("id") Long id,
                     @Param("userId") Integer userId);
-    int register(Long id, Integer userId);
+    int register(Long id, Long userId);
     int unregister(Long id, Integer userId);
     int bookmark(Long id, Integer userId);
     int unbookmark(Long id, Integer userId);

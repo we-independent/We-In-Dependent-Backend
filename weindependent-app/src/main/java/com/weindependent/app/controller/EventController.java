@@ -2,6 +2,7 @@ package com.weindependent.app.controller;
 
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
+import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
@@ -45,7 +46,7 @@ public class EventController {
     )
     @SignatureAuth
     @PostMapping("/register/{id}")
-    public String register(@PathVariable Long id) { return IEventService.register(id);}
+    public EventRegisterDetailVO register(@PathVariable Long id) { return IEventService.register(id);}
 
     @Operation(summary = "Unregister an event by ID")
     @SignatureAuth
