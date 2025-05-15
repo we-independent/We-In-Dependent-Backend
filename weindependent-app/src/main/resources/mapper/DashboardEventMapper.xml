@@ -35,6 +35,9 @@
             <if test="title != null and title != ''">
                 AND e.title LIKE CONCAT('%', #{title}, '%')
             </if>
+            <if test="location != null and location != ''">
+                AND e.location LIKE CONCAT('%', #{location}, '%')
+            </if>
             <if test="speakerUserId != null">
                 AND e.speaker_user_id = #{speakerUserId}
             </if>
