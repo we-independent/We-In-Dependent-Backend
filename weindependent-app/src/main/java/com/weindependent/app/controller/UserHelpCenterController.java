@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user/profile/help")
+@RequestMapping("/user/profile/help")
 public class UserHelpCenterController {
     
     @Autowired
