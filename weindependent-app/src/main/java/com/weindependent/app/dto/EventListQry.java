@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class EventListQry {
     private String title;
     private Long speakerUserId;
+    private String location;
     private Integer categoryId;
     private Integer createUserId;
     private LocalDateTime eventTimeStart;
