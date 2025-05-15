@@ -17,4 +17,6 @@ public interface IEventService {
     RecentEventVOs getRegisteredPastEvents(Integer pageNum, Integer pageSize);
     RecentEventVOs getViewedEvents(int page, int size);
     RecentEventVOs getBookmarkedEvents(int page, int size);
+    List<EventVO> searchEventsNatural(String keyword);
+    List<EventVO> searchEventsBoolean(String keyword);
 }

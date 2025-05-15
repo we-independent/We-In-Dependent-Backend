@@ -156,5 +156,13 @@ public class EventServiceImpl implements IEventService {
         return recentEventVOS;
     }
 
+    @Override
+    public List<EventVO> searchEventsNatural(String keyword) {
+        return eventMapper.searchEventsNatural(keyword);
+    }
 
+    @Override
+    public List<EventVO> searchEventsBoolean(String keyword) {
+        return eventMapper.searchEventsBoolean(keyword);
+    }
 }
