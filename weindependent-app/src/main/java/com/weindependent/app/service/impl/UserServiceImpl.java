@@ -21,6 +21,9 @@ import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.web.multipart.MultipartFile;
+import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
+import com.weindependent.app.service.FileService;
+import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -36,10 +39,10 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Resource
-    private com.weindependent.app.database.mapper.weindependent.UserImageMapper profileImageMapper;
+    private UserImageMapper profileImageMapper;
 
     @Autowired
-    private com.weindependent.app.service.FileService fileService;
+    private FileService fileService;
 
     @Autowired
     private EmailServiceImpl resetUserPasswordEmailService;
@@ -157,7 +160,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Then upload
-        com.weindependent.app.vo.UploadedFileVO uploadedFileVO =
+        UploadedFileVO uploadedFileVO =
             fileService.uploadFile(resizedFile, null, "user-profile-image");
 
         ImageDO imageDo = new ImageDO();

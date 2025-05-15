@@ -6,7 +6,7 @@
 
 
     <insert id="create" parameterType="com.weindependent.app.database.dataobject.ImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO event_image (file_name,file_key, file_type, file_path)
+        INSERT INTO user_profile_image (file_name,file_key, file_type, file_path)
         VALUES  (#{fileName},#{fileKey}, #{fileType}, #{filePath})
     </insert>
 
@@ -16,10 +16,10 @@
         SET is_deleted = 1
         WHERE id IN (
         SELECT image_id
-        FROM event
+        FROM user_profile_image
         WHERE id IN
-        <foreach collection="list" item="eventId" open="(" separator="," close=")">
-            #{userId}
+        <foreach collection="list" item="imageId" open="(" separator="," close=")">
+            #{imageId}
         </foreach>
         )
     </update>
