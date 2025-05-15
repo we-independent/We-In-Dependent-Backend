@@ -21,4 +21,6 @@ public interface EventMapper {
     List<RecentEventVO> getRegisteredPastEvents(Integer userId);
     List<RecentEventVO> getViewedEvents(int userId);
     List<RecentEventVO> getBookmarkedEvents(int userId);
+    List<EventVO> searchEventsNatural(@Param("keyword") String keyword);
+    List<EventVO> searchEventsBoolean(@Param("keyword") String keyword);
 }

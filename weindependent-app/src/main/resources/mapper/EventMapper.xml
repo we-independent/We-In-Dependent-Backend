@@ -149,5 +149,53 @@
 
 
 
+    <!-- Natural Language Mode -->
+    <select id="searchEventsNatural" parameterType="string" resultType="com.weindependent.app.vo.event.EventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_time,
+            e.location,
+            e.banner_id,
+            e.link,
+            e.category_id,
+            c.name AS categoryName,
+            f.file_path AS bannerUrl
+        FROM event e
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+                 LEFT JOIN category c ON e.category_id = c.id
+        WHERE
+                        e.is_deleted = 0
+                    AND MATCH(e.title, e.summary, e.content)
+            AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)
+        ORDER BY e.event_time DESC
+    </select>
+
+
+
+    <!-- Boolean Mode -->
+    <select id="searchEventsBoolean" parameterType="string" resultType="com.weindependent.app.vo.event.EventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_time,
+            e.location,
+            e.banner_id,
+            e.link,
+            e.category_id,
+            c.name AS categoryName,
+            f.file_path AS bannerUrl
+        FROM event e
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+                 LEFT JOIN category c ON e.category_id = c.id
+        WHERE
+                        e.is_deleted = 0
+                    AND MATCH(e.title, e.summary, e.content)
+            AGAINST (#{keyword} IN BOOLEAN MODE)
+        ORDER BY e.event_time DESC
+    </select>
+
 
 </mapper>
