@@ -6,31 +6,27 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
+import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.UserDO;
-import com.weindependent.app.dto.LoginQry;
-import com.weindependent.app.dto.RegisterQry;
-import com.weindependent.app.enums.MailTypeEnum;
-import com.weindependent.app.service.IEmailService;
-import com.weindependent.app.utils.PasswordUtil;
-import com.weindependent.app.dto.SendMailQry;
-import com.weindependent.app.dto.ResetPasswordQry;
+import com.weindependent.app.dto.*;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.UserService;
+import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.LoginVO;
 import com.weindependent.app.vo.user.UserVO;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.weindependent.app.dto.UpdateUserQry;
-import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -214,8 +210,10 @@ public class UserController {
     @SignatureAuth
     @Operation(summary = "新增个人头像图片")
     @PostMapping(value = "/profile/img/upload", consumes =
-        org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+            MediaType.MULTIPART_FORM_DATA_VALUE)
     public  ImageDO createProfileImg(@RequestParam("file")  MultipartFile file) {
+        org.springframework.http.MediaType mediaType = MediaType.parseMediaType(file.getContentType());
+        org.springframework.http.MediaType a;
         return userService.createProfileImg(file);
     }
 }

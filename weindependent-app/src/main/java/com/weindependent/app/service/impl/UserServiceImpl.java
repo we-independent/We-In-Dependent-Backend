@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
@@ -27,6 +28,8 @@ import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import com.weindependent.app.utils.ImageResizeUtil;
 
 @Service
 @Slf4j
@@ -152,7 +155,7 @@ public class UserServiceImpl implements UserService {
     public ImageDO createProfileImg(MultipartFile file) {
         MultipartFile resizedFile;
         try {
-            resizedFile = com.weindependent.app.utils.ImageResizeUtil.resizeImage(file,
+            resizedFile = ImageResizeUtil.resizeImage(file,
                 RESIZE_WIDTH, RESIZE_HEIGHT);
         } catch (Exception e) {
             log.error("Failed to resize image before uploading: {}", e.getMessage());
@@ -170,7 +173,7 @@ public class UserServiceImpl implements UserService {
         imageDo.setFilePath(uploadedFileVO.getFilePath());
         int affectedRows = profileImageMapper.create(imageDo);
         if (affectedRows != 1) {
-            throw new com.weindependent.app.exception.ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
         }
         return imageDo;
     }
