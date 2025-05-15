@@ -1,24 +1,38 @@
 package com.weindependent.app.service.impl;
 
-import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageHelper;
+import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
+import com.weindependent.app.service.UserService;
+import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventServiceImpl implements IEventService {
 
     @Resource
     private EventMapper eventMapper;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private IEmailService emailService;
 
     @Override
     public List<RecentEventVO> getRecentEvents(int page, int size) {
@@ -50,8 +64,18 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public String register(Long id) {
-        int userId = StpUtil.getLoginIdAsInt();
+    public EventRegisterDetailVO register(Long id) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        EventVO eventVO =eventMapper.getById(id, null);
+        if (eventVO == null) {
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
+        }
+
+        UserDO user= userService.findUserById(userId);
+        if(user == null){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "User does not exist");
+        }
+
         int affectedRow = 0;
         try {
             affectedRow = eventMapper.register(id, userId);
@@ -60,15 +84,28 @@ public class EventServiceImpl implements IEventService {
             if (cause instanceof java.sql.SQLIntegrityConstraintViolationException &&
                     cause.getMessage() != null &&
                     cause.getMessage().contains("Duplicate entry")) {
-                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "User already registered for this event");
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "User already registered for this event"); //Throw exception when user already registered
             }
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot register event");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot register event"); // Unknown exception
         }
         if(affectedRow == 0){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Cannot find event");
         }
-        EventVO eventVO =eventMapper.getById(id,null);
-        return eventVO.getLink();
+
+        Map<String, String> sendMailParams = new HashMap<>();
+        sendMailParams.put("title", eventVO.getTitle());
+        sendMailParams.put("username",user.getRealName());
+        sendMailParams.put("link", eventVO.getLink());
+        sendMailParams.put("time", eventVO.getEventTime().toString());
+        sendMailParams.put("location", eventVO.getLocation());
+        sendMailParams.put("speaker", eventVO.getSpeakerName());
+        emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+
+        EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();
+        eventRegisterDetailVO.setLink(eventVO.getLink());
+        eventRegisterDetailVO.setIcsText(generateIcsCalendarText(eventVO));
+        eventRegisterDetailVO.setGoogleCalendarLink(generateGoogleCalendarLink(eventVO));
+        return eventRegisterDetailVO;
     }
 
     @Override
@@ -107,5 +144,43 @@ public class EventServiceImpl implements IEventService {
         }
     }
 
+    private String generateGoogleCalendarLink(EventVO eventVO) {
+        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String endUtc = eventVO.getEventTime().plusHours(1).atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String description = "Link: "+eventVO.getLink();
+
+        return String.format(
+                "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%s&dates=%s/%s&details=%s&location=%s",
+                eventVO.getTitle(), startUtc, endUtc,description, eventVO.getLocation()
+        );
+    }
+
+    private String generateIcsCalendarText(EventVO eventVO) {
+        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String endUtc = eventVO.getEventTime().plusHours(1).atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String description = "Link: "+eventVO.getLink();
+
+        return String.format(
+                "BEGIN:VCALENDAR\n" +
+                        "VERSION:2.0\n" +
+                        "BEGIN:VEVENT\n" +
+                        "SUMMARY:%s\n" +
+                        "DESCRIPTION:%s\n" +
+                        "DTSTART:%s\n" +
+                        "DTEND:%s\n" +
+                        "LOCATION:%s\n" +
+                        "END:VEVENT\n" +
+                        "END:VCALENDAR",
+                eventVO.getTitle(),
+                description,
+                startUtc,
+                endUtc,
+                eventVO.getLocation()
+        );
+    }
 
 }
