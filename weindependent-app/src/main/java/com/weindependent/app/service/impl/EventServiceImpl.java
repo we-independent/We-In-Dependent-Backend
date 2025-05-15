@@ -231,5 +231,13 @@ public class EventServiceImpl implements IEventService {
                 eventVO.getLocation()
         );
     }
+    @Override
+    public List<EventVO> searchEventsNatural(String keyword) {
+        return eventMapper.searchEventsNatural(keyword);
+    }
 
+    @Override
+    public List<EventVO> searchEventsBoolean(String keyword) {
+        return eventMapper.searchEventsBoolean(keyword);
+    }
 }

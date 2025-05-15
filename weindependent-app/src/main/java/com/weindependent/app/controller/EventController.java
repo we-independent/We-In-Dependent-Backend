@@ -99,4 +99,17 @@ public class EventController {
         return IEventService.getViewedEvents(page,size);
     }
 
+    @Operation(summary = "Search events using full-text search in natural language mode")
+    @SignatureAuth
+    @GetMapping("/search/natural")
+    public List<EventVO> searchEventsNatural(@RequestParam String keyword) {
+        return IEventService.searchEventsNatural(keyword);
+    }
+
+    @Operation(summary = "Search events using full-text search in boolean mode")
+    @SignatureAuth
+    @GetMapping("/search/boolean")
+    public List<EventVO> searchEventsBoolean(@RequestParam String keyword) {
+        return IEventService.searchEventsBoolean(keyword);
+    }
 }
