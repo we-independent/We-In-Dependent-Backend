@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.UserImageMapper">
+
+
+    <insert id="create" parameterType="com.weindependent.app.database.dataobject.ImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO user_profile_image (file_name,file_key, file_type, file_path)
+        VALUES  (#{fileName},#{fileKey}, #{fileType}, #{filePath})
+    </insert>
+
+
+    <update id="delete" parameterType="java.util.List">
+        UPDATE user_profile_image
+        SET is_deleted = 1
+        WHERE id IN (
+        SELECT image_id
+        FROM user_profile_image
+        WHERE id IN
+        <foreach collection="list" item="imageId" open="(" separator="," close=")">
+            #{imageId}
+        </foreach>
+        )
+    </update>
+
+</mapper>

@@ -45,4 +45,8 @@
         SELECT COUNT(*) &gt; 0 FROM t_system_user WHERE id = #{id}
     </select>
 
+    <update id="updateUser" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        UPDATE t_system_user SET real_name,visa_type WHERE id = #{id}
+    </update>
+
 </mapper>

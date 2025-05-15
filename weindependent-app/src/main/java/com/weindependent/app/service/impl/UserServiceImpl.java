@@ -5,10 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
+import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.convertor.UserConvertor;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 
@@ -16,16 +19,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
+import cn.dev33.satoken.stp.StpUtil;
+import com.weindependent.app.database.dataobject.ImageDO;
+import org.springframework.web.multipart.MultipartFile;
+import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
+import com.weindependent.app.service.FileService;
+import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import com.weindependent.app.utils.ImageResizeUtil;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final Integer RESIZE_WIDTH = 200;
+    private final Integer RESIZE_HEIGHT = 200;
+
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private UserImageMapper profileImageMapper;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private EmailServiceImpl resetUserPasswordEmailService;
@@ -122,6 +142,40 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDO findUserById(Long userId) {
         return userMapper.findById(userId); 
+    }
+
+    @Override
+    public void updateUser(UpdateUserQry updateUserQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        UserDO userDO = UserConvertor.toUserDO(userId, updateUserQry);
+        userMapper.updateUser(userDO);
+    }
+
+    @Override
+    public ImageDO createProfileImg(MultipartFile file) {
+        MultipartFile resizedFile;
+        try {
+            resizedFile = ImageResizeUtil.resizeImage(file,
+                RESIZE_WIDTH, RESIZE_HEIGHT);
+        } catch (Exception e) {
+            log.error("Failed to resize image before uploading: {}", e.getMessage());
+            throw new RuntimeException("Failed to resize image");
+        }
+
+        // Then upload
+        UploadedFileVO uploadedFileVO =
+            fileService.uploadFile(resizedFile, null, "user-profile-image");
+
+        ImageDO imageDo = new ImageDO();
+        imageDo.setFileName(uploadedFileVO.getFileName());
+        imageDo.setFileKey(uploadedFileVO.getFileKey());
+        imageDo.setFileType(resizedFile.getContentType());
+        imageDo.setFilePath(uploadedFileVO.getFilePath());
+        int affectedRows = profileImageMapper.create(imageDo);
+        if (affectedRows != 1) {
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
+        }
+        return imageDo;
     }
 }
 

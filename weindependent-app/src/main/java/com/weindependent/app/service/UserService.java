@@ -3,6 +3,10 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.RegisterQry;
+import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.database.dataobject.ImageDO;
+import org.springframework.web.multipart.MultipartFile;
+
 public interface UserService {
 //    UserDO queryByUsernameAndPassword(String username, String password);
     UserDO queryByEmailAndPassword(String email, String password);
@@ -11,4 +15,6 @@ public interface UserService {
     UserDO findUserByAccount(String account);
     int resetPassword(String email, String newPassword);
     UserDO findUserById(Long userId); //Hurely added for pdf download
+    void updateUser(UpdateUserQry updateUserQry);
+    ImageDO createProfileImg(MultipartFile file);
 }
