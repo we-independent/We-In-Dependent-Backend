@@ -89,9 +89,9 @@
         UPDATE event e
         JOIN event_image ei ON e.banner_id = ei.id
         SET
-        e.is_deleted = true,
-        ei.is_deleted = true,
-        e.update_user_id = #{updateUserId}
+            e.is_deleted = true,
+            ei.is_deleted = true,
+            e.update_user_id = #{updateUserId}
         WHERE e.id IN
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
