@@ -5,8 +5,8 @@
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventMapper">
 
     <insert id="create" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO event (title, summary, content, event_time, location, link, category_id, speaker_user_id, banner_id,create_user_id,update_user_id)
-        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{link}, #{categoryId}, #{speakerUserId}, #{bannerId},#{createUserId}, #{updateUserId})
+        INSERT INTO event (title, summary, content, event_time, location, link, category_id, speaker_user_id, banner_id, create_user_id, update_user_id)
+        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{link}, #{categoryId}, #{speakerUserId}, #{bannerId}, #{createUserId}, #{updateUserId});
     </insert>
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.database.dataobject.EventDO">
@@ -89,9 +89,9 @@
         UPDATE event e
         JOIN event_image ei ON e.banner_id = ei.id
         SET
-            e.is_deleted = true,
-            ei.is_deleted = true,
-            e.update_user_id = #{updateUserId}
+        e.is_deleted = true,
+        ei.is_deleted = true,
+        e.update_user_id = #{updateUserId}
         WHERE e.id IN
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}

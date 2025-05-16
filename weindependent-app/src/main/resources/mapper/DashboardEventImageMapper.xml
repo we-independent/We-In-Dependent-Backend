@@ -24,4 +24,10 @@
         )
     </update>
 
+    <update id="markUsed" parameterType="long">
+        UPDATE event_image
+        SET is_deleted = 0
+        WHERE id = #{id} AND is_deleted = 1
+    </update>
+
 </mapper>

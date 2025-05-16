@@ -9,15 +9,10 @@
             e.title,
             e.summary,
             e.event_time,
-            f.file_path AS bannerUrl,
-            <choose>
-                <when test="userId != null">
-                    CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
-                </when>
-                <otherwise>
-                    false AS isBookMarked
-                </otherwise>
-            </choose>
+            f.file_path AS bannerUrl
+            <if test="userId != null">
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            </if>
         FROM event e
              LEFT JOIN event_image f ON e.banner_id = f.id
              <if test="userId != null">
@@ -29,32 +24,36 @@
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.vo.event.EventVO">
         SELECT e.id,
-               e.title,
-               e.content,
-               e.event_time,
-               e.location,
-               e.banner_id,
-               e.link,
-               e.category_id,
-               c.name                                                   AS categoryName,
-               f.file_path                                              AS bannerUrl,
-               u.id                                                     AS speakerId,
-               u.real_name                                              AS speakerName,
-               s.title                                                  AS speakerTitle,
-               s.background                                             AS speakerBackground,
-               s.description                                            AS speakerDescription,
-               s.banner_id                                              AS speakerBannerId,
-               img.file_path                                            AS speakerBannerUrl,
-               CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+        e.title,
+        e.content,
+        e.event_time,
+        e.location,
+        e.banner_id,
+        e.link,
+        e.category_id,
+        c.name AS categoryName,
+        f.file_path AS bannerUrl,
+        u.id AS speakerId,
+        u.real_name AS speakerName,
+        s.title AS speakerTitle,
+        s.background AS speakerBackground,
+        s.description AS speakerDescription,
+        s.banner_id AS speakerBannerId,
+        img.file_path AS speakerBannerUrl
+        <if test="userId != null">
+            , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+        </if>
         FROM event e
-                 LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
-                 LEFT JOIN event_speaker s ON s.user_id = u.id
-                 LEFT JOIN event_speaker_image img ON s.banner_id = img.id
-                 LEFT JOIN event_image f ON e.banner_id = f.id
-                 LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
-                 LEFT JOIN category c on e.category_id = c.id
+        LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
+        LEFT JOIN event_speaker s ON s.user_id = u.id
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        LEFT JOIN event_image f ON e.banner_id = f.id
+        <if test="userId != null">
+            LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
+        </if>
+        LEFT JOIN category c on e.category_id = c.id
         WHERE e.id = #{id}
-          AND e.is_deleted = 0
+        AND e.is_deleted = 0
     </select>
 
     <insert id="register">
