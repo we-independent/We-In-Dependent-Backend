@@ -14,6 +14,7 @@ public enum ErrorCode {
     UPDATE_DB_FAILED(-3, "Update db failed"),
     BLOG_NOT_EXIST(-4, "Blog does not exist"),
     USERNAME_PASSWORD_ERROR(401, "Invalid username or password"),
+    NOT_LOGGED_IN(402, "Login expired or not logged in"),
     UNAUTHORIZED_ACCESS(403, "You are not allowed to access this resource."),
     FONT_NOT_EXIST(-5, "Font not exist"),
     RELATED_ARTICLE_FETCH_FAILED(-5, "Fail to Get Related Articles"), 

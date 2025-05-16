@@ -4,6 +4,8 @@ import com.weindependent.app.aspect.SignatureAuthAspect;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.exception.SignatureAuthException;
+
+import cn.dev33.satoken.exception.NotLoginException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -52,6 +54,17 @@ public class GlobalExceptionResolver{
         Map<String, Object> error = new HashMap<>();
         error.put("code", ErrorCode.UNDEFINED_ERROR.getCode());
         error.put("msg", e.getMessage());
+        error.put("data", "");
+        return error;
+    }
+
+    @ExceptionHandler(NotLoginException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleNotLoginException(NotLoginException ex){
+        log.warn("NotLoginException: {}", ex.getMessage());
+        Map<String, Object> error = new HashMap<>();
+        error.put("code", ErrorCode.NOT_LOGGED_IN.getCode());
+        error.put("msg", ErrorCode.NOT_LOGGED_IN.getTitle());
         error.put("data", "");
         return error;
     }
