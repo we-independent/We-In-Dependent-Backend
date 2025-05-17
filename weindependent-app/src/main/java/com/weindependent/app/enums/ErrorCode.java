@@ -19,8 +19,8 @@ public enum ErrorCode {
     FONT_NOT_EXIST(-5, "Font not exist"),
     RELATED_ARTICLE_FETCH_FAILED(-5, "Fail to Get Related Articles"), 
     UNKONWN_CATEGORY(-6, "Unknown Category"),
-    EVENT_NOT_EXIST(-7, "Event does not exist");
-
+    EVENT_NOT_EXIST(-7, "Event does not exist"),
+    SPEAKER_NOT_EXIST(-8, "Speaker does not exist");
     
     private int code;
     private final String title;

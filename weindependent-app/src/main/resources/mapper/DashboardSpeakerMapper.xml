@@ -68,4 +68,13 @@
         LIMIT 1
     </select>
 
+    <select id="getBannerIdsBySpeakerIds" resultType="long">
+        SELECT banner_id
+        FROM event_speaker
+        WHERE id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>
