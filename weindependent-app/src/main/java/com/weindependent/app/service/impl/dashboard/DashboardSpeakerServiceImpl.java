@@ -24,6 +24,7 @@ import com.weindependent.app.vo.UploadedFileVO;
 import com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
