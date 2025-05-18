@@ -1,17 +1,13 @@
 package com.weindependent.app.service.impl.dashboard;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.weindependent.app.convertor.BlogConverter;
 import com.weindependent.app.database.dataobject.TagArticleRelationDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagArticleRelationMapper;
-import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.utils.CommonUtil;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +21,7 @@ import com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -33,11 +29,8 @@ import com.weindependent.app.vo.UploadedFileVO;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 
-import io.opencensus.tags.Tag;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogArticleService;
@@ -63,7 +56,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Resource
     private DashboardBlogImageMapper blogImageMapper;
     @Resource
-    private FileService fileService;
+    private IFileService fileService;
     @Autowired
     private DashboardTagArticleRelationMapper dashboardTagArticleRelationMapper;
 
@@ -183,7 +176,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         }
 
         // Then upload
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"event-banner" );
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.BLOG_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setCategory("blog-banner");
