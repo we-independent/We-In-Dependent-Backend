@@ -122,7 +122,7 @@ public class FileServiceImpl implements FileService {
         try{
             uploadedFile = drive.files()
                     .create(fileMetadata, byteArrayContent)
-                    .setFields("id,name,webViewLink")
+                    .setFields("id,name,thumbnailLink")
                     .execute();
         }
         catch (IOException e){
@@ -134,7 +134,7 @@ public class FileServiceImpl implements FileService {
         UploadedFileVO uploadedFileVO = new UploadedFileVO();
         uploadedFileVO.setFileKey(uploadedFile.getId());
         uploadedFileVO.setFileName(uploadedFile.getName());
-        uploadedFileVO.setFilePath(uploadedFile.getWebViewLink());
+        uploadedFileVO.setFilePath(uploadedFile.getThumbnailLink());
         fileMetadata.setMimeType(mimeType);
 
         return uploadedFileVO;
