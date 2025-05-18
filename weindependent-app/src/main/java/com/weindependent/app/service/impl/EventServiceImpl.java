@@ -17,6 +17,8 @@ import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 import java.time.ZoneId;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class EventServiceImpl implements IEventService {
 
@@ -62,8 +65,8 @@ public class EventServiceImpl implements IEventService {
         if (eventVO == null) {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
         }
-        if(userId != null){
-            eventMapper.recordUserViewEvent(userId,id);
+        if (userId != null) {
+            recordUserViewEvent(userId, id);
         }
         return eventVO;
     }
@@ -107,9 +110,11 @@ public class EventServiceImpl implements IEventService {
         emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
 
         EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();
-        eventRegisterDetailVO.setLink(eventVO.getLink());
-        eventRegisterDetailVO.setIcsText(generateIcsCalendarText(eventVO));
-        eventRegisterDetailVO.setGoogleCalendarLink(generateGoogleCalendarLink(eventVO));
+        if (eventVO.getLink() != null) {
+            eventRegisterDetailVO.setLink(eventVO.getLink());
+            eventRegisterDetailVO.setIcsText(generateIcsCalendarText(eventVO));
+            eventRegisterDetailVO.setGoogleCalendarLink(generateGoogleCalendarLink(eventVO));
+        }
         return eventRegisterDetailVO;
     }
 
@@ -239,5 +244,14 @@ public class EventServiceImpl implements IEventService {
     @Override
     public List<EventVO> searchEventsBoolean(String keyword) {
         return eventMapper.searchEventsBoolean(keyword);
+    }
+
+    @Async
+    protected void recordUserViewEvent(int userId, long eventId) {
+        try {
+            eventMapper.recordUserViewEvent(userId, eventId);
+        } catch (Exception e) {
+            log.error("Failed to record event view: userId={}, eventId={}", userId, eventId, e);
+        }
     }
 }

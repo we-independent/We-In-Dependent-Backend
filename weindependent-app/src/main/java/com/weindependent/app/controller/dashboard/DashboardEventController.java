@@ -35,7 +35,6 @@ public class DashboardEventController {
     @SignatureAuth
     @PostMapping()
     public EventDO create(@Valid @RequestBody EventQry eventQry)  {
-        int userId = StpUtil.getLoginIdAsInt();
         return IDashboardEventService.create(eventQry);
     }
 

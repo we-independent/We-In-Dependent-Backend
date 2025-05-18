@@ -24,11 +24,12 @@ import com.weindependent.app.vo.user.UserVOs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+@Transactional
 @Service
 @Slf4j
 public class DashboardEventServiceImpl implements IDashboardEventService {
@@ -57,10 +58,16 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     @Override
     public EventDO create(EventQry eventQry) {
         Long userId = StpUtil.getLoginIdAsLong();
-        EventDO eventDO = EventConverter.toEventDO(eventQry,null,userId,userId);
+        EventDO eventDO = EventConverter.toEventDO(eventQry, null, userId, userId);
 
         if (dashboardEventMapper.create(eventDO) == 0) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(),"Failed to create event");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to create event");
+        }
+
+        if (eventDO.getBannerId() != null) {
+            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
+            };
         }
         return eventDO;
     }
@@ -79,8 +86,14 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         EventDO eventDO = EventConverter.toEventDO(event,id,null,userId);
 
         if(dashboardEventMapper.update(eventDO)==0){
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString());
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString()+". Check if the image is not used by other event.");
         };
+
+        if (eventDO.getBannerId() != null) {
+            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
+            };
+        }
 
     }
 

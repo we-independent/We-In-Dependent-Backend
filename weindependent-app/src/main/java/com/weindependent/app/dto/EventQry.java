@@ -30,6 +30,5 @@ public class EventQry {
     @NotNull(message = "speakerUserId is mandatory")
     private Long speakerUserId;
 
-    @NotNull(message = "bannerId is mandatory")
     private Long bannerId;
 }
