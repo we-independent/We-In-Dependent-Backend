@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.UserHelpCenterMapper">
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.HelpCenterRequestDO">
+        INSERT INTO help_center_request (user_id, name, email, subject, message, create_time)
+        VALUES (#{userId}, #{name}, #{email}, #{subject}, #{message}, #{createTime})
+    </insert>
+
+    <select id="selectByUserId" resultType="com.weindependent.app.vo.HelpCenterRequestVO">
+        SELECT subject, message, create_time
+        FROM help_center_request
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

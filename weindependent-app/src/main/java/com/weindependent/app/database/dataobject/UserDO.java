@@ -1,6 +1,8 @@
 package com.weindependent.app.database.dataobject;
 
 import lombok.Data;
+//Author : Nero
+
 
 @Data
 public class UserDO {

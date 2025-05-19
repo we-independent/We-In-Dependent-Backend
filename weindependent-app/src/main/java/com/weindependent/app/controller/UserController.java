@@ -33,7 +33,8 @@ import java.util.Map;
 @Tag(name = "用户管理")
 @Slf4j
 @RestController
-@RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+// @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
 public class UserController {
 
     @Resource
@@ -144,6 +145,8 @@ public class UserController {
     @GetMapping("/isLogin")
     @CrossOrigin(origins = "*")
     public Map<String, Object> isLogin() {
+        log.info("👀 当前 Sa-Token token: {}", StpUtil.getTokenValue());
+
         Map<String, Object> result = new HashMap<>();
         result.put("isLogin", StpUtil.isLogin());
 
