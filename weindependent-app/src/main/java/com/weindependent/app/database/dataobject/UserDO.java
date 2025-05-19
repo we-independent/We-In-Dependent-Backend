@@ -9,6 +9,7 @@ public class UserDO {
     private String password;
     private String realName;
     private String email;
+    private Integer profileImageId;
     private String loginProvider;
     private String language;
     private String visaType;

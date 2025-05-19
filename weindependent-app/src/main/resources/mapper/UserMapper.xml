@@ -50,8 +50,13 @@
     </select>
 
     <update id="updateUser" parameterType="com.weindependent.app.database.dataobject.UserDO">
-        UPDATE t_system_user SET real_name = #{realName},language = #{language}
-        <if test="visaType != null and visaType != ''"> ,visa_type = #{visaType} </if>
+        UPDATE t_system_user
+        <set>
+            <if test="realName != null and realName != ''">real_name = #{realName},</if>
+            <if test="language != null and language != ''">language = #{language},</if>
+            <if test="visaType != null and visaType != ''">visa_type = #{visaType},</if>
+            <if test="profileImageId != null">profile_image_id = #{profileImageId},</if>
+        </set>
         WHERE id = #{id}
     </update>
 

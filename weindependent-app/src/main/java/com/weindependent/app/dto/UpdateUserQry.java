@@ -2,6 +2,7 @@ package com.weindependent.app.dto;
 
 import lombok.Data;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class UpdateUserQry {
@@ -11,6 +12,6 @@ public class UpdateUserQry {
   private String language;
   @NotBlank(message = "VisaType is required")
   private String visaType;
-  @NotBlank(message = "imgId is required")
-  private long imgId;
+  @NotNull(message = "profileImageId is required")
+  private Integer profileImageId;
 }
