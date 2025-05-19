@@ -3,7 +3,6 @@ package com.weindependent.app.service.impl.dashboard;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.EventConverter;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
@@ -13,8 +12,9 @@ import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
 import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.service.IDashboardEventService;
 import com.weindependent.app.utils.ImageResizeUtil;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -35,7 +35,7 @@ import java.util.List;
 public class DashboardEventServiceImpl implements IDashboardEventService {
 
     @Autowired
-    private FileService fileService;
+    private IFileService fileService;
 
     private final Integer RESIZE_WIDTH = 1729;
     private final Integer RESIZE_HEIGHT = 438;
@@ -108,7 +108,7 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         }
 
         // Then upload
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"event-banner" );
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setCategory("event-banner");

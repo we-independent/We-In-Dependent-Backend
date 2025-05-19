@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ import com.weindependent.app.database.mapper.dashboard.DashboardSpeakerMapper;
 import com.weindependent.app.dto.EventSpeakerQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.service.IDashboardSpeakerService;
 import com.weindependent.app.utils.ImageResizeUtil;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -34,7 +35,7 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
     private static final int RESIZE_HEIGHT = 600;
 
     @Resource
-    private FileService fileService;
+    private IFileService fileService;
 
     @Resource
     private DashboardSpeakerMapper dashboardSpeakerMapper;
@@ -140,7 +141,7 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
             throw new RuntimeException("Failed to resize image");
         }
 
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, "event-speaker-banner");
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_SPEAKER_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setCategory("event-speaker-banner");

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -23,7 +24,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.web.multipart.MultipartFile;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
     private UserImageMapper profileImageMapper;
 
     @Autowired
-    private FileService fileService;
+    private IFileService fileService;
 
     @Autowired
     private EmailServiceImpl resetUserPasswordEmailService;
@@ -164,7 +165,7 @@ public class UserServiceImpl implements UserService {
 
         // Then upload
         UploadedFileVO uploadedFileVO =
-            fileService.uploadFile(resizedFile, null, "user-profile-image");
+            fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_SPEAKER_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setFileName(uploadedFileVO.getFileName());

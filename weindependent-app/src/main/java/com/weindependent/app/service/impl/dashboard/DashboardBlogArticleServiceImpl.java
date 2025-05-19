@@ -12,6 +12,7 @@ import com.weindependent.app.database.dataobject.TagArticleRelationDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagArticleRelationMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.utils.CommonUtil;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ import com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper;
 import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -63,7 +64,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Resource
     private DashboardBlogImageMapper blogImageMapper;
     @Resource
-    private FileService fileService;
+    private IFileService fileService;
     @Autowired
     private DashboardTagArticleRelationMapper dashboardTagArticleRelationMapper;
 
@@ -183,7 +184,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         }
 
         // Then upload
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"event-banner" );
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.BLOG_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setCategory("blog-banner");
