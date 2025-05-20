@@ -14,12 +14,15 @@ import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.UserService;
+import com.weindependent.app.service.impl.EmailServiceImpl;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.LoginVO;
 import com.weindependent.app.vo.user.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -30,12 +33,13 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Tag(name = "用户管理")
 @Slf4j
 @RestController
-@RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-// @RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
+// @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
 public class UserController {
 
     @Resource
@@ -218,5 +222,22 @@ public class UserController {
         org.springframework.http.MediaType mediaType = MediaType.parseMediaType(file.getContentType());
         org.springframework.http.MediaType a;
         return userService.createProfileImg(file);
+    }
+
+
+    /**
+     * HelpCenter
+     */
+    @SignatureAuth
+    @Operation(summary = "提交 Help Center 请求")
+    @PostMapping("/profile/help/send")
+    @CrossOrigin(origins = "*")
+    public void sendHelp(@RequestBody HelpCenterRequestQry qry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        UserDO user = userService.findUserById(userId);
+        if (user == null) {
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "用户不存在");
+        }
+        userService.saveHelpRequest(userId, qry);
     }
 }
