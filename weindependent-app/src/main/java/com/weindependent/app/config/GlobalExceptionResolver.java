@@ -60,7 +60,7 @@ public class GlobalExceptionResolver{
 
     @ExceptionHandler(NotLoginException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Map<String, Object> handleNotLoginException(NotLoginException ex) {
+    public Map<String, Object> handleNotLoginException(NotLoginException ex){
         log.warn("NotLoginException: {}", ex.getMessage());
         Map<String, Object> error = new HashMap<>();
         error.put("code", ErrorCode.NOT_LOGGED_IN.getCode());

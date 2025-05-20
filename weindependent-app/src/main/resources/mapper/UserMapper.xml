@@ -28,8 +28,12 @@
     </select>
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
-        INSERT INTO t_system_user (account, password, real_name, login_provider)
-        VALUES (#{account}, #{password}, #{realName}, #{loginProvider})
+        INSERT INTO t_system_user (account, password, real_name, login_provider, language
+        <if test="visaType != null and visaType != ''"> ,visa_type</if>
+        )
+        VALUES (#{account}, #{password}, #{realName}, #{loginProvider}, #{language}
+        <if test="visaType != null and visaType != ''">,#{visaType}</if>
+        )
         ON DUPLICATE KEY UPDATE last_login_time = NOW();
     </insert>
 
@@ -47,7 +51,12 @@
 
     <update id="updateUser" parameterType="com.weindependent.app.database.dataobject.UserDO">
         UPDATE t_system_user
-        SET real_name = #{realName}, visa_type = #{visaType}
+        <set>
+            <if test="realName != null and realName != ''">real_name = #{realName},</if>
+            <if test="language != null and language != ''">language = #{language},</if>
+            <if test="visaType != null and visaType != ''">visa_type = #{visaType},</if>
+            <if test="profileImageId != null">profile_image_id = #{profileImageId},</if>
+        </set>
         WHERE id = #{id}
     </update>
 

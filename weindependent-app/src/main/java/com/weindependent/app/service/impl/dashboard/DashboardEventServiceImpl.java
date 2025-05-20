@@ -3,7 +3,6 @@ package com.weindependent.app.service.impl.dashboard;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.weindependent.app.convertor.EventConverter;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
@@ -13,8 +12,9 @@ import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
 import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.exception.ResponseException;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.service.IDashboardEventService;
 import com.weindependent.app.utils.ImageResizeUtil;
 import com.weindependent.app.vo.UploadedFileVO;
@@ -24,17 +24,18 @@ import com.weindependent.app.vo.user.UserVOs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+@Transactional
 @Service
 @Slf4j
 public class DashboardEventServiceImpl implements IDashboardEventService {
 
     @Autowired
-    private FileService fileService;
+    private IFileService fileService;
 
     private final Integer RESIZE_WIDTH = 1729;
     private final Integer RESIZE_HEIGHT = 438;
@@ -57,10 +58,16 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     @Override
     public EventDO create(EventQry eventQry) {
         Long userId = StpUtil.getLoginIdAsLong();
-        EventDO eventDO = EventConverter.toEventDO(eventQry,null,userId,userId);
+        EventDO eventDO = EventConverter.toEventDO(eventQry, null, userId, userId);
 
         if (dashboardEventMapper.create(eventDO) == 0) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(),"Failed to create event");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to create event");
+        }
+
+        if (eventDO.getBannerId() != null) {
+            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
+            };
         }
         return eventDO;
     }
@@ -79,8 +86,14 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         EventDO eventDO = EventConverter.toEventDO(event,id,null,userId);
 
         if(dashboardEventMapper.update(eventDO)==0){
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString());
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString()+". Check if the image is not used by other event.");
         };
+
+        if (eventDO.getBannerId() != null) {
+            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
+            };
+        }
 
     }
 
@@ -95,7 +108,7 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         }
 
         // Then upload
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"event-banner" );
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setCategory("event-banner");

@@ -2,16 +2,17 @@ package com.weindependent.app.service.impl;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.FileList;
+import com.weindependent.app.config.GoogleDriveFolderProperties;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
 import com.weindependent.app.database.dataobject.BlogPdfDownloadLogDO;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfDownloadLogMapper;
 import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +28,11 @@ import java.util.regex.Pattern;
 @Service("blogPdfDriverManagerService")
 public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerService {
 
-    @Value("${google.drive.folder.blog-pdf}")
-    private String blogPdfFolderId;
+    @Autowired
+    GoogleDriveFolderProperties googleDriveFolderProperties;
 
     @Autowired
-    private FileService fileService;
+    private IFileService fileService;
 
     @Autowired
     private BlogPdfExportMapper blogPdfExportMapper;
@@ -69,13 +70,13 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
             }
         }
 
-        Drive drive = ((FileServiceImpl) fileService).getDrive();
+        Drive drive = fileService.getDrive();
 
         // 检查 Drive 中是否已存在同名文件（仅当数据库中无记录，且下载次数达标）
         if (!forceUpload && existing == null && downloadCount >= 5) {
             try {
                 String fileName = "WeIndependent_blog_" + blogId + ".pdf";
-                String query = String.format("name = '%s' and trashed = false and '%s' in parents", fileName, blogPdfFolderId);
+                String query = String.format("name = '%s' and trashed = false and '%s' in parents", fileName, googleDriveFolderProperties.getIds().get(GoogleDriveFileCategoryEnum.BLOG_PDF));
                 FileList result = drive.files().list()
                         .setQ(query)
                         .setSpaces("drive")
@@ -99,7 +100,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
             try {
                 String fileName = "WeIndependent_blog_" + blogId + ".pdf";
                 MultipartFile file = new MockMultipartFile(fileName, fileName, "application/pdf", pdfBytes);
-                UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, "blog-pdf");
+                UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, GoogleDriveFileCategoryEnum.BLOG_PDF);
                 String viewUrl = uploadedFileVo.getFilePath();
                 if (viewUrl == null || viewUrl.isEmpty()) throw new RuntimeException("上传成功但返回空链接");
                 // String fileId = extractDriveFieldId(viewUrl);

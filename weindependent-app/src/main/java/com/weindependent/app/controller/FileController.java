@@ -1,7 +1,7 @@
 package com.weindependent.app.controller;
 
 import com.weindependent.app.dto.FileUploadQry;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +16,7 @@ import javax.validation.Valid;
 @RequestMapping(value = "api/file", produces = "application/json;charset=UTF-8")
 public class FileController {
     @Resource
-    private FileService fileService;
-
-    @PostMapping( consumes="multipart/form-data")
-    public UploadedFileVO uploadFile(@ModelAttribute @Valid FileUploadQry fileUploadQry) {
-        if(!fileUploadQry.isValid()){
-            throw new RuntimeException("Invalid fileuploadQry");
-        }
-        return fileService.uploadFile(fileUploadQry.getFile(),null,fileUploadQry.getCategory());
-    }
+    private IFileService fileService;
 
     @DeleteMapping(consumes = "application/json;charset=UTF-8")
     public void deleteFile(@RequestParam("fileId") String fileId) {

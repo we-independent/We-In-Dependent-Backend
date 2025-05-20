@@ -29,4 +29,12 @@ public interface DashboardEventImageMapper {
 
     public int delete(List<Long> ids);
 
+  /**
+   * 標記活動图片idDelete = false
+   *
+   * @param bannerId 活動图片id
+   * @return 结果成功與否
+   */
+    public int markUsed(Long bannerId);
+
 }

@@ -27,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -203,7 +204,7 @@ public class UserController {
     @Operation(summary = "更新使用者资料")
     @PutMapping("/")
     @CrossOrigin(origins = "*")
-    public void updateUser(@RequestBody UpdateUserQry updateUserQry) {
+    public void updateUser(@Valid @RequestBody UpdateUserQry updateUserQry) {
         userService.updateUser(updateUserQry);
     }
 

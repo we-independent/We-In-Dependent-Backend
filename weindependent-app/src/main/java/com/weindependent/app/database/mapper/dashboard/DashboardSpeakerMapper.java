@@ -17,4 +17,5 @@ public interface DashboardSpeakerMapper {
     DashboardSpeakerVO getById(@Param("id") Long id);
 
     EventSpeakerDO getByUserId(@Param("userId") Long userId);
+    List<Long> getBannerIdsBySpeakerIds(List<Long> ids);
 }

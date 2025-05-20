@@ -11,4 +11,6 @@ public interface DashboardEventSpeakerImageMapper {
     int insert(ImageDO image);
     int update(ImageDO image);
     int delete(@Param("ids") List<Long> ids);
+    int setNotDeletedById(@Param("id") Long id);
+    int setDeletedById(@Param("id") Long id);
 }

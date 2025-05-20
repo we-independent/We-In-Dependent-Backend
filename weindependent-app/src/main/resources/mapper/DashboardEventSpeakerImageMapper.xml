@@ -6,8 +6,8 @@
 
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.ImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO event_speaker_image (category, file_name,file_key, file_type, file_path)
-        VALUES (#{category}, #{fileName},#{fileKey}, #{fileType}, #{filePath})
+        INSERT INTO event_speaker_image (category, file_name,file_key, file_type, file_path, is_deleted)
+        VALUES (#{category}, #{fileName},#{fileKey}, #{fileType}, #{filePath}, #{isDeleted})
     </insert>
 
 
@@ -18,6 +18,18 @@
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </update>
+
+    <update id="setNotDeletedById">
+        UPDATE event_speaker_image
+        SET is_deleted = 0
+        WHERE id = #{id}
+    </update>
+
+    <update id="setDeletedById">
+        UPDATE event_speaker_image
+        SET is_deleted = 1
+        WHERE id = #{id}
     </update>
 
 </mapper>
