@@ -46,7 +46,9 @@
     </select>
 
     <update id="updateUser" parameterType="com.weindependent.app.database.dataobject.UserDO">
-        UPDATE t_system_user SET real_name,visa_type WHERE id = #{id}
+        UPDATE t_system_user
+        SET real_name = #{realName}, visa_type = #{visaType}
+        WHERE id = #{id}
     </update>
 
 </mapper>

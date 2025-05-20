@@ -212,9 +212,8 @@ public class UserController {
      */
     @SignatureAuth
     @Operation(summary = "新增个人头像图片")
-    @PostMapping(value = "/profile/img/upload", consumes =
-            MediaType.MULTIPART_FORM_DATA_VALUE)
-    public  ImageDO createProfileImg(@RequestParam("file")  MultipartFile file) {
+    @PostMapping(value = "/profile/img/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImageDO createProfileImg(@RequestParam("file")  MultipartFile file) {
         org.springframework.http.MediaType mediaType = MediaType.parseMediaType(file.getContentType());
         org.springframework.http.MediaType a;
         return userService.createProfileImg(file);
