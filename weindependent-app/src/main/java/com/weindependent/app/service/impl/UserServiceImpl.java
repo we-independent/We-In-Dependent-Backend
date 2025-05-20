@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService {
 
         // Then upload
         UploadedFileVO uploadedFileVO =
-            fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_SPEAKER_BANNER);
+            fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setFileName(uploadedFileVO.getFileName());
