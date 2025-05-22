@@ -18,4 +18,5 @@ public interface UserMapper {
     boolean existsById(int id);
     UserDO findById(Long userId); //Hurely add for pdf download
     void updateUser(UserDO userDO);
+    int changePassword(@Param("id") Long id, @Param("newPassword")String newPassword);
 }

@@ -93,7 +93,7 @@ public class FileServiceImpl implements IFileService {
         try{
             uploadedFile = drive.files()
                     .create(fileMetadata, byteArrayContent)
-                    .setFields("id,name,thumbnailLink")
+                    .setFields("id,name")
                     .execute();
         }
         catch (IOException e){
@@ -105,7 +105,7 @@ public class FileServiceImpl implements IFileService {
         UploadedFileVO uploadedFileVO = new UploadedFileVO();
         uploadedFileVO.setFileKey(uploadedFile.getId());
         uploadedFileVO.setFileName(uploadedFile.getName());
-        uploadedFileVO.setFilePath(uploadedFile.getThumbnailLink());
+        uploadedFileVO.setFilePath("https://drive.google.com/thumbnail?id=" + uploadedFile.getId() + "&sz=s400");
         fileMetadata.setMimeType(mimeType);
 
         return uploadedFileVO;

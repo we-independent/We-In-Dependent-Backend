@@ -61,4 +61,13 @@
         WHERE id = #{id}
     </update>
 
+    <update id="changePassword" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        UPDATE t_system_user
+        <set>
+            password = #{newPassword}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
 </mapper>
