@@ -217,4 +217,12 @@ public class UserController {
         org.springframework.http.MediaType a;
         return userService.createProfileImg(file);
     }
+
+    @SignatureAuth
+    @Operation(summary = "修改密码（登录状态）")
+    @PutMapping("/change-password")
+    @CrossOrigin(origins = "*")
+    public void changePassword(@Valid @RequestBody ChangePasswordQry changePasswordQry) {
+        userService.changePassword(changePasswordQry);
+    }
 }

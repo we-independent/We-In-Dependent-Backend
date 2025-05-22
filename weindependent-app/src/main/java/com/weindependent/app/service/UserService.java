@@ -1,6 +1,7 @@
 package com.weindependent.app.service;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.dto.ChangePasswordQry;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.RegisterQry;
 import com.weindependent.app.dto.UpdateUserQry;
@@ -17,4 +18,5 @@ public interface UserService {
     UserDO findUserById(Long userId); //Hurely added for pdf download
     void updateUser(UpdateUserQry updateUserQry);
     ImageDO createProfileImg(MultipartFile file);
+    void changePassword(ChangePasswordQry changePasswordQry);
 }
