@@ -219,6 +219,14 @@ public class UserController {
     }
 
     @SignatureAuth
+    @Operation(summary = "验证旧密码")
+    @PostMapping("/verify-password")
+    @CrossOrigin(origins = "*")
+    public void verifyPassword(@Valid @RequestBody VerifyPasswordQry verifyPasswordQry) {
+        userService.verifyPassword(verifyPasswordQry);
+    }
+
+    @SignatureAuth
     @Operation(summary = "修改密码（登录状态）")
     @PutMapping("/change-password")
     @CrossOrigin(origins = "*")

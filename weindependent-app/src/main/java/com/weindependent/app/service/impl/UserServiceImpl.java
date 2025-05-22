@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.dto.ChangePasswordQry;
+import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.exception.ResponseException;
@@ -181,26 +182,26 @@ public class UserServiceImpl implements UserService {
         return imageDo;
     }
 
+    @Override
+    public void verifyPassword(VerifyPasswordQry verifyPasswordQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        UserDO user = userMapper.findById(userId);
+        if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(verifyPasswordQry.getOldPassword(), user.getPassword())) {
+            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), "Invalid old password");
+        }
+
+    }
 
     @Override
     public void changePassword(ChangePasswordQry changePasswordQry) {
         Long userId = StpUtil.getLoginIdAsLong();
-
-        // Step 1: validate user password
-        UserDO user = userMapper.findById(userId);
-        if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(changePasswordQry.getOldPassword(), user.getPassword())) {
-            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), "Invalid old password");
-        }
-
-        // Step 2: change user password
-
         String hashedNewPassword = PasswordUtil.hashPassword(changePasswordQry.getNewPassword());
 
         if (userMapper.changePassword(userId,hashedNewPassword)==0) {
             log.error("Failed to change password because user does not exist for userId: {}.", userId);
             throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
         }
-
 
         log.info("Change password successful for userId {}", userId);
     }
