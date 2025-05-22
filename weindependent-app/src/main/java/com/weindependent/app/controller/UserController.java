@@ -209,6 +209,7 @@ public class UserController {
     @PutMapping("/")
     @CrossOrigin(origins = "*")
     public void updateUser(@Valid @RequestBody UpdateUserQry updateUserQry) {
+        log.info("🟢 收到 updateUser 请求: {}", updateUserQry);
         userService.updateUser(updateUserQry);
     }
 

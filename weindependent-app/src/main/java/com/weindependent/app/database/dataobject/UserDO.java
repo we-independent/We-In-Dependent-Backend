@@ -16,4 +16,5 @@ public class UserDO {
     private String language;
     private String visaType;
     private boolean subscription;
+    private Boolean isVisaPublic;
 }
