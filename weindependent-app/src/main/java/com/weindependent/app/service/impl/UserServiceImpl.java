@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
+import com.weindependent.app.dto.ChangePasswordQry;
+import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.exception.ResponseException;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.database.dataobject.ImageDO;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.service.IFileService;
@@ -177,6 +180,30 @@ public class UserServiceImpl implements UserService {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
         }
         return imageDo;
+    }
+
+    @Override
+    public void verifyPassword(VerifyPasswordQry verifyPasswordQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        UserDO user = userMapper.findById(userId);
+        if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(verifyPasswordQry.getOldPassword(), user.getPassword())) {
+            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), "Invalid old password");
+        }
+
+    }
+
+    @Override
+    public void changePassword(ChangePasswordQry changePasswordQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        String hashedNewPassword = PasswordUtil.hashPassword(changePasswordQry.getNewPassword());
+
+        if (userMapper.changePassword(userId,hashedNewPassword)==0) {
+            log.error("Failed to change password because user does not exist for userId: {}.", userId);
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
+        }
+
+        log.info("Change password successful for userId {}", userId);
     }
 }
 
