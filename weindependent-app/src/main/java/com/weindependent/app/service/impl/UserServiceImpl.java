@@ -111,12 +111,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int resetPassword(String token, String newPassword){
+    public int resetPassword(String token, String newPassword) {
         //temp token see reference https://sa-token.cc/doc.html#/plugin/temp-token?id=临时token令牌认证
         String userId = SaTempUtil.parseToken(token, String.class);
 
         long timeout = SaTempUtil.getTimeout(token);
-        if (timeout < 0){
+        if (timeout < 0) {
             log.info("Reset password failed because token does not exist for userId: {}.", userId);
             return ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode(); //Token does not exist or expired.
         }
@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
     //Hurely add for pdf download
     @Override
     public UserDO findUserById(Long userId) {
-        return userMapper.findById(userId); 
+        return userMapper.findById(userId);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file,
-                RESIZE_WIDTH, RESIZE_HEIGHT);
+                    RESIZE_WIDTH, RESIZE_HEIGHT);
         } catch (Exception e) {
             log.error("Failed to resize image before uploading: {}", e.getMessage());
             throw new RuntimeException("Failed to resize image");
@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService {
 
         // Then upload
         UploadedFileVO uploadedFileVO =
-            fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
+                fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setFileName(uploadedFileVO.getFileName());
@@ -178,5 +178,22 @@ public class UserServiceImpl implements UserService {
         }
         return imageDo;
     }
+
+
+    @Override
+    public void deleteAccount(Long userId) {
+        UserDO user = userMapper.findById(userId);
+
+        int result = userMapper.deleteUserById(userId);
+        log.info("Deleted rows: {}", result);
+        if (result == 0) {
+            log.error("Failed to delete user from database. User ID: {}", userId);
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to delete account");
+        }
+
+        log.info("User account deleted successfully. User ID: {}", userId);
+    }
+
 }
+
 

@@ -217,4 +217,16 @@ public class UserController {
         org.springframework.http.MediaType a;
         return userService.createProfileImg(file);
     }
+
+    @SignatureAuth
+    @Operation(summary = "删除账号（用户主动注销）")
+    @DeleteMapping("/")
+    @CrossOrigin(origins = "*")
+    public void deleteAccount() {
+        Long userId = StpUtil.getLoginIdAsLong();
+        userService.deleteAccount(userId);
+        log.info("DELETE /user/ triggered by userId: {}", userId);
+        StpUtil.logout();
+        log.info("Account deleted and user logged out: userId={}", userId);
+    }
 }

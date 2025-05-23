@@ -17,4 +17,5 @@ public interface UserService {
     UserDO findUserById(Long userId); //Hurely added for pdf download
     void updateUser(UpdateUserQry updateUserQry);
     ImageDO createProfileImg(MultipartFile file);
+    void deleteAccount(Long userId);
 }
