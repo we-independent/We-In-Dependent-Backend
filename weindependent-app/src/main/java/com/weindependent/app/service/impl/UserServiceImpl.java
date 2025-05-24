@@ -116,7 +116,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public int resetPassword(String token, String newPassword){
         //temp token see reference https://sa-token.cc/doc.html#/plugin/temp-token?id=临时token令牌认证
-        String userId = SaTempUtil.parseToken(token, String.class);
+        // String userId = SaTempUtil.parseToken(token, String.class);
+        Long userId = SaTempUtil.parseToken(token, Long.class);
 
         long timeout = SaTempUtil.getTimeout(token);
         if (timeout < 0){
@@ -132,7 +133,8 @@ public class UserServiceImpl implements UserService {
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
-        if (userMapper.updatePassword(Integer.parseInt(userId), hashedPassword) <= 0) {
+        // if (userMapper.updatePassword(Integer.parseInt(userId), hashedPassword) <= 0) {
+        if (userMapper.updatePassword(userId, hashedPassword) <= 0) {
             log.info("Reset password failed because cannot update in DB for userId: {}.", userId);
             return ErrorCode.UPDATE_DB_FAILED.getCode(); //database update failed
         }
