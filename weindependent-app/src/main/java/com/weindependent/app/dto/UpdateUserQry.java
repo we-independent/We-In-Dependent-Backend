@@ -10,7 +10,7 @@ public class UpdateUserQry {
   private String realName;
   @NotBlank(message = "language is required")
   private String language;
-  @NotBlank(message = "VisaType is required")
+  // @NotBlank(message = "VisaType is required")
   private String visaType;
   @NotNull(message = "profileImageId is required")
   private Integer profileImageId;
