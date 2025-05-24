@@ -68,6 +68,9 @@ public class EventServiceImpl implements IEventService {
         if (userId != null) {
             recordUserViewEvent(userId, id);
         }
+        else{
+            eventVO.setVideoLink(null);   //prevent not logged in user from accessing the video.
+        }
         return eventVO;
     }
 

@@ -11,6 +11,7 @@ public class EventVO {
     private String content;
     private LocalDateTime eventTime;
     private String link;
+    private String videoLink;
     private Integer categoryId;
     private String categoryName;
     private String location;
@@ -25,3 +26,5 @@ public class EventVO {
     private String bannerUrl;
     private boolean isBookMarked;
 }
+
+
