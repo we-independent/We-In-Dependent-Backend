@@ -25,14 +25,16 @@ public class EventController {
 
     @Operation(summary = "Get upcoming events")
     @SignatureAuth
-    @GetMapping("/upcoming") // No need pagination
-    public List<RecentEventVO> getUpcomingEvents() {
-        return IEventService.getUpcomingEvents();
+    @GetMapping("/upcoming")
+    public RecentEventVOs getUpcomingEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getUpcomingEvents(page,size);
     }
 
     @Operation(summary = "Get past events")
     @SignatureAuth
-    @GetMapping("/past") // No need pagination
+    @GetMapping("/past")
     public RecentEventVOs getPastEvents(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -47,10 +49,7 @@ public class EventController {
         return IEventService.getEventById(id);
     }
 
-    @Operation(
-        summary = "Register an event by ID",
-        description = "Returns an link of the event"
-    )
+    @Operation(summary = "Register an event by ID")
     @SignatureAuth
     @PostMapping("/register/{id}")
     public EventRegisterDetailVO register(@PathVariable Long id) { return IEventService.register(id);}

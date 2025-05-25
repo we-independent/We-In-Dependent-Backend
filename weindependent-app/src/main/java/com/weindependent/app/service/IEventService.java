@@ -8,7 +8,7 @@ import com.weindependent.app.vo.event.RecentEventVOs;
 import java.util.List;
 
 public interface IEventService {
-    List<RecentEventVO> getUpcomingEvents();
+    RecentEventVOs getUpcomingEvents(int page, int size);
     RecentEventVOs getPastEvents(int page, int size);
     EventVO getEventById(Long id);
     EventRegisterDetailVO register(Long id);

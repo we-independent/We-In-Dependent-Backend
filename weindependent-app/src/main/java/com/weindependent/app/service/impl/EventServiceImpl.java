@@ -40,16 +40,20 @@ public class EventServiceImpl implements IEventService {
     private IEmailService emailService;
 
     @Override
-    public List<RecentEventVO> getUpcomingEvents() {
+    public RecentEventVOs getUpcomingEvents(int page,int size) {
         Integer userId =null;
         if(StpUtil.isLogin()){
             userId=StpUtil.getLoginIdAsInt();
         }
+        Page p = PageHelper.startPage(page, size);
         List<RecentEventVO> events = eventMapper.getUpcoming(userId);
         if(events == null ){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
-        return events;
+        RecentEventVOs recentEventVOs = new RecentEventVOs();
+        recentEventVOs.setEvents(events);
+        recentEventVOs.setPages(p.getPages());
+        return recentEventVOs;
     }
 
     @Override
@@ -70,8 +74,6 @@ public class EventServiceImpl implements IEventService {
         recentEventVOs.setPages(p.getPages());
         return recentEventVOs;
     }
-
-
 
     @Override
     public EventVO getEventById(Long id) {
