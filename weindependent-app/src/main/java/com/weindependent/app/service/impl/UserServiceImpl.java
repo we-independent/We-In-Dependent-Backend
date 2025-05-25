@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
+import com.weindependent.app.dto.ChangePasswordQry;
+import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.exception.ResponseException;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.database.dataobject.ImageDO;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.service.IFileService;
@@ -111,12 +114,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int resetPassword(String token, String newPassword) {
+    public int resetPassword(String token, String newPassword){
         //temp token see reference https://sa-token.cc/doc.html#/plugin/temp-token?id=临时token令牌认证
-        String userId = SaTempUtil.parseToken(token, String.class);
+        // String userId = SaTempUtil.parseToken(token, String.class);
+        Long userId = SaTempUtil.parseToken(token, Long.class);
 
         long timeout = SaTempUtil.getTimeout(token);
-        if (timeout < 0) {
+        if (timeout < 0){
             log.info("Reset password failed because token does not exist for userId: {}.", userId);
             return ErrorCode.TOKEN_NOT_EXIST_OR_EXPIRED.getCode(); //Token does not exist or expired.
         }
@@ -129,7 +133,8 @@ public class UserServiceImpl implements UserService {
 
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         user.setPassword(hashedPassword);
-        if (userMapper.updatePassword(Integer.parseInt(userId), hashedPassword) <= 0) {
+        // if (userMapper.updatePassword(Integer.parseInt(userId), hashedPassword) <= 0) {
+        if (userMapper.updatePassword(userId, hashedPassword) <= 0) {
             log.info("Reset password failed because cannot update in DB for userId: {}.", userId);
             return ErrorCode.UPDATE_DB_FAILED.getCode(); //database update failed
         }
@@ -142,7 +147,7 @@ public class UserServiceImpl implements UserService {
     //Hurely add for pdf download
     @Override
     public UserDO findUserById(Long userId) {
-        return userMapper.findById(userId);
+        return userMapper.findById(userId); 
     }
 
     @Override
@@ -157,7 +162,7 @@ public class UserServiceImpl implements UserService {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file,
-                    RESIZE_WIDTH, RESIZE_HEIGHT);
+                RESIZE_WIDTH, RESIZE_HEIGHT);
         } catch (Exception e) {
             log.error("Failed to resize image before uploading: {}", e.getMessage());
             throw new RuntimeException("Failed to resize image");
@@ -165,7 +170,7 @@ public class UserServiceImpl implements UserService {
 
         // Then upload
         UploadedFileVO uploadedFileVO =
-                fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
+            fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setFileName(uploadedFileVO.getFileName());
@@ -194,6 +199,29 @@ public class UserServiceImpl implements UserService {
         log.info("User account deleted successfully. User ID: {}", userId);
     }
 
-}
 
+    @Override
+    public void verifyPassword(VerifyPasswordQry verifyPasswordQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        UserDO user = userMapper.findById(userId);
+        if (ObjectUtils.isEmpty(user) || !PasswordUtil.verifyPassword(verifyPasswordQry.getOldPassword(), user.getPassword())) {
+            throw new ResponseException(ErrorCode.USERNAME_PASSWORD_ERROR.getCode(), "Invalid old password");
+        }
+
+    }
+
+    @Override
+    public void changePassword(ChangePasswordQry changePasswordQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        String hashedNewPassword = PasswordUtil.hashPassword(changePasswordQry.getNewPassword());
+
+        if (userMapper.changePassword(userId,hashedNewPassword)==0) {
+            log.error("Failed to change password because user does not exist for userId: {}.", userId);
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), ErrorCode.USER_NOT_EXIST.getTitle());
+        }
+
+        log.info("Change password successful for userId {}", userId);
+    }
+}
 

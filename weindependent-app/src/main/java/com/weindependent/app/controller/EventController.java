@@ -9,27 +9,51 @@ import com.weindependent.app.vo.event.RecentEventVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Tag(name = "活動")
 @Slf4j
 @RestController
+@Validated
 @RequestMapping(value = "/api/event")
 public class EventController {
 
     @Resource
     private IEventService IEventService;
 
-    @Operation(summary = "Get recent events")
+    @Operation(summary = "Get upcoming events")
     @SignatureAuth
-    @GetMapping("/recent")
-    public List<RecentEventVO> getRecentEvents(
+    @GetMapping("/upcoming")
+    public RecentEventVOs getUpcomingEvents(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return IEventService.getRecentEvents(page, size);
+        return IEventService.getUpcomingEvents(page,size);
+    }
+
+    @Operation(summary = "Get past events")
+    @SignatureAuth
+    @GetMapping("/past")
+    public RecentEventVOs getPastEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getPastEvents(page, size);
+    }
+
+    @Operation(summary = "Get upcoming events by month")
+    @SignatureAuth
+    @GetMapping("/upcoming/month")
+    public List<RecentEventVO> getUpcomingByMonth(
+            @RequestParam @NotNull @Min(1900) @Max(2100) Integer year,
+            @RequestParam @NotNull @Min(1) @Max(12) Integer month
+    ) {
+        return IEventService.getByMonth(year, month);
     }
 
 
@@ -40,10 +64,7 @@ public class EventController {
         return IEventService.getEventById(id);
     }
 
-    @Operation(
-        summary = "Register an event by ID",
-        description = "Returns an link of the event"
-    )
+    @Operation(summary = "Register an event by ID")
     @SignatureAuth
     @PostMapping("/register/{id}")
     public EventRegisterDetailVO register(@PathVariable Long id) { return IEventService.register(id);}
@@ -63,13 +84,13 @@ public class EventController {
     @DeleteMapping("/bookmark/{id}")
     public void unbookmark(@PathVariable Long id) {IEventService.unbookmark(id);}
 
-    @Operation(summary = "List All registered ongoing events 已註冊活動列表")
+    @Operation(summary = "List All registered upcoming events 已註冊活動列表")
     @SignatureAuth
-    @GetMapping("/registered/ongoing")
-    public RecentEventVOs getRegisteredOngoingEvents(
+    @GetMapping("/registered/upcoming")
+    public RecentEventVOs getRegisteredUpcomingEvents(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return IEventService.getRegisteredOngoingEvents(page,size);
+        return IEventService.getRegisteredUpcomingEvents(page,size);
     }
 
     @Operation(summary = "List all registered past events 已參加活動列表")

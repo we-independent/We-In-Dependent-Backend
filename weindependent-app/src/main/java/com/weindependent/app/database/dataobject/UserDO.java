@@ -1,5 +1,7 @@
 package com.weindependent.app.database.dataobject;
 
+import javax.persistence.Column;
+
 import lombok.Data;
 
 @Data
@@ -14,4 +16,6 @@ public class UserDO {
     private String language;
     private String visaType;
     private boolean subscription;
+    // nullable false - not public
+    private Boolean isVisaPublic;
 }

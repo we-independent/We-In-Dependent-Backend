@@ -56,6 +56,15 @@
             <if test="language != null and language != ''">language = #{language},</if>
             <if test="visaType != null and visaType != ''">visa_type = #{visaType},</if>
             <if test="profileImageId != null">profile_image_id = #{profileImageId},</if>
+            <if test="isVisaPublic != null">is_visa_public = #{isVisaPublic},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="changePassword" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        UPDATE t_system_user
+        <set>
+            password = #{newPassword}
         </set>
         WHERE id = #{id}
     </update>
@@ -63,5 +72,6 @@
     <delete id="deleteUserById" parameterType="long">
         DELETE FROM t_system_user WHERE id = #{userId}
     </delete>
+
 
 </mapper>
