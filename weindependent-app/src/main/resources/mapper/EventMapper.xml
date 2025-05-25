@@ -22,6 +22,21 @@
         ORDER BY e.event_time DESC
     </select>
 
+    <select id="getByMonth" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            f.file_path AS bannerUrl
+        FROM event e
+                 LEFT JOIN event_image f ON e.banner_id = f.id
+        WHERE e.is_deleted = 0
+          AND YEAR(e.event_time) = #{year}
+          AND MONTH(e.event_time) = #{month}
+        ORDER BY e.event_time ASC
+    </select>
+
     <select id="getById" parameterType="map" resultType="com.weindependent.app.vo.event.EventVO">
         SELECT e.id,
         e.title,

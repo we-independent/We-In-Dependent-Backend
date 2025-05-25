@@ -11,6 +11,8 @@ import java.util.List;
 public interface EventMapper {
     List<RecentEventVO> getRecent(Integer userId);
     void recordUserViewEvent(Integer userId, Long eventId);
+    List<RecentEventVO> getByMonth(@Param("year") Integer year,
+                                   @Param("month") Integer month);
     EventVO getById(@Param("id") Long id,
                     @Param("userId") Integer userId);
     int register(Long id, Long userId);
