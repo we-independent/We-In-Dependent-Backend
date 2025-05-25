@@ -23,4 +23,5 @@ public interface UserService {
     ImageDO createProfileImg(MultipartFile file);
     void verifyPassword(@Valid VerifyPasswordQry verifyPasswordQry);
     void changePassword(ChangePasswordQry changePasswordQry);
+    void deleteAccount(Long userId);
 }

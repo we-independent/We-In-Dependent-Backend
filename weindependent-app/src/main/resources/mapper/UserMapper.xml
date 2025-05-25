@@ -69,5 +69,9 @@
         WHERE id = #{id}
     </update>
 
+    <delete id="deleteUserById" parameterType="long">
+        DELETE FROM t_system_user WHERE id = #{userId}
+    </delete>
+
 
 </mapper>

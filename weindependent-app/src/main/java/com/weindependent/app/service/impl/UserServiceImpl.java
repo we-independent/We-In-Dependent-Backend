@@ -184,6 +184,22 @@ public class UserServiceImpl implements UserService {
         return imageDo;
     }
 
+
+    @Override
+    public void deleteAccount(Long userId) {
+        UserDO user = userMapper.findById(userId);
+
+        int result = userMapper.deleteUserById(userId);
+        log.info("Deleted rows: {}", result);
+        if (result == 0) {
+            log.error("Failed to delete user from database. User ID: {}", userId);
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to delete account");
+        }
+
+        log.info("User account deleted successfully. User ID: {}", userId);
+    }
+
+
     @Override
     public void verifyPassword(VerifyPasswordQry verifyPasswordQry) {
         Long userId = StpUtil.getLoginIdAsLong();
