@@ -8,14 +8,15 @@ import com.weindependent.app.vo.event.RecentEventVOs;
 import java.util.List;
 
 public interface IEventService {
-    List<RecentEventVO> getRecentEvents(int page, int size);
+    RecentEventVOs getUpcomingEvents(int page, int size);
+    RecentEventVOs getPastEvents(int page, int size);
     List<RecentEventVO> getByMonth(int year, int month);
     EventVO getEventById(Long id);
     EventRegisterDetailVO register(Long id);
     void unregister(Long id);
     void bookmark(Long id);
     void unbookmark(Long id);
-    RecentEventVOs getRegisteredOngoingEvents(Integer pageNum, Integer pageSize);
+    RecentEventVOs getRegisteredUpcomingEvents(Integer pageNum, Integer pageSize);
     RecentEventVOs getRegisteredPastEvents(Integer pageNum, Integer pageSize);
     RecentEventVOs getViewedEvents(int page, int size);
     RecentEventVOs getBookmarkedEvents(int page, int size);

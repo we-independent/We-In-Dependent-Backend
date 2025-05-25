@@ -40,17 +40,20 @@ public class EventServiceImpl implements IEventService {
     private IEmailService emailService;
 
     @Override
-    public List<RecentEventVO> getRecentEvents(int page, int size) {
+    public RecentEventVOs getUpcomingEvents(int page,int size) {
         Integer userId =null;
         if(StpUtil.isLogin()){
             userId=StpUtil.getLoginIdAsInt();
         }
-        PageHelper.startPage(page, size);
-        List<RecentEventVO> recentEventVOS = eventMapper.getRecent(userId);
-        if(recentEventVOS == null ){
+        Page p = PageHelper.startPage(page, size);
+        List<RecentEventVO> events = eventMapper.getUpcoming(userId);
+        if(events == null ){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
-        return recentEventVOS;
+        RecentEventVOs recentEventVOs = new RecentEventVOs();
+        recentEventVOs.setEvents(events);
+        recentEventVOs.setPages(p.getPages());
+        return recentEventVOs;
     }
 
     @Override
@@ -63,6 +66,24 @@ public class EventServiceImpl implements IEventService {
 
     }
 
+    @Override
+    public RecentEventVOs getPastEvents(int page, int size) {
+        Integer userId =null;
+        if(StpUtil.isLogin()){
+            userId=StpUtil.getLoginIdAsInt();
+        }
+
+        Page p = PageHelper.startPage(page, size);
+        List<RecentEventVO> events = eventMapper.getPast(userId);
+        if(events == null ){
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
+        }
+
+        RecentEventVOs recentEventVOs = new RecentEventVOs();
+        recentEventVOs.setEvents(events);
+        recentEventVOs.setPages(p.getPages());
+        return recentEventVOs;
+    }
 
     @Override
     public EventVO getEventById(Long id) {
@@ -164,10 +185,10 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public RecentEventVOs getRegisteredOngoingEvents(Integer pageNum, Integer pageSize) {
+    public RecentEventVOs getRegisteredUpcomingEvents(Integer pageNum, Integer pageSize) {
         int userId = StpUtil.getLoginIdAsInt();
         Page page = PageHelper.startPage(pageNum, pageSize);
-        List<RecentEventVO> events = eventMapper.getRegisteredOngoingEvents(userId);
+        List<RecentEventVO> events = eventMapper.getRegisteredUpcomingEvents(userId);
         RecentEventVOs recentEventVOS = new RecentEventVOs();
         recentEventVOS.setEvents(events);
         recentEventVOS.setPages(page.getPages());
