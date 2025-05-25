@@ -9,14 +9,19 @@ import com.weindependent.app.vo.event.RecentEventVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Tag(name = "活動")
 @Slf4j
 @RestController
+@Validated
 @RequestMapping(value = "/api/event")
 public class EventController {
 
@@ -39,6 +44,16 @@ public class EventController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return IEventService.getPastEvents(page, size);
+    }
+
+    @Operation(summary = "Get upcoming events by month")
+    @SignatureAuth
+    @GetMapping("/upcoming/month")
+    public List<RecentEventVO> getUpcomingByMonth(
+            @RequestParam @NotNull @Min(1900) @Max(2100) Integer year,
+            @RequestParam @NotNull @Min(1) @Max(12) Integer month
+    ) {
+        return IEventService.getByMonth(year, month);
     }
 
 

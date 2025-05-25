@@ -10,6 +10,7 @@ import java.util.List;
 public interface IEventService {
     RecentEventVOs getUpcomingEvents(int page, int size);
     RecentEventVOs getPastEvents(int page, int size);
+    List<RecentEventVO> getByMonth(int year, int month);
     EventVO getEventById(Long id);
     EventRegisterDetailVO register(Long id);
     void unregister(Long id);
