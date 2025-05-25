@@ -23,13 +23,22 @@ public class EventController {
     @Resource
     private IEventService IEventService;
 
-    @Operation(summary = "Get recent events")
+    @Operation(summary = "Get upcoming events")
     @SignatureAuth
-    @GetMapping("/recent")
-    public List<RecentEventVO> getRecentEvents(
+    @GetMapping("/upcoming")
+    public RecentEventVOs getUpcomingEvents(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return IEventService.getRecentEvents(page, size);
+        return IEventService.getUpcomingEvents(page,size);
+    }
+
+    @Operation(summary = "Get past events")
+    @SignatureAuth
+    @GetMapping("/past")
+    public RecentEventVOs getPastEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getPastEvents(page, size);
     }
 
 
@@ -40,10 +49,7 @@ public class EventController {
         return IEventService.getEventById(id);
     }
 
-    @Operation(
-        summary = "Register an event by ID",
-        description = "Returns an link of the event"
-    )
+    @Operation(summary = "Register an event by ID")
     @SignatureAuth
     @PostMapping("/register/{id}")
     public EventRegisterDetailVO register(@PathVariable Long id) { return IEventService.register(id);}
@@ -63,13 +69,13 @@ public class EventController {
     @DeleteMapping("/bookmark/{id}")
     public void unbookmark(@PathVariable Long id) {IEventService.unbookmark(id);}
 
-    @Operation(summary = "List All registered ongoing events 已註冊活動列表")
+    @Operation(summary = "List All registered upcoming events 已註冊活動列表")
     @SignatureAuth
-    @GetMapping("/registered/ongoing")
-    public RecentEventVOs getRegisteredOngoingEvents(
+    @GetMapping("/registered/upcoming")
+    public RecentEventVOs getRegisteredUpcomingEvents(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return IEventService.getRegisteredOngoingEvents(page,size);
+        return IEventService.getRegisteredUpcomingEvents(page,size);
     }
 
     @Operation(summary = "List all registered past events 已參加活動列表")

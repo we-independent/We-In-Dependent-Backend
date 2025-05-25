@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.EventMapper">
-    <select id="getRecent" parameterType="map" resultType="com.weindependent.app.vo.event.RecentEventVO">
+    <select id="getPast" parameterType="map" resultType="com.weindependent.app.vo.event.RecentEventVO">
         SELECT
             e.id,
             e.title,
@@ -19,7 +19,30 @@
                  LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
              </if>
         WHERE e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &lt;= NOW()
         ORDER BY e.event_time DESC
+    </select>
+
+    <select id="getUpcoming" parameterType="map" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            f.file_path AS bannerUrl
+            <if test="userId != null">
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            </if>
+        FROM event e
+             LEFT JOIN event_image f ON e.banner_id = f.id
+             <if test="userId != null">
+                 LEFT JOIN event_user_bookmark b
+                   ON e.id = b.event_id
+                  AND b.user_id = #{userId}
+             </if>
+        WHERE e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &gt; NOW()
+        ORDER BY e.event_time ASC
     </select>
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.vo.event.EventVO">
@@ -76,7 +99,7 @@
         WHERE event_id = #{id} AND user_id = #{userId}
     </delete>
 
-    <select id="getRegisteredOngoingEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+    <select id="getRegisteredUpcomingEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
         SELECT
             e.id,
             e.title,
