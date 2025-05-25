@@ -9,6 +9,7 @@ import com.weindependent.app.vo.event.RecentEventVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ import java.util.List;
 @Tag(name = "活動")
 @Slf4j
 @RestController
+@Validated
 @RequestMapping(value = "/api/event")
 public class EventController {
 
