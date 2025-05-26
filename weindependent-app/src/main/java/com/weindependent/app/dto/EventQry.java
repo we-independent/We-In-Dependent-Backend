@@ -23,6 +23,8 @@ public class EventQry {
     @NotBlank(message = "location is mandatory")
     private String location;
 
+    private String videoLink;
+
     private String link;
 
     private Integer categoryId;

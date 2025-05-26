@@ -20,6 +20,7 @@ public class EventDO {
     private Long speakerUserId;
     private Integer categoryId;
     private String link;
+    private String videoLink;
     private Long bannerId;
     private boolean isDeleted;
     private LocalDateTime createTime;

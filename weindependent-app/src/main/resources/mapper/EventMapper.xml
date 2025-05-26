@@ -69,6 +69,7 @@
         e.banner_id,
         e.link,
         e.category_id,
+        e.video_link as videoLink,
         c.name AS categoryName,
         f.file_path AS bannerUrl,
         u.id AS speakerId,
