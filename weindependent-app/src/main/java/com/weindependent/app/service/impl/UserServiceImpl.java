@@ -5,9 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.dto.ChangePasswordQry;
+import com.weindependent.app.dto.HelpCenterRequestQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
+import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -23,15 +25,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
+
+import com.weindependent.app.database.dataobject.HelpCenterRequestDO;
 import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.weindependent.app.database.mapper.weindependent.UserHelpCenterMapper;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.weindependent.app.utils.ImageResizeUtil;
 
@@ -53,6 +64,13 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailServiceImpl resetUserPasswordEmailService;
+
+
+    @Autowired
+    private UserHelpCenterMapper userHelpCenterMapper;
+
+    @Autowired
+    private EmailServiceImpl emailServiceImpl;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -222,6 +240,43 @@ public class UserServiceImpl implements UserService {
         }
 
         log.info("Change password successful for userId {}", userId);
+    }
+
+        @Override
+    public void saveHelpRequest(Long userId, HelpCenterRequestQry qry){
+        UserDO user = userMapper.findById(userId);
+        if(user == null){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "User is not exist.");
+        }
+        String userName = Optional.ofNullable(user.getRealName()).orElse("User");
+        String userEmail = Optional.ofNullable(user.getAccount()).orElse("unknown@noemail.com");
+
+        HelpCenterRequestDO request = new HelpCenterRequestDO();
+        request.setUserId(userId);
+        request.setName(userName);
+        request.setEmail(userEmail);
+        request.setSubject(qry.getSubject());
+        request.setMessage(qry.getMessage());
+        request.setCreateTime(LocalDateTime.now());
+
+        userHelpCenterMapper.insert(request);
+
+        // Confirmation email send to user
+        Map<String, String> emailParams = new HashMap<>();
+        emailParams.put("name", userName);
+        emailParams.put("message", qry.getMessage());
+
+        emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
+
+        // 4. 抄送客服邮箱
+        Map<String, String> adminMailParams = new HashMap<>();
+        adminMailParams.put("name", userName);
+        adminMailParams.put("email", userEmail);
+        adminMailParams.put("subject", qry.getSubject());
+        adminMailParams.put("message", qry.getMessage());
+        adminMailParams.put("replyTo", userEmail);
+
+        emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
     }
 }
 
