@@ -36,8 +36,7 @@ import java.util.Map;
 @Tag(name = "用户管理")
 @Slf4j
 @RestController
-// @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-@RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
 
 public class UserController {
 
