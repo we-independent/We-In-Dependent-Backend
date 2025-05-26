@@ -7,6 +7,7 @@ import cn.dev33.satoken.temp.SaTempUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
+
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.*;
 import com.weindependent.app.enums.ErrorCode;
@@ -14,6 +15,7 @@ import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.UserService;
+import com.weindependent.app.service.impl.EmailServiceImpl;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.LoginVO;
 import com.weindependent.app.vo.user.UserVO;
@@ -35,6 +37,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+
 public class UserController {
 
     @Resource
@@ -244,5 +247,18 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public void changePassword(@Valid @RequestBody ChangePasswordQry changePasswordQry) {
         userService.changePassword(changePasswordQry);
+    }
+    //User Profile Help Center
+    @SignatureAuth
+    @Operation(summary = "提交 Help Center 请求")
+    @PostMapping("/profile/help/send")
+    @CrossOrigin(origins = "*")
+    public void sendHelp(@RequestBody HelpCenterRequestQry qry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        UserDO user = userService.findUserById(userId);
+        if (user == null) {
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "用户不存在");
+        }
+        userService.saveHelpRequest(userId, qry);
     }
 }
