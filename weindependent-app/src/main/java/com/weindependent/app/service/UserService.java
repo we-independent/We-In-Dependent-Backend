@@ -2,6 +2,7 @@ package com.weindependent.app.service;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.ChangePasswordQry;
+import com.weindependent.app.dto.HelpCenterRequestQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.RegisterQry;
@@ -24,4 +25,6 @@ public interface UserService {
     void verifyPassword(@Valid VerifyPasswordQry verifyPasswordQry);
     void changePassword(ChangePasswordQry changePasswordQry);
     void deleteAccount(Long userId);
+    void saveHelpRequest(Long userId, HelpCenterRequestQry qry);
+
 }
