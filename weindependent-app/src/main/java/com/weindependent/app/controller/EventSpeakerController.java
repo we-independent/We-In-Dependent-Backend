@@ -22,7 +22,7 @@ public class EventSpeakerController {
     @Resource
     private IEventSpeakerService eventSpeakerService;
 
-    @Operation(summary = "Get speaker by their user ID")
+    @Operation(summary = "Get speaker by speaker ID")
     @SignatureAuth
     @GetMapping("/{id}")
     public EventSpeakerVO getById(@PathVariable Long id) {

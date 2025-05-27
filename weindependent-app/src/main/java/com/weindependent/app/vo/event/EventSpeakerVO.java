@@ -4,8 +4,9 @@ import lombok.Data;
 
 @Data
 public class EventSpeakerVO {
-    private Long userId;
-    private String name;            // From t_system_user.real_name
+    private Long speakerId;
+    private String firstName;
+    private String lastName;
     private String title;
     private String background;
     private String description;

@@ -16,6 +16,9 @@ public interface DashboardSpeakerMapper {
     List<DashboardSpeakerVO> list();
     DashboardSpeakerVO getById(@Param("id") Long id);
 
-    EventSpeakerDO getByUserId(@Param("userId") Long userId);
     List<Long> getBannerIdsBySpeakerIds(List<Long> ids);
+
+    List<DashboardSpeakerVO> searchByFullName(@Param("name") String name);
+    List<DashboardSpeakerVO> searchByFirstName(@Param("firstName") String firstName);
+    List<DashboardSpeakerVO> searchByLastName(@Param("lastName") String lastName);
 }

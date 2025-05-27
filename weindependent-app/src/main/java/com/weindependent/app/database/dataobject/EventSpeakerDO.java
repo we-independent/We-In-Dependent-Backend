@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EventSpeakerDO {
     private Long id;
-    private Long userId;
-    private String title;
+    // private Long userId;
+    private String firstName;
+    private String lastName;
+    private String title; // Optional
     private String background;
     private String description;
     private Long bannerId;

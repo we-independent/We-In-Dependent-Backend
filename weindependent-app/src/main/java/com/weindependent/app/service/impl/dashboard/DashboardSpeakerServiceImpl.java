@@ -46,14 +46,16 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(EventSpeakerQry qry) {
-        EventSpeakerDO existing = dashboardSpeakerMapper.getByUserId(qry.getUserId());
-        if (existing != null) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "This user already has a speaker profile. Please update instead.");
-        }
+        // EventSpeakerDO existing =
+        // dashboardSpeakerMapper.getByUserId(qry.getUserId());
+        // if (existing != null) {
+        // throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "This user
+        // already has a speaker profile. Please update instead.");
+        // }
 
         EventSpeakerDO speaker = new EventSpeakerDO();
         BeanUtils.copyProperties(qry, speaker);
-        speaker.setUserId(qry.getUserId());
+        // speaker.setUserId(qry.getUserId());
         int affected = dashboardSpeakerMapper.insert(speaker);
         if (affected == 0) {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to insert speaker");
@@ -62,7 +64,8 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
         // Mark banner image as not deleted (set is_deleted = 0)
         int updated = dashboardEventSpeakerImageMapper.setNotDeletedById(speaker.getBannerId());
         if (updated == 0) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to activate the uploaded speaker image");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(),
+                    "Failed to activate the uploaded speaker image");
         }
     }
 
@@ -70,7 +73,9 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
     @Transactional(rollbackFor = Exception.class)
     public void update(Long id, EventSpeakerQry qry) {
         // Fetch existing speaker
-        EventSpeakerDO existing = dashboardSpeakerMapper.getByUserId(qry.getUserId());
+        // EventSpeakerDO existing =
+        // dashboardSpeakerMapper.getByUserId(qry.getUserId());
+        DashboardSpeakerVO existing = dashboardSpeakerMapper.getById(id);
         if (existing == null) {
             throw new ResponseException(ErrorCode.SPEAKER_NOT_EXIST.getCode(), "Speaker not found");
         }
@@ -141,7 +146,8 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
             throw new RuntimeException("Failed to resize image");
         }
 
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_SPEAKER_BANNER);
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,
+                GoogleDriveFileCategoryEnum.EVENT_SPEAKER_BANNER);
 
         ImageDO imageDo = new ImageDO();
         imageDo.setCategory("event-speaker-banner");
@@ -155,5 +161,46 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
         }
         return imageDo;
+    }
+
+    @Override
+    public List<DashboardSpeakerVO> searchByName(String name) {
+        if (name == null || name.isEmpty()) {
+            return list();
+        }
+
+        List<DashboardSpeakerVO> speakers = dashboardSpeakerMapper.searchByFullName(name);
+        return speakers.stream().map(s -> {
+            DashboardSpeakerVO vo = new DashboardSpeakerVO();
+            BeanUtils.copyProperties(s, vo);
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DashboardSpeakerVO> searchByFirstName(String firstName) {
+        if (firstName == null || firstName.isEmpty()) {
+            return list();
+        }
+
+        List<DashboardSpeakerVO> speakers = dashboardSpeakerMapper.searchByFirstName(firstName);
+        return speakers.stream().map(s -> {
+            DashboardSpeakerVO vo = new DashboardSpeakerVO();
+            BeanUtils.copyProperties(s, vo);
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DashboardSpeakerVO> searchByLastName(String lastName) {
+        if (lastName == null || lastName.isEmpty()) {
+            return list();
+        }
+        List<DashboardSpeakerVO> speakers = dashboardSpeakerMapper.searchByLastName(lastName);
+        return speakers.stream().map(s -> {
+            DashboardSpeakerVO vo = new DashboardSpeakerVO();
+            BeanUtils.copyProperties(s, vo);
+            return vo;
+        }).collect(Collectors.toList());
     }
 }
