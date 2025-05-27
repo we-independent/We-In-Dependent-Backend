@@ -1,6 +1,5 @@
 package com.weindependent.app.controller.dashboard;
 
-import org.springframework.web.bind.annotation.RestController;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
@@ -42,7 +41,7 @@ public class DashboardSpeakerController {
         dashboardSpeakerService.create(qry);
     }
 
-    @Operation(summary = "Update speaker by their user ID")
+    @Operation(summary = "Update speaker by speaker ID")
     @SaCheckRole("admin")
     @SignatureAuth
     @PutMapping("/{id}")
@@ -50,7 +49,7 @@ public class DashboardSpeakerController {
         dashboardSpeakerService.update(id, qry);
     }
 
-    @Operation(summary = "Delete speaker(s) by their user ID(s)")
+    @Operation(summary = "Delete speaker(s) by speaker ID(s)")
     @SaCheckRole("admin")
     @SignatureAuth
     @DeleteMapping("/{ids}")
@@ -66,11 +65,36 @@ public class DashboardSpeakerController {
         return dashboardSpeakerService.list();
     }
 
-    @Operation(summary = "Get speaker by their user ID")
+    @Operation(summary = "Get speaker by speaker ID")
     @SaCheckRole("admin")
     @SignatureAuth
     @GetMapping("/{id}")
     public DashboardSpeakerVO getById(@PathVariable Long id) {
         return dashboardSpeakerService.getById(id);
     }
+
+    @Operation(summary = "Search speaker by full name")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/search")
+    public List<DashboardSpeakerVO> searchByName(@RequestParam String name) {
+        return dashboardSpeakerService.searchByName(name);
+    }
+
+    @Operation(summary = "Search speaker by first name")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/search/first-name")
+    public List<DashboardSpeakerVO> searchByFirstName(@RequestParam String firstName) {
+        return dashboardSpeakerService.searchByFirstName(firstName);
+    }
+
+    @Operation(summary = "Search speaker by last name")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/search/last-name")
+    public List<DashboardSpeakerVO> searchByLastName(@RequestParam String lastName) {
+        return dashboardSpeakerService.searchByLastName(lastName);
+    }
+
 }

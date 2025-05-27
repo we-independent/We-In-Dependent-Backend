@@ -15,4 +15,8 @@ public interface IDashboardSpeakerService {
     List<DashboardSpeakerVO> list();
     DashboardSpeakerVO getById(Long id);
     ImageDO uploadBanner(MultipartFile file);
+
+    List<DashboardSpeakerVO> searchByName(String name);
+    List<DashboardSpeakerVO> searchByFirstName(String firstName);
+    List<DashboardSpeakerVO> searchByLastName(String lastName);
 }
