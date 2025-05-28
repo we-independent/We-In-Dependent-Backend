@@ -15,6 +15,7 @@ public interface DashboardSpeakerMapper {
     int delete(@Param("ids") List<Long> ids);
     List<DashboardSpeakerVO> list();
     DashboardSpeakerVO getById(@Param("id") Long id);
+    List<DashboardSpeakerVO> getByIds(List<Long> ids);
 
     List<Long> getBannerIdsBySpeakerIds(List<Long> ids);
 

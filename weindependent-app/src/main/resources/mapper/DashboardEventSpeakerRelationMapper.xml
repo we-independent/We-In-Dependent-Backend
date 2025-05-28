@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventSpeakerRelationMapper">
+
+    <insert id="insert">
+        INSERT INTO event_speaker_relation (event_id, speaker_id)
+        VALUES (#{eventId}, #{speakerId})
+    </insert>
+
+    <delete id="deleteByEventId">
+        DELETE FROM event_speaker_relation WHERE event_id = #{eventId}
+    </delete>
+
+    <select id="getSpeakerIdsByEventId" resultType="long">
+        SELECT speaker_id FROM event_speaker_relation WHERE event_id = #{eventId}
+    </select>
+
+    <select id="exists" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM event_speaker_relation
+        WHERE event_id = #{eventId} AND speaker_id = #{speakerId}
+    </select>
+
+</mapper>

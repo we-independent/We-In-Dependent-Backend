@@ -62,6 +62,25 @@
         WHERE s.id = #{id}
     </select>
 
+    <select id="getByIds" parameterType="list" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
+        SELECT s.id,
+            s.first_name,
+            s.last_name,
+            s.title,
+            s.background,
+            s.description,
+            s.banner_id,
+            img.file_path AS bannerUrl,
+            s.create_time,
+            s.update_time
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE s.id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="getBannerIdsBySpeakerIds" resultType="long">
         SELECT banner_id
         FROM event_speaker

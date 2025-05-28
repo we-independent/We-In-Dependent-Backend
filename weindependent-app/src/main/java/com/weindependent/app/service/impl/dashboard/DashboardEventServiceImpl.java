@@ -9,6 +9,8 @@ import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardEventSpeakerRelationMapper;
+import com.weindependent.app.database.mapper.dashboard.DashboardSpeakerMapper;
 import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.enums.ErrorCode;
@@ -20,6 +22,7 @@ import com.weindependent.app.utils.ImageResizeUtil;
 import com.weindependent.app.vo.UploadedFileVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVOs;
+import com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO;
 import com.weindependent.app.vo.user.UserVOs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,10 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     private DashboardEventImageMapper dashboardEventImageMapper;
     @Autowired
     private DashboardEventMapper dashboardEventMapper;
+    @Autowired
+    private DashboardEventSpeakerRelationMapper dashboardEventSpeakerRelationMapper;
+    @Autowired
+    private DashboardSpeakerMapper dashboardSpeakerMapper;
 
     @Override
     public DashboardEventVOs list(EventListQry eventListQry) {
@@ -148,5 +155,33 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         return dashboardEventMapper.getById(id);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addSpeakersToEvent(Long eventId, List<Long> speakerIds) {
+        for (Long speakerId : speakerIds) {
+            boolean exists = dashboardEventSpeakerRelationMapper.exists(eventId, speakerId);
+            if (!exists) {
+                dashboardEventSpeakerRelationMapper.insert(eventId, speakerId);
+            }
+        }
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateSpeakersOfEvent(Long eventId, List<Long> speakerIds) {
+        dashboardEventSpeakerRelationMapper.deleteByEventId(eventId);
+        addSpeakersToEvent(eventId, speakerIds);
+    }
+
+
+    @Override
+    public List<DashboardSpeakerVO> getSpeakersByEventId(Long eventId) {
+        List<Long> speakerIds = dashboardEventSpeakerRelationMapper.getSpeakerIdsByEventId(eventId);
+        if (speakerIds == null || speakerIds.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        return dashboardSpeakerMapper.getByIds(speakerIds);
+    }
 
 }

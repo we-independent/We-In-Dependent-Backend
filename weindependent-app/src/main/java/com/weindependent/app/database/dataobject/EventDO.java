@@ -17,7 +17,7 @@ public class EventDO {
     private String content;
     private LocalDateTime eventTime;
     private String location;
-    private Long speakerUserId;
+    // private Long speakerUserId;
     private Integer categoryId;
     private String link;
     private String videoLink;
