@@ -12,6 +12,7 @@ import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
+import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
@@ -95,6 +96,11 @@ public class EventServiceImpl implements IEventService {
         if (eventVO == null) {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
         }
+
+        // NEW: fetch and set speaker list
+        List<EventSpeakerVO> speakers = eventMapper.getSpeakersByEventId(id);
+        eventVO.setSpeakers(speakers);
+
         if (userId != null) {
             recordUserViewEvent(userId, id);
         }
@@ -139,7 +145,7 @@ public class EventServiceImpl implements IEventService {
         sendMailParams.put("link", eventVO.getLink());
         sendMailParams.put("time", eventVO.getEventTime().toString());
         sendMailParams.put("location", eventVO.getLocation());
-        sendMailParams.put("speaker", eventVO.getSpeakerName());
+        // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
         emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
 
         EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();

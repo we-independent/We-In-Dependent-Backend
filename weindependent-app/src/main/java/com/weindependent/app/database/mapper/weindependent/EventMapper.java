@@ -1,5 +1,6 @@
 package com.weindependent.app.database.mapper.weindependent;
 
+import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -16,6 +17,7 @@ public interface EventMapper {
                                    @Param("month") Integer month);
     EventVO getById(@Param("id") Long id,
                     @Param("userId") Integer userId);
+    List<EventSpeakerVO> getSpeakersByEventId(@Param("eventId") Long eventId);
     int register(Long id, Long userId);
     int unregister(Long id, Integer userId);
     int bookmark(Long id, Integer userId);

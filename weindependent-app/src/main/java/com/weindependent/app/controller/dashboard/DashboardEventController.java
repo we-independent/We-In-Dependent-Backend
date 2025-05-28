@@ -11,6 +11,7 @@ import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.service.IDashboardEventService;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVOs;
+import com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO;
 import com.weindependent.app.vo.user.UserVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -101,4 +102,29 @@ public class DashboardEventController {
                                       @RequestParam(defaultValue = "10") int size) {
         return IDashboardEventService.getBookmarkedUsers(id, page, size);
     }
+
+    @Operation(summary = "Assign speakers to an event")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @PostMapping("/{eventId}/speakers")
+    public void addSpeakersToEvent(@PathVariable Long eventId, @RequestBody List<Long> speakerIds) {
+        IDashboardEventService.addSpeakersToEvent(eventId, speakerIds);
+    }
+
+    @Operation(summary = "Update speakers of an event (replace existing ones)")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @PutMapping("/{eventId}/speakers")
+    public void updateSpeakersOfEvent(@PathVariable Long eventId, @RequestBody List<Long> speakerIds) {
+        IDashboardEventService.updateSpeakersOfEvent(eventId, speakerIds);
+    }
+
+    @Operation(summary = "Get speakers of an event")
+    @SaCheckRole("admin")
+    @SignatureAuth
+    @GetMapping("/{eventId}/speakers")
+    public List<DashboardSpeakerVO> getSpeakersByEventId(@PathVariable Long eventId) {
+        return IDashboardEventService.getSpeakersByEventId(eventId);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.weindependent.app.vo.event;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class EventVO {
@@ -15,13 +16,14 @@ public class EventVO {
     private Integer categoryId;
     private String categoryName;
     private String location;
-    private Integer speakerId;
-    private String speakerName;
-    private String speakerTitle;
-    private String speakerBackground;
-    private String speakerDescription;
-    private Long speakerBannerId;
-    private String speakerBannerUrl;
+    // private Integer speakerId;
+    // private String speakerName;
+    // private String speakerTitle;
+    // private String speakerBackground;
+    // private String speakerDescription;
+    // private Long speakerBannerId;
+    // private String speakerBannerUrl;
+    private List<EventSpeakerVO> speakers;
     private Long bannerId;
     private String bannerUrl;
     private boolean isBookMarked;

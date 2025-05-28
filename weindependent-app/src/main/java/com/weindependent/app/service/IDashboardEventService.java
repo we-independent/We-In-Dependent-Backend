@@ -7,6 +7,7 @@ import com.weindependent.app.dto.EventListQry;
 import com.weindependent.app.dto.EventQry;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVO;
 import com.weindependent.app.vo.event.dashboard.DashboardEventVOs;
+import com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO;
 import com.weindependent.app.vo.user.UserVOs;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,4 +24,7 @@ public interface IDashboardEventService {
     UserVOs getRegisteredUsers(Long id, Integer page, Integer size);
     UserVOs getBookmarkedUsers(Long id, Integer page, Integer size);
     EventDO getById(Long id);
+    void addSpeakersToEvent(Long eventId, List<Long> speakerIds);
+    void updateSpeakersOfEvent(Long eventId, List<Long> speakerIds);
+    List<DashboardSpeakerVO> getSpeakersByEventId(Long eventId);
 }
