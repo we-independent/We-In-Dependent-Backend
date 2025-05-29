@@ -30,9 +30,11 @@
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_system_user (account, password, real_name, login_provider, language
         <if test="visaType != null and visaType != ''"> ,visa_type</if>
+        <if test="notificationEnabled != null">, notification_enabled</if>
         )
         VALUES (#{account}, #{password}, #{realName}, #{loginProvider}, #{language}
         <if test="visaType != null and visaType != ''">,#{visaType}</if>
+        <if test="notificationEnabled != null">, #{notificationEnabled}</if>
         )
         ON DUPLICATE KEY UPDATE last_login_time = NOW();
     </insert>

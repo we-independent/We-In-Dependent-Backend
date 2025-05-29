@@ -9,10 +9,12 @@ import java.time.LocalDateTime;
 @Data
 public class EventSpeakerQry {
 
-    @NotNull(message = "userId is required")
-    private Long userId;
+    @NotBlank(message = "speakerFirstName is mandatory")
+    private String firstName;
 
-    @NotBlank(message = "speakerTitle is mandatory")
+    @NotBlank(message = "speakerLastName is mandatory")
+    private String lastName;
+
     private String title;
 
     @NotBlank(message = "speakerBackground is mandatory")

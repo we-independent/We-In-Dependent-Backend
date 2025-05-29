@@ -5,8 +5,8 @@
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventMapper">
 
     <insert id="create" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO event (title, summary, content, event_time, location, link, video_link, category_id, speaker_user_id, banner_id, create_user_id, update_user_id)
-        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{link}, #{videoLink}, #{categoryId}, #{speakerUserId}, #{bannerId}, #{createUserId}, #{updateUserId});
+        INSERT INTO event (title, summary, content, event_time, location, link, video_link, category_id, banner_id, create_user_id, update_user_id)
+        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{link}, #{videoLink}, #{categoryId}, #{bannerId}, #{createUserId}, #{updateUserId});
     </insert>
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.database.dataobject.EventDO">
@@ -23,13 +23,13 @@
             ei.file_path AS bannerFilePath,
             cu.real_name AS createUserName,
             uu.real_name AS updateUserName,
-            su.real_name AS speakerName,
+            <!-- su.real_name AS speakerName, -->
             CEIL(COUNT(*) OVER() / #{pageSize}) AS pages
         FROM event e
              LEFT JOIN event_image ei ON e.banner_id = ei.id
              LEFT JOIN t_system_user cu ON e.create_user_id = cu.id
              LEFT JOIN t_system_user uu ON e.update_user_id = uu.id
-             LEFT JOIN t_system_user su ON e.speaker_user_id = su.id
+             <!-- LEFT JOIN t_system_user su ON e.speaker_user_id = su.id -->
              LEFT JOIN category c ON e.category_id = c.id
         <where>
             <if test="title != null and title != ''">
@@ -38,9 +38,9 @@
             <if test="location != null and location != ''">
                 AND e.location LIKE CONCAT('%', #{location}, '%')
             </if>
-            <if test="speakerUserId != null">
+            <!-- <if test="speakerUserId != null">
                 AND e.speaker_user_id = #{speakerUserId}
-            </if>
+            </if> -->
             <if test="categoryId != null">
                 AND e.category_id = #{categoryId}
             </if>
@@ -109,7 +109,7 @@
                 e.location = #{location},
                 e.link = #{link},
                 e.category_id = #{categoryId},
-                e.speaker_user_id = #{speakerUserId},
+                <!-- e.speaker_user_id = #{speakerUserId}, -->
                 e.update_user_id = #{updateUserId},
                 e.banner_id = #{bannerId},
                 e.video_link = #{videoLink},

@@ -4,6 +4,7 @@ package com.weindependent.app.vo.event.dashboard;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class DashboardEventVO {
@@ -13,8 +14,8 @@ public class DashboardEventVO {
     private String content;
     private LocalDateTime eventTime;
     private String location;
-    private Long speakerUserId;
-    private String speakerName;
+    // private Long speakerUserId;
+    // private String speakerName;
     private Long bannerId;
     private String bannerFilePath;
     private boolean isDeleted;

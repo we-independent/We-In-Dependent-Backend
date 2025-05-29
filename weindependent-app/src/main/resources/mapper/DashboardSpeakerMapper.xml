@@ -6,23 +6,25 @@
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardSpeakerMapper">
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO event_speaker (user_id, title, background, description, banner_id, create_time, update_time)
-        VALUES (#{userId}, #{title}, #{background}, #{description}, #{bannerId}, NOW(), NOW())
+        INSERT INTO event_speaker (first_name, last_name, title, background, description, banner_id, create_time, update_time)
+        VALUES (#{firstName}, #{lastName}, #{title}, #{background}, #{description}, #{bannerId}, NOW(), NOW())
     </insert>
 
     <update id="update" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO">
         UPDATE event_speaker
-        SET title = #{title},
+        SET first_name = #{firstName},
+            last_name = #{lastName},
+            title = #{title},
             background = #{background},
             description = #{description},
             banner_id = #{bannerId},
             update_time = NOW()
-        WHERE user_id = #{id}
+        WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="map">
         DELETE FROM event_speaker
-        WHERE user_id IN
+        WHERE id IN
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -30,8 +32,8 @@
 
     <select id="list" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
         SELECT s.id,
-               s.user_id,
-               u.real_name AS userName,
+               s.first_name,
+               s.last_name,
                s.title,
                s.background,
                s.description,
@@ -40,15 +42,14 @@
                s.create_time,
                s.update_time
         FROM event_speaker s
-        LEFT JOIN t_system_user u ON s.user_id = u.id
         LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         ORDER BY s.update_time DESC
     </select>
 
     <select id="getById" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
         SELECT s.id,
-               s.user_id,
-               u.real_name AS userName,
+               s.first_name,
+               s.last_name,
                s.title,
                s.background,
                s.description,
@@ -57,15 +58,27 @@
                s.create_time,
                s.update_time
         FROM event_speaker s
-        LEFT JOIN t_system_user u ON s.user_id = u.id
         LEFT JOIN event_speaker_image img ON s.banner_id = img.id
-        WHERE s.user_id = #{id}
+        WHERE s.id = #{id}
     </select>
 
-    <select id="getByUserId" resultType="com.weindependent.app.database.dataobject.EventSpeakerDO">
-        SELECT * FROM event_speaker
-        WHERE user_id = #{userId}
-        LIMIT 1
+    <select id="getByIds" parameterType="list" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
+        SELECT s.id,
+            s.first_name,
+            s.last_name,
+            s.title,
+            s.background,
+            s.description,
+            s.banner_id,
+            img.file_path AS bannerUrl,
+            s.create_time,
+            s.update_time
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE s.id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
     <select id="getBannerIdsBySpeakerIds" resultType="long">
@@ -75,6 +88,57 @@
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+
+    <select id="searchByFullName" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
+        SELECT s.id,
+                s.first_name,
+                s.last_name,
+                s.title,
+                s.background,
+                s.description,
+                s.banner_id,
+                img.file_path AS bannerUrl,
+                s.create_time,
+                s.update_time
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE CONCAT(s.first_name, ' ', s.last_name) LIKE CONCAT('%', #{name}, '%')
+            ORDER BY s.update_time DESC
+    </select>
+
+    <select id="searchByFirstName" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
+        SELECT s.id,
+               s.first_name,
+               s.last_name,
+               s.title,
+               s.background,
+               s.description,
+               s.banner_id,
+               img.file_path AS bannerUrl,
+               s.create_time,
+               s.update_time
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE s.first_name LIKE CONCAT('%', #{firstName}, '%')
+        ORDER BY s.update_time DESC
+    </select>
+
+    <select id="searchByLastName" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
+        SELECT s.id,
+               s.first_name,
+               s.last_name,
+               s.title,
+               s.background,
+               s.description,
+               s.banner_id,
+               img.file_path AS bannerUrl,
+               s.create_time,
+               s.update_time
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE s.last_name LIKE CONCAT('%', #{lastName}, '%')
+        ORDER BY s.update_time DESC
     </select>
 
 </mapper>
