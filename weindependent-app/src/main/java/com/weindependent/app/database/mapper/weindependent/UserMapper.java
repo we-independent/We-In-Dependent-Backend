@@ -12,7 +12,10 @@ public interface UserMapper {
     UserDO query(Map<String, String> paramMap);
     List<UserDO> getAllUsers();
     UserDO findByAccount(String account);
+
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(UserDO user);
+    
     UserDO findById(String id);
     // int updatePassword(@Param("id") int id, @Param("password") String password);
     int updatePassword(@Param("id") Long id, @Param("password") String password);
@@ -21,4 +24,5 @@ public interface UserMapper {
     void updateUser(UserDO userDO);
     int deleteUserById(@Param("userId") Long userId);
     int changePassword(@Param("id") Long id, @Param("newPassword")String newPassword);
+    Boolean findNotificationEnabledByUserId(@Param("userId") Long userId);
 }

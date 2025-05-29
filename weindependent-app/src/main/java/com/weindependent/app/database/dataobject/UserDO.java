@@ -18,4 +18,6 @@ public class UserDO {
     private boolean subscription;
     // nullable false - not public
     private Boolean isVisaPublic;
+    // nullable default 0
+    private Boolean notificationEnabled;
 }

@@ -34,5 +34,6 @@ public interface UserService {
     NotificationSettingsDO getSettingsByUserId(Long userId);
     void saveSettingsByUserId(NotificationSettingsDO settingsDO);
     void updateNotificationField(Long userId, String fieldName, Boolean fieldValue);
+    void initializeNotificationSettings(Long userId, Boolean subscribe);
 
 }

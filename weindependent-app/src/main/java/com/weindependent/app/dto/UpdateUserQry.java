@@ -16,4 +16,6 @@ public class UpdateUserQry {
   private Integer profileImageId;
   @NotNull(message = "isVisaPublic is required")
   private Boolean isVisaPublic;
+  private Boolean notificationEnabled;
+
 }

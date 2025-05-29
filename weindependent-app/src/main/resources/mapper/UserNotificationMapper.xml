@@ -7,44 +7,41 @@
     <select id='findByUserId' parameterType="long" resultType="NotificationSettingsDO">
         SELECT * FROM user_notification_settings WHERE user_id = #{userId}
     </select>
-    <insert id="insertDefault" parameterType="long">
-        INSERT IGNORE INTO user_notification_settings (user_id)
-        VALUES (#{userId})
-    </insert>
 
     <insert id='insert' parameterType='com.weindependent.app.database.dataobject.NotificationSettingsDO'>
         INSERT INTO user_notification_settings
-            (user_id, updates_enabled, general_announcements, new_programs, holiday_messages,
-            donations_enabled, donation_confirmations, donation_updates, billing_issues,
-            events_enabled, rsvp_confirmations, event_updates,
+            (user_id, updates_enabled, updates_general_announcements, updates_new_programs, updates_holiday_messages,
+            donations_enabled, donations_donation_confirmations, donations_donation_updates, donations_billing_issues,
+            events_enabled, events_rsvp_confirmations, events_event_updates,
             help_center_enabled)
         VALUES
-            (#{userId}, #{updatesEnabled}, #{generalAnnouncements}, #{newPrograms}, #{holidayMessages},
-            #{donationsEnabled}, #{donationConfirmations}, #{donationUpdates}, #{billingIssues},
-            #{eventsEnabled}, #{rsvpConfirmations}, #{eventUpdates},
+            (#{userId}, #{updatesEnabled}, #{updatesGeneralAnnouncements}, #{updatesNewPrograms}, #{updatesHolidayMessages},
+            #{donationsEnabled}, #{donationsDonationConfirmations}, #{donationsDonationUpdates}, #{donationsBillingIssues},
+            #{eventsEnabled}, #{eventsRsvpConfirmations}, #{eventsEventUpdates},
             #{helpCenterEnabled})
     </insert>
+
 
     <update id='update' parameterType='com.weindependent.app.database.dataobject.NotificationSettingsDO'>
         UPDATE user_notification_settings SET
             updates_enabled = #{updatesEnabled},
-            general_announcements = #{generalAnnouncements},
-            new_programs = #{newPrograms},
-            holiday_messages = #{holidayMessages},
+            updates_general_announcements = #{updatesGeneralAnnouncements},
+            updates_new_programs = #{updatesNewPrograms},
+            updates_holiday_messages = #{updatesHolidayMessages},
             donations_enabled = #{donationsEnabled},
-            donation_confirmations = #{donationConfirmations},
-            donation_updates = #{donationUpdates},
-            billing_issues = #{billingIssues},
+            donations_donation_confirmations = #{donationsDonationConfirmations},
+            donations_donation_updates = #{donationsDonationUpdates},
+            donations_billing_issues = #{donationsBillingIssues},
             events_enabled = #{eventsEnabled},
-            rsvp_confirmations = #{rsvpConfirmations},
-            event_updates = #{eventUpdates},
-            help_center_enabled = #{helpCenterEnabled},
-            <!-- response_and_update = #{responseAndUpdate} -->
+            events_rsvp_confirmations = #{eventsRsvpConfirmations},
+            events_event_updates = #{eventsEventUpdates},
+            help_center_enabled = #{helpCenterEnabled}
         WHERE
             user_id = #{userId}
     </update>
 
-    <update id="updateField" parameterType="map">
+
+    <update id="updateField" parameterType="com.weindependent.app.dto.NotificationFieldUpdateQry">
         UPDATE user_notification_settings
         <set>
             <if test="fieldName == 'updates_enabled'"> updates_enabled = #{fieldValue}, </if>
@@ -66,4 +63,9 @@
         </set>
         WHERE user_id = #{userId}
     </update>
+
+    <!-- <select id="findNotificationEnabledByUserId">
+        SELECT notification_enabled FROM t_system_user WHERE user_id = #{userId};
+    </select> -->
+
 </mapper>

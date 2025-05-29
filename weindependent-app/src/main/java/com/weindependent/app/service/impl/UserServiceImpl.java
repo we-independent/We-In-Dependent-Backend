@@ -7,6 +7,7 @@ import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.dto.ChangePasswordQry;
 import com.weindependent.app.dto.HelpCenterRequestQry;
+import com.weindependent.app.dto.NotificationFieldUpdateQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
@@ -130,8 +131,12 @@ public class UserServiceImpl implements UserService {
         user.setVisaType(dto.getVisaType());
         user.setLoginProvider("local");
         user.setSubscription(dto.isSubscription());
-
-        return userMapper.insert(user) > 0;
+        boolean inserted = userMapper.insert(user) > 0;
+        // initialize notification after register
+        if(inserted){
+            initializeNotificationSettings(user.getId(), dto.isSubscription());
+        }
+        return inserted;
     }
 
     @Override
@@ -297,15 +302,18 @@ public class UserServiceImpl implements UserService {
     public NotificationSettingsDO getSettingsByUserId(Long userId) {
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
         if (notificationDO == null){
-            userNotificationMapper.insertDefault(userId);
+            Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
+            initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
             notificationDO = userNotificationMapper.findByUserId(userId); 
         }
+
         return notificationDO;
     }
 
     @Override
     public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
         if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
+
             userNotificationMapper.update(settingsDO);
         } else {
             userNotificationMapper.insert(settingsDO);
@@ -324,11 +332,52 @@ public class UserServiceImpl implements UserService {
         }
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
         if (notificationDO == null) {
-            userNotificationMapper.insertDefault(userId);
+            Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
+            initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
         }
         else {
-            userNotificationMapper.updateField(userId, fieldName, fieldValue);
+            NotificationFieldUpdateQry qry = new NotificationFieldUpdateQry();
+            qry.setUserId(userId);
+            qry.setFieldName(fieldName);
+            qry.setFieldValue(fieldValue);
+            userNotificationMapper.updateField(qry);
         }
+    }
+
+    @Override
+    public void initializeNotificationSettings(Long userId, Boolean subscribe){
+        NotificationSettingsDO settingsDO = new NotificationSettingsDO();
+        settingsDO.setUserId(userId);
+        if (!Boolean.TRUE.equals(subscribe)) {
+        settingsDO.setUpdatesEnabled(false);
+        settingsDO.setUpdatesGeneralAnnouncements(false);
+        settingsDO.setUpdatesNewPrograms(false);
+        settingsDO.setUpdatesHolidayMessages(false);
+        settingsDO.setDonationsEnabled(true);
+        settingsDO.setDonationsDonationConfirmations(true);
+        settingsDO.setDonationsDonationUpdates(true);
+        settingsDO.setDonationsBillingIssues(true);
+        settingsDO.setEventsEnabled(true);
+        settingsDO.setEventsEventUpdates(true);
+        settingsDO.setEventsRsvpConfirmations(true);
+        settingsDO.setHelpCenterEnabled(true);
+        } else {
+            settingsDO.setUpdatesEnabled(true);
+            settingsDO.setUpdatesGeneralAnnouncements(true);
+            settingsDO.setUpdatesNewPrograms(true);
+            settingsDO.setUpdatesHolidayMessages(true);
+            settingsDO.setDonationsEnabled(true);
+            settingsDO.setDonationsDonationConfirmations(true);
+            settingsDO.setDonationsDonationUpdates(true);
+            settingsDO.setDonationsBillingIssues(true);
+            settingsDO.setEventsEnabled(true);
+            settingsDO.setEventsEventUpdates(true);
+            settingsDO.setEventsRsvpConfirmations(true);
+            settingsDO.setHelpCenterEnabled(true);
+        }
+
+        userNotificationMapper.insert(settingsDO);
+
     }
 }
 
