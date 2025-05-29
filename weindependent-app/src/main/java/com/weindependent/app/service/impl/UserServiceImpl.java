@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
+import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.dto.ChangePasswordQry;
 import com.weindependent.app.dto.HelpCenterRequestQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
@@ -17,17 +18,20 @@ import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.UpdateUserQry;
 import com.weindependent.app.convertor.UserConvertor;
-
 import cn.dev33.satoken.temp.SaTempUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
+import com.weindependent.app.dto.UpdateNotificationFieldQry;
+
 import cn.dev33.satoken.stp.StpUtil;
 
 import com.weindependent.app.database.dataobject.HelpCenterRequestDO;
 import com.weindependent.app.database.dataobject.ImageDO;
+import com.weindependent.app.database.dataobject.NotificationSettingsDO;
+
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +43,7 @@ import com.weindependent.app.vo.UploadedFileVO;
 import javax.annotation.Resource;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +76,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailServiceImpl emailServiceImpl;
+
+    @Autowired
+    private UserNotificationMapper userNotificationMapper;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -242,7 +250,7 @@ public class UserServiceImpl implements UserService {
         log.info("Change password successful for userId {}", userId);
     }
 
-        @Override
+    @Override
     public void saveHelpRequest(Long userId, HelpCenterRequestQry qry){
         UserDO user = userMapper.findById(userId);
         if(user == null){
@@ -265,7 +273,11 @@ public class UserServiceImpl implements UserService {
         Map<String, String> emailParams = new HashMap<>();
         emailParams.put("name", userName);
         emailParams.put("message", qry.getMessage());
-
+        NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
+        if(notificationDO == null || Boolean.FALSE.equals(notificationDO.getHelpCenterEnabled())){
+            log.info("User {} has disabled Help Center notifications.", userId);
+            return;
+        }
         emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
 
         // 4. 抄送客服邮箱
@@ -277,6 +289,46 @@ public class UserServiceImpl implements UserService {
         adminMailParams.put("replyTo", userEmail);
 
         emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
+    }
+
+
+    // Profile - Notification Settings
+    @Override
+    public NotificationSettingsDO getSettingsByUserId(Long userId) {
+        NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
+        if (notificationDO == null){
+            userNotificationMapper.insertDefault(userId);
+            notificationDO = userNotificationMapper.findByUserId(userId); 
+        }
+        return notificationDO;
+    }
+
+    @Override
+    public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
+        if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
+            userNotificationMapper.update(settingsDO);
+        } else {
+            userNotificationMapper.insert(settingsDO);
+        }
+    }
+
+    @Override
+    public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
+        List<String> allowedFields = Arrays.asList(
+            "updates_enabled","updates_general_announcements","updates_new_programs","updates_holiday_messages","donations_enabled","donations_donation_confirmations","donations_donation_updates",
+            "donations_billing_issues","events_enabled","events_rsvp_confirmations","events_event_updates",
+            "help_center_enabled"        
+        );
+        if (!allowedFields.contains(fieldName)) {
+            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid field name: " + fieldName);
+        }
+        NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
+        if (notificationDO == null) {
+            userNotificationMapper.insertDefault(userId);
+        }
+        else {
+            userNotificationMapper.updateField(userId, fieldName, fieldValue);
+        }
     }
 }
 

@@ -7,7 +7,7 @@ import cn.dev33.satoken.temp.SaTempUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
-
+import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.dto.*;
 import com.weindependent.app.enums.ErrorCode;
@@ -22,6 +22,8 @@ import com.weindependent.app.vo.user.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -32,6 +34,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+
+
 
 @Tag(name = "用户管理")
 @Slf4j
@@ -268,4 +272,30 @@ public class UserController {
         }
         userService.saveHelpRequest(userId, qry);
     }
+
+    //User Profile Notifications
+    @SignatureAuth
+    @GetMapping("/notifications/settings")
+    public NotificationSettingsDO getNotificationSettings() {
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("📥 正在获取通知设置 userId = {}", userId);
+        return userService.getSettingsByUserId(userId);
+    }
+    
+    @SignatureAuth
+    @PostMapping(value = "/notifications/settings", consumes = "application/json;charset=UTF-8")
+    public void postNotificationSettings(@RequestBody NotificationSettingsDO settingsDO) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        settingsDO.setUserId(userId);
+        userService.saveSettingsByUserId(settingsDO);
+    }
+
+    @SignatureAuth
+    @PostMapping(value = "/notifications/settings/update", consumes = "application/json;charset=UTF-8")
+    public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        userService.updateNotificationField(userId, notificationQry.getFieldName(), notificationQry.getFieldValue());
+    }
+    
 }

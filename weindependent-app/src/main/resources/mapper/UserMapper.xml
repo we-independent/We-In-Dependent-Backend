@@ -73,5 +73,4 @@
         DELETE FROM t_system_user WHERE id = #{userId}
     </delete>
 
-
 </mapper>
