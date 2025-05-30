@@ -30,7 +30,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -229,6 +232,7 @@ public class UserController {
         org.springframework.http.MediaType a;
         return userService.createProfileImg(file);
     }
+
 
     @SignatureAuth
     @Operation(summary = "删除账号（用户主动注销）")
