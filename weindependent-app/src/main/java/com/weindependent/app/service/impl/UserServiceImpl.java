@@ -2,6 +2,7 @@ package com.weindependent.app.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.api.client.googleapis.notifications.NotificationUtils;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
@@ -38,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.weindependent.app.database.mapper.weindependent.UserHelpCenterMapper;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
+import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
@@ -51,6 +53,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.weindependent.app.utils.ImageResizeUtil;
+import com.weindependent.app.utils.NotificationUtil;
 
 @Service
 @Slf4j
@@ -69,14 +72,13 @@ public class UserServiceImpl implements UserService {
     private IFileService fileService;
 
     @Autowired
-    private EmailServiceImpl resetUserPasswordEmailService;
-
-
-    @Autowired
     private UserHelpCenterMapper userHelpCenterMapper;
 
     @Autowired
     private EmailServiceImpl emailServiceImpl;
+
+    @Autowired
+    private IEmailService iEmailService;
 
     @Autowired
     private UserNotificationMapper userNotificationMapper;
@@ -274,7 +276,7 @@ public class UserServiceImpl implements UserService {
 
         userHelpCenterMapper.insert(request);
 
-        // 抄送客服邮箱
+        // admin 需要的info
         Map<String, String> adminMailParams = new HashMap<>();
         adminMailParams.put("name", userName);
         adminMailParams.put("email", userEmail);
@@ -282,18 +284,29 @@ public class UserServiceImpl implements UserService {
         adminMailParams.put("message", qry.getMessage());
         adminMailParams.put("replyTo", userEmail);
 
-        emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
+        // user info 
+        Map<String, String> userParams = new HashMap<>();
+        userParams.put("name", userName);
+        userParams.put("message", qry.getMessage());
 
-        // Confirmation email send to user
-        Map<String, String> emailParams = new HashMap<>();
-        emailParams.put("name", userName);
-        emailParams.put("message", qry.getMessage());
-        NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
-        if(notificationDO == null || Boolean.FALSE.equals(notificationDO.getHelpCenterEnabled())){
-            log.info("User {} has disabled Help Center notifications.", userId);
-            return;
-        }
-        emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
+        log.info(userEmail, adminMailParams, userParams);   
+        log.info("是否启用通知 helpCenterEnabled: {}", userNotificationMapper.findByUserId(userId).getHelpCenterEnabled());
+
+        // 根据用户的notification setting发送email到用户邮箱
+        NotificationUtil.sendNotificationIfEnabled(
+            userNotificationMapper.findByUserId(userId),
+            "helpCenterEnabled",
+            userEmail,
+            MailTypeEnum.HELP_CENTER,
+            userParams,
+            emailServiceImpl,
+            true,
+            "info@weindependent.org",
+            MailTypeEnum.HELP_CENTER_NOTIFY,
+            adminMailParams,
+            userId,
+            log
+        );
     }
 
 
