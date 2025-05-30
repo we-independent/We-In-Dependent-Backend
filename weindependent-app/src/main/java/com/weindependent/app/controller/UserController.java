@@ -36,8 +36,8 @@ import java.util.Map;
 @Tag(name = "用户管理")
 @Slf4j
 @RestController
-@RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-
+// @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
 public class UserController {
 
     @Resource
@@ -52,7 +52,7 @@ public class UserController {
 
     @SignatureAuth
     @Operation(summary = "用户注册")
-    @PostMapping("/register")
+    @PostMapping(value = "/register", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public void register(@Validated @RequestBody RegisterQry registerQry) {
         userService.registerUser(registerQry);
@@ -61,7 +61,8 @@ public class UserController {
 
     @SignatureAuth
     @Operation(summary = "用户登录")
-    @PostMapping("/login")
+    // @PostMapping("/login")    
+    @PostMapping(value = "/login", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
         UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
@@ -90,7 +91,8 @@ public class UserController {
     }
     @SignatureAuth
     @Operation(summary = "重置密码")
-    @PostMapping("/reset/password")
+    // @PostMapping("/reset/password")
+    @PostMapping(value = "/reset/password", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry)throws Exception{
         String token = resetPasswordQry.getToken();
@@ -173,7 +175,8 @@ public class UserController {
 
 //    @SignatureAuth
     @Operation(summary = "发送邮件")
-    @PostMapping("/send/email")
+    // @PostMapping("/send/email")
+    @PostMapping(value = "/send/email", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
         Map<String, String> sendMailParams = new HashMap<>();
@@ -192,7 +195,8 @@ public class UserController {
 
     @SignatureAuth
     @Operation(summary = "用户列表")
-    @PostMapping("/list")
+    // @PostMapping("/list")
+    @PostMapping(value = "/list", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
         int pageNum = (int) requestMap.get("pageNum");
@@ -202,7 +206,8 @@ public class UserController {
 
     @SignatureAuth
     @Operation(summary = "更新使用者资料")
-    @PutMapping("/")
+    // @PutMapping("/")
+    @PutMapping(value = "/", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public void updateUser(@Valid @RequestBody UpdateUserQry updateUserQry) {
         userService.updateUser(updateUserQry);
@@ -235,7 +240,8 @@ public class UserController {
 
     @SignatureAuth
     @Operation(summary = "验证旧密码")
-    @PostMapping("/verify-password")
+    // @PostMapping("/verify-password")
+    @PostMapping(value = "/verify-password", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public void verifyPassword(@Valid @RequestBody VerifyPasswordQry verifyPasswordQry) {
         userService.verifyPassword(verifyPasswordQry);
@@ -243,7 +249,8 @@ public class UserController {
 
     @SignatureAuth
     @Operation(summary = "修改密码（登录状态）")
-    @PutMapping("/change-password")
+    // @PutMapping("/change-password")
+    @PutMapping(value = "/change-password", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public void changePassword(@Valid @RequestBody ChangePasswordQry changePasswordQry) {
         userService.changePassword(changePasswordQry);
@@ -251,7 +258,7 @@ public class UserController {
     //User Profile Help Center
     @SignatureAuth
     @Operation(summary = "提交 Help Center 请求")
-    @PostMapping("/profile/help/send")
+    @PostMapping(value = "/profile/help/send", consumes = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*")
     public void sendHelp(@RequestBody HelpCenterRequestQry qry) {
         Long userId = StpUtil.getLoginIdAsLong();
