@@ -274,6 +274,16 @@ public class UserServiceImpl implements UserService {
 
         userHelpCenterMapper.insert(request);
 
+        // 抄送客服邮箱
+        Map<String, String> adminMailParams = new HashMap<>();
+        adminMailParams.put("name", userName);
+        adminMailParams.put("email", userEmail);
+        adminMailParams.put("subject", qry.getSubject());
+        adminMailParams.put("message", qry.getMessage());
+        adminMailParams.put("replyTo", userEmail);
+
+        emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
+
         // Confirmation email send to user
         Map<String, String> emailParams = new HashMap<>();
         emailParams.put("name", userName);
@@ -284,16 +294,6 @@ public class UserServiceImpl implements UserService {
             return;
         }
         emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
-
-        // 4. 抄送客服邮箱
-        Map<String, String> adminMailParams = new HashMap<>();
-        adminMailParams.put("name", userName);
-        adminMailParams.put("email", userEmail);
-        adminMailParams.put("subject", qry.getSubject());
-        adminMailParams.put("message", qry.getMessage());
-        adminMailParams.put("replyTo", userEmail);
-
-        emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
     }
 
 
