@@ -159,8 +159,8 @@ public class UserController {
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
         result.put("isLogin", StpUtil.isLogin());
-
         log.info("Login status checked: isLogin={}", StpUtil.isLogin());
+        log.info("Login status checked: {}", result);
         return result;
     }
 

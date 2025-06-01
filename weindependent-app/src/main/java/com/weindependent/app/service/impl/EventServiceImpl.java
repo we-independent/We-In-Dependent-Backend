@@ -5,12 +5,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
+import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.service.UserService;
+import com.weindependent.app.utils.NotificationUtil;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
@@ -39,6 +41,8 @@ public class EventServiceImpl implements IEventService {
     private UserService userService;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private UserNotificationMapper userNotificationMapper;
 
     @Override
     public RecentEventVOs getUpcomingEvents(int page,int size) {
@@ -146,7 +150,31 @@ public class EventServiceImpl implements IEventService {
         sendMailParams.put("time", eventVO.getEventTime().toString());
         sendMailParams.put("location", eventVO.getLocation());
         // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
-        emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+        // emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+
+        Map<String, String> adminMailParams = new HashMap<>();
+        adminMailParams.put("name", user.getRealName());
+        adminMailParams.put("email", user.getAccount());
+        adminMailParams.put("title", eventVO.getTitle());
+        adminMailParams.put("link", eventVO.getLink());
+        adminMailParams.put("time", eventVO.getEventTime().toString());
+        adminMailParams.put("location", eventVO.getLocation());
+        adminMailParams.put("replyTo", user.getAccount());
+         NotificationUtil.sendNotificationIfEnabled(
+            userNotificationMapper.findByUserId(userId),
+            "eventsRsvpConfirmations",
+            user.getAccount(),
+            MailTypeEnum.REGISTER_EVENT,
+            sendMailParams,
+            emailService,
+            true,
+            "info@weindependent.org",
+            MailTypeEnum.REGISTER_EVENT,
+            adminMailParams,
+            userId,
+            log
+        );
+
 
         EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();
         if (eventVO.getLink() != null) {

@@ -186,6 +186,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(UpdateUserQry updateUserQry) {
         Long userId = StpUtil.getLoginIdAsLong();
+
+        Integer profileImageId = updateUserQry.getProfileImageId();
+        if (profileImageId == null || profileImageId <= 0) {
+            updateUserQry.setProfileImageId(null); // 不更新头像字段，保持现状或交由前端渲染默认图
+        }
+
         UserDO userDO = UserConvertor.toUserDO(userId, updateUserQry);
         userMapper.updateUser(userDO);
     }
