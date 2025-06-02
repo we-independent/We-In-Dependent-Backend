@@ -158,6 +158,7 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
+        log.info("🔥 [isLogin] 当前 token = {}", StpUtil.getTokenValue()); 
         result.put("isLogin", StpUtil.isLogin());
         log.info("Login status checked: isLogin={}", StpUtil.isLogin());
         log.info("Login status checked: {}", result);

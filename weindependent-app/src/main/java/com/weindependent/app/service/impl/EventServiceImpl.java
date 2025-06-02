@@ -160,7 +160,7 @@ public class EventServiceImpl implements IEventService {
         adminMailParams.put("time", eventVO.getEventTime().toString());
         adminMailParams.put("location", eventVO.getLocation());
         adminMailParams.put("replyTo", user.getAccount());
-         NotificationUtil.sendNotificationIfEnabled(
+        NotificationUtil.sendNotificationIfEnabled(
             userNotificationMapper.findByUserId(userId),
             "eventsRsvpConfirmations",
             user.getAccount(),
