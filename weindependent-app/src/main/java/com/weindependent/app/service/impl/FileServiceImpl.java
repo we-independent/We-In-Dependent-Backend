@@ -105,9 +105,8 @@ public class FileServiceImpl implements IFileService {
         UploadedFileVO uploadedFileVO = new UploadedFileVO();
         uploadedFileVO.setFileKey(uploadedFile.getId());
         uploadedFileVO.setFileName(uploadedFile.getName());
-        uploadedFileVO.setFilePath("https://drive.google.com/thumbnail?id=" + uploadedFile.getId() + "&sz=s400");
+        uploadedFileVO.setFilePath("https://cdn.weindependent.org/image/" + uploadedFile.getId());
         fileMetadata.setMimeType(mimeType);
-
         return uploadedFileVO;
     }
 
