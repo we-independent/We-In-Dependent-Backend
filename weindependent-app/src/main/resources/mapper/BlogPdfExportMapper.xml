@@ -10,6 +10,7 @@
         <result property="id" column="id" />
         <result property="articleSourceType" column="article_source_type" />
         <result property="sourceUrl" column="source_url" />
+        <result property="sourceUrlDisplayText" column="source_url_display_text" />
         <result property="authorId" column="author_id" />
         <result property="bannerImgId" column="banner_img_id" />
         <result property="summary" column="summary" />
