@@ -16,6 +16,9 @@ public class BlogArticleVO
     /** 原始文章链接 */
     private String sourceUrl;
 
+    /** 原始文章链接显示文字 */
+    private String sourceUrlDisplayText;
+
     /** 作者ID */
     private Integer authorId;
 

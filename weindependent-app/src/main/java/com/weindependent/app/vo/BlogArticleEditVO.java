@@ -12,6 +12,8 @@ public class BlogArticleEditVO {
 
     private String sourceUrl;
 
+    private String sourceUrlDisplayText;
+
     private Integer authorId;
 
     private Integer bannerImgId;
