@@ -1,5 +1,6 @@
 package com.weindependent.app.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
@@ -9,6 +10,7 @@ import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.dto.*;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
@@ -44,7 +46,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 // @RequestMapping(value = "/user", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-@RequestMapping(value = "/user", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/api/user", produces = "application/json;charset=UTF-8")
 public class UserController {
 
     @Resource
@@ -55,6 +57,9 @@ public class UserController {
 
     @Value("${frontend.url}")
     private String frontendUrl;
+
+    @Autowired
+    private UserImageMapper userImageMapper;
 
 
     @SignatureAuth
@@ -92,7 +97,10 @@ public class UserController {
         loginVO.setLanguage(user.getLanguage());
         loginVO.setVisaType(user.getVisaType());
         loginVO.setSubscription(user.isSubscription());
-
+        ImageDO profileImage = userImageMapper.findById(user.getProfileImageId());
+        if (profileImage != null) {
+            loginVO.setAvatar(profileImage.getFilePath());
+        }
         log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
     }
@@ -296,10 +304,10 @@ public class UserController {
     }
 
     @SignatureAuth
+    @SaCheckLogin
     @PostMapping(value = "/notifications/settings/update", consumes = "application/json;charset=UTF-8")
     public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
         Long userId = StpUtil.getLoginIdAsLong();
-
         userService.updateNotificationField(userId, notificationQry.getFieldName(), notificationQry.getFieldValue());
     }
     

@@ -320,7 +320,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public NotificationSettingsDO getSettingsByUserId(Long userId) {
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
-        if (notificationDO == null){
+        if (notificationDO == null){ //TODO: throw exception
             Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
             initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
             notificationDO = userNotificationMapper.findByUserId(userId); 
@@ -329,7 +329,7 @@ public class UserServiceImpl implements UserService {
         return notificationDO;
     }
 
-    @Override
+    @Override //TODO: delete
     public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
         if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
 
