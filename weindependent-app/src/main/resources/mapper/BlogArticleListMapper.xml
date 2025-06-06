@@ -33,6 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             resultMap="BlogArticleListResult">
         <include refid="selectBlogArticleVo"/>
         <where>
+            and is_deleted = 0
             <!-- 只保留按分类筛选的条件 -->
             <if test="categoryId != null">
                 and category_id = #{categoryId}
