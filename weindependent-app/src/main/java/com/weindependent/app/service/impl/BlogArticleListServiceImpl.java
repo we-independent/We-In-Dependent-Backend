@@ -179,6 +179,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setArticleStatus(article.getArticleStatus());
         qry.setArticleSourceType(article.getArticleSourceType());
         qry.setSourceUrl(article.getSourceUrl());
+        qry.setSourceUrlDisplayText(article.getSourceUrlDisplayText());
         qry.setCreateUserId(article.getCreateUserId());
         qry.setCreateTime(article.getCreateTime());
         qry.setUpdateUserId(article.getUpdateUserId());
