@@ -12,4 +12,6 @@ public interface UserImageMapper {
 
   public int delete(java.util.List<Long> ids);
 
+  ImageDO findById(Integer id);
+
 }
