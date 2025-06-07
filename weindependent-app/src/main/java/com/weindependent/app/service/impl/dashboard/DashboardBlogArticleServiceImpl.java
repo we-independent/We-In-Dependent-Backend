@@ -376,7 +376,10 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         return blogArticleDOS.stream().map(BlogConverter::toBlogVO).collect(Collectors.toList());
     }
 
-
+    @Override
+    public List<BlogArticleDO> searchByIdAndTitle(String keyword) {
+        return blogArticleMapper.searchByIdAndTitle(keyword);
+    }
 
     private void deleteImgById(Integer imgId){
         //Hurely add null exception handling

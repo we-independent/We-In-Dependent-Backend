@@ -4,28 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.MostSavedMapper">
 
-    <resultMap type="com.weindependent.app.vo.BlogHomePageHeroVO" id="BlogHomePageHeroVOResult">
-        <result property="articleId" column="article_id"/>
-        <result property="articleTitle" column="article_title"/>
-        <result property="categoryId" column="category_id"/>
-        <result property="categoryName" column="category_name"/>
-        <result property="bannerImageUrl" column="file_path" />
-
-        <result property="createTime" column="create_time" />
-        <result property="createUserId" column="create_user_id" />
-        <result property="updateTime" column="update_time" />
-        <result property="updateUserId" column="update_user_id" />
-
-        <result property="isDeleted" column="is_deleted" />
-
-        <collection property="tagVOList" ofType="com.weindependent.app.vo.TagVO" column="article_id" select="selectTagVOList"/>
-    </resultMap>
-
-    <resultMap id="TagVOResult" type="com.weindependent.app.vo.TagVO">
-        <id column="id" jdbcType="BIGINT" property="id" />
-        <result column="name" jdbcType="VARCHAR" property="name" />
-    </resultMap>
-
     <select id="getSavedCountsByArticleIds"
             parameterType="list"
             resultType="com.weindependent.app.database.dataobject.SavedCountDO">
@@ -38,53 +16,6 @@
             #{id}
         </foreach>
         GROUP BY article_id
-    </select>
-
-    <select id="findCurrentMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
-        SELECT *
-        FROM most_saved
-        WHERE status = 1
-        ORDER BY create_time DESC
-    </select>
-
-    <select id="findPreviousMostSavedList" resultType="com.weindependent.app.database.dataobject.EditorPickDO">
-        SELECT *
-        FROM most_saved
-        WHERE status = 0
-        ORDER BY create_time DESC
-    </select>
-
-    <select id="findBlogHomePageHeroVOByIds" resultMap="BlogHomePageHeroVOResult">
-        SELECT 
-            blog_article.id AS article_id,
-            blog_article.title AS article_title,
-            blog_article.category_id,
-            category.name AS category_name,
-            blog_image.file_path,
-            
-            blog_article.create_time,
-            blog_article.create_user_id,
-            blog_article.update_time AS update_time,
-            blog_article.update_user_id AS update_user_id,
-            blog_article.is_deleted
-
-        FROM blog_article
-        LEFT JOIN category ON blog_article.category_id = category.id
-        LEFT JOIN blog_image ON blog_article.banner_img_id = blog_image.id
-        WHERE blog_article.id IN
-        <foreach item="id" collection="ids" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-        AND blog_article.is_deleted = 0
-    </select>
-
-    <select id="selectTagVOList" resultMap="TagVOResult">
-        SELECT tag.id,
-               name
-        FROM tag_article_relation left join tag on tag_article_relation.tag_id = tag.id
-        WHERE tag_article_relation.article_id = #{id}
-          AND tag.is_deleted = 0
-          AND tag_article_relation.is_deleted = 0
     </select>
 
     <select id="findTopSavedBlogs" parameterType="int" resultType="com.weindependent.app.dto.BlogArticleCardQry">
