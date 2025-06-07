@@ -3,16 +3,17 @@ package com.weindependent.app.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
 import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.service.UserService;
-import com.weindependent.app.utils.NotificationUtil;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
@@ -24,6 +25,8 @@ import org.springframework.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import javax.management.NotificationBroadcaster;
+
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -160,20 +163,14 @@ public class EventServiceImpl implements IEventService {
         adminMailParams.put("time", eventVO.getEventTime().toString());
         adminMailParams.put("location", eventVO.getLocation());
         adminMailParams.put("replyTo", user.getAccount());
-        NotificationUtil.sendNotificationIfEnabled(
-            userNotificationMapper.findByUserId(userId),
-            "eventsRsvpConfirmations",
-            user.getAccount(),
-            MailTypeEnum.REGISTER_EVENT,
-            sendMailParams,
-            emailService,
-            true,
-            "info@weindependent.org",
-            MailTypeEnum.REGISTER_EVENT,
-            adminMailParams,
-            userId,
-            log
-        );
+
+        NotificationFieldEnum fieldEnum = NotificationFieldEnum.EVENTS_RSVP_CONFIRMATIONS;
+        NotificationSettingsDO settingsDO = userNotificationMapper.findByUserId(userId);
+        Boolean isEnabled = fieldEnum.isEnabled(settingsDO);
+
+        if(isEnabled){
+            emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+        }
 
 
         EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();

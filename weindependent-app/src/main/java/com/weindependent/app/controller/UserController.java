@@ -14,6 +14,7 @@ import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.dto.*;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.UserService;
@@ -58,7 +59,7 @@ public class UserController {
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    @Autowired
+    @Resource
     private UserImageMapper userImageMapper;
 
 
@@ -295,19 +296,23 @@ public class UserController {
         return userService.getSettingsByUserId(userId);
     }
     
-    @SignatureAuth
-    @PostMapping(value = "/notifications/settings", consumes = "application/json;charset=UTF-8")
-    public void postNotificationSettings(@RequestBody NotificationSettingsDO settingsDO) {
-        Long userId = StpUtil.getLoginIdAsLong();
-        settingsDO.setUserId(userId);
-        userService.saveSettingsByUserId(settingsDO);
-    }
+    // @SignatureAuth
+    // @PostMapping(value = "/notifications/settings", consumes = "application/json;charset=UTF-8")
+    // public void postNotificationSettings(@RequestBody NotificationSettingsDO settingsDO) {
+    //     Long userId = StpUtil.getLoginIdAsLong();
+    //     settingsDO.setUserId(userId);
+    //     userService.saveSettingsByUserId(settingsDO);
+    // }
 
     @SignatureAuth
     @SaCheckLogin
     @PostMapping(value = "/notifications/settings/update", consumes = "application/json;charset=UTF-8")
     public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
         Long userId = StpUtil.getLoginIdAsLong();
+        if (!NotificationFieldEnum.isValidField(notificationQry.getFieldName())) {
+            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "非法字段名：" + notificationQry.getFieldName());
+        }
+
         userService.updateNotificationField(userId, notificationQry.getFieldName(), notificationQry.getFieldValue());
     }
     

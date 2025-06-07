@@ -20,7 +20,8 @@ public enum ErrorCode {
     RELATED_ARTICLE_FETCH_FAILED(-5, "Fail to Get Related Articles"), 
     UNKONWN_CATEGORY(-6, "Unknown Category"),
     EVENT_NOT_EXIST(-7, "Event does not exist"),
-    SPEAKER_NOT_EXIST(-8, "Speaker does not exist");
+    SPEAKER_NOT_EXIST(-8, "Speaker does not exist"),
+    NOTIFICATION_DISABLED(-9, "Notification is not allowed for this field by user");
     
     private int code;
     private final String title;

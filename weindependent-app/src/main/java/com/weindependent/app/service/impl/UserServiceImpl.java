@@ -13,12 +13,14 @@ import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.config.EmailConfig;
 import com.weindependent.app.convertor.UserConvertor;
 import cn.dev33.satoken.temp.SaTempUtil;
 
@@ -53,7 +55,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.weindependent.app.utils.ImageResizeUtil;
-import com.weindependent.app.utils.NotificationUtil;
 
 @Service
 @Slf4j
@@ -82,6 +83,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserNotificationMapper userNotificationMapper;
+
+    @Resource
+    private EmailConfig emailConfig;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -294,25 +298,17 @@ public class UserServiceImpl implements UserService {
         Map<String, String> userParams = new HashMap<>();
         userParams.put("name", userName);
         userParams.put("message", qry.getMessage());
+        userParams.put("email", userEmail);             
+        userParams.put("subject", qry.getSubject());
 
         log.info(userEmail, adminMailParams, userParams);   
-        log.info("是否启用通知 helpCenterEnabled: {}", userNotificationMapper.findByUserId(userId).getHelpCenterEnabled());
+        log.info("是否启用通知 helpCenterEnabled: {}", userNotificationMapper.findByUserId(userId).getHelpCenterEnabled()); 
+        String adminEmail = emailConfig.getUsername(); 
 
-        // 根据用户的notification setting发送email到用户邮箱
-        NotificationUtil.sendNotificationIfEnabled(
-            userNotificationMapper.findByUserId(userId),
-            "helpCenterEnabled",
-            userEmail,
-            MailTypeEnum.HELP_CENTER,
-            userParams,
-            emailServiceImpl,
-            true,
-            "info@weindependent.org",
-            MailTypeEnum.HELP_CENTER_NOTIFY,
-            adminMailParams,
-            userId,
-            log
-        );
+        // 发送confirmation email到用户邮箱
+        iEmailService.send(userEmail, MailTypeEnum.HELP_CENTER, adminMailParams);
+        // log.info("📨 给客服 info@weindependent.org 抄送通知邮件");
+        iEmailService.send(adminEmail, MailTypeEnum.HELP_CENTER_NOTIFY, userParams);
     }
 
 
@@ -321,32 +317,25 @@ public class UserServiceImpl implements UserService {
     public NotificationSettingsDO getSettingsByUserId(Long userId) {
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
         if (notificationDO == null){ //TODO: throw exception
-            Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
-            initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
-            notificationDO = userNotificationMapper.findByUserId(userId); 
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "Invalid user: " + userId);
         }
-
         return notificationDO;
     }
 
-    @Override //TODO: delete
-    public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
-        if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
+    // @Override //TODO: delete
+    // public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
+    //     if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
 
-            userNotificationMapper.update(settingsDO);
-        } else {
-            userNotificationMapper.insert(settingsDO);
-        }
-    }
+    //         userNotificationMapper.update(settingsDO);
+    //     } else {
+    //         userNotificationMapper.insert(settingsDO);
+    //     }
+    // }
 
     @Override
     public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
-        List<String> allowedFields = Arrays.asList(
-            "updates_enabled","updates_general_announcements","updates_new_programs","updates_holiday_messages","donations_enabled","donations_donation_confirmations","donations_donation_updates",
-            "donations_billing_issues","events_enabled","events_rsvp_confirmations","events_event_updates",
-            "help_center_enabled"        
-        );
-        if (!allowedFields.contains(fieldName)) {
+ 
+        if (!NotificationFieldEnum.isValidField(fieldName)) {
             throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid field name: " + fieldName);
         }
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
@@ -368,33 +357,11 @@ public class UserServiceImpl implements UserService {
         NotificationSettingsDO settingsDO = new NotificationSettingsDO();
         settingsDO.setUserId(userId);
         if (!Boolean.TRUE.equals(subscribe)) {
-        settingsDO.setUpdatesEnabled(false);
-        settingsDO.setUpdatesGeneralAnnouncements(false);
-        settingsDO.setUpdatesNewPrograms(false);
-        settingsDO.setUpdatesHolidayMessages(false);
-        settingsDO.setDonationsEnabled(true);
-        settingsDO.setDonationsDonationConfirmations(true);
-        settingsDO.setDonationsDonationUpdates(true);
-        settingsDO.setDonationsBillingIssues(true);
-        settingsDO.setEventsEnabled(true);
-        settingsDO.setEventsEventUpdates(true);
-        settingsDO.setEventsRsvpConfirmations(true);
-        settingsDO.setHelpCenterEnabled(true);
-        } else {
-            settingsDO.setUpdatesEnabled(true);
-            settingsDO.setUpdatesGeneralAnnouncements(true);
-            settingsDO.setUpdatesNewPrograms(true);
-            settingsDO.setUpdatesHolidayMessages(true);
-            settingsDO.setDonationsEnabled(true);
-            settingsDO.setDonationsDonationConfirmations(true);
-            settingsDO.setDonationsDonationUpdates(true);
-            settingsDO.setDonationsBillingIssues(true);
-            settingsDO.setEventsEnabled(true);
-            settingsDO.setEventsEventUpdates(true);
-            settingsDO.setEventsRsvpConfirmations(true);
-            settingsDO.setHelpCenterEnabled(true);
+            settingsDO.setUpdatesEnabled(false);
+            settingsDO.setUpdatesGeneralAnnouncements(false);
+            settingsDO.setUpdatesNewPrograms(false);
+            settingsDO.setUpdatesHolidayMessages(false);
         }
-
         userNotificationMapper.insert(settingsDO);
 
     }
