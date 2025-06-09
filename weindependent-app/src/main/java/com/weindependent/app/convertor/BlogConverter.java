@@ -10,6 +10,7 @@ public class BlogConverter {
         blogVO.setId(blogDO.getId());
         blogVO.setArticleSourceType(blogDO.getArticleSourceType());
         blogVO.setSourceUrl(blogDO.getSourceUrl());
+        blogVO.setSourceUrlDisplayText(blogDO.getSourceUrlDisplayText());
         blogVO.setAuthorId(blogDO.getAuthorId());
         blogVO.setBannerImgId(blogDO.getBannerImgId());
         blogVO.setSummary(blogDO.getSummary());

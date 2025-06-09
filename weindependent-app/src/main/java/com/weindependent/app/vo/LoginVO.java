@@ -11,4 +11,5 @@ public class LoginVO {
     private String language;
     private String visaType;
     private boolean subscription;
+    private String avatar;
 }

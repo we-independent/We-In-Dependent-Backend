@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventMapper">
+
+    <insert id="create" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO event (title, summary, content, event_time, location, link, video_link, category_id, banner_id, create_user_id, update_user_id)
+        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{link}, #{videoLink}, #{categoryId}, #{bannerId}, #{createUserId}, #{updateUserId});
+    </insert>
+
+    <select id="getById" parameterType="map" resultType="com.weindependent.app.database.dataobject.EventDO">
+        SELECT
+            e.*
+        FROM event e
+        WHERE e.id = #{id}
+    </select>
+
+    <select id="list" parameterType="com.weindependent.app.dto.EventListQry" resultType="com.weindependent.app.vo.event.dashboard.DashboardEventVO">
+        SELECT
+            e.*,
+            c.name AS categoryName,
+            ei.file_path AS bannerFilePath,
+            cu.real_name AS createUserName,
+            uu.real_name AS updateUserName,
+            <!-- su.real_name AS speakerName, -->
+            CEIL(COUNT(*) OVER() / #{pageSize}) AS pages
+        FROM event e
+             LEFT JOIN event_image ei ON e.banner_id = ei.id
+             LEFT JOIN t_system_user cu ON e.create_user_id = cu.id
+             LEFT JOIN t_system_user uu ON e.update_user_id = uu.id
+             <!-- LEFT JOIN t_system_user su ON e.speaker_user_id = su.id -->
+             LEFT JOIN category c ON e.category_id = c.id
+        <where>
+            <if test="title != null and title != ''">
+                AND e.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="location != null and location != ''">
+                AND e.location LIKE CONCAT('%', #{location}, '%')
+            </if>
+            <!-- <if test="speakerUserId != null">
+                AND e.speaker_user_id = #{speakerUserId}
+            </if> -->
+            <if test="categoryId != null">
+                AND e.category_id = #{categoryId}
+            </if>
+            <if test="createUserId != null">
+                AND e.create_user_id = #{createUserId}
+            </if>
+            <if test="eventTimeStart != null">
+                AND e.event_time &gt;= #{eventTimeStart}
+            </if>
+            <if test="eventTimeEnd != null">
+                AND e.event_time &lt;= #{eventTimeEnd}
+            </if>
+            <if test="createTimeStart != null">
+                AND e.create_time &gt;= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null">
+                AND e.create_time &lt;= #{createTimeEnd}
+            </if>
+            <if test="isDeleted != null">
+                AND e.is_deleted = #{isDeleted}
+            </if>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+
+    <select id="getRegisteredUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT
+          u.id, u.account, u.email,u.real_name
+        FROM event_user_register eur
+        JOIN t_system_user u ON eur.user_id = u.id
+        WHERE eur.event_id = #{id}
+        ORDER BY eur.create_time DESC
+    </select>
+
+    <select id="getBookmarkedUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT
+            u.id, u.account, u.email,u.real_name
+        FROM event_user_bookmark eub
+                 JOIN t_system_user u ON eub.user_id = u.id
+        WHERE eub.event_id = #{id}
+        ORDER BY eub.create_time DESC
+    </select>
+
+    <update id="delete" parameterType="java.util.List">
+        UPDATE event e
+        JOIN event_image ei ON e.banner_id = ei.id
+        SET
+            e.is_deleted = true,
+            ei.is_deleted = true,
+            e.update_user_id = #{updateUserId}
+        WHERE e.id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="update" parameterType="com.weindependent.app.database.dataobject.EventDO">
+        UPDATE event e
+            LEFT JOIN event_image ei ON e.banner_id = ei.id
+            SET
+                e.title = #{title},
+                e.summary = #{summary},
+                e.content = #{content},
+                e.event_time = #{eventTime},
+                e.location = #{location},
+                e.link = #{link},
+                e.category_id = #{categoryId},
+                <!-- e.speaker_user_id = #{speakerUserId}, -->
+                e.update_user_id = #{updateUserId},
+                e.banner_id = #{bannerId},
+                e.video_link = #{videoLink},
+                ei.is_deleted = CASE
+                WHEN e.banner_id != #{bannerId} THEN 1
+                ELSE ei.is_deleted
+        END
+        WHERE e.id = #{id}
+    </update>
+
+
+
+</mapper>

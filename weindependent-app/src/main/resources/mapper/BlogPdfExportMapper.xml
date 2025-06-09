@@ -10,6 +10,7 @@
         <result property="id" column="id" />
         <result property="articleSourceType" column="article_source_type" />
         <result property="sourceUrl" column="source_url" />
+        <result property="sourceUrlDisplayText" column="source_url_display_text" />
         <result property="authorId" column="author_id" />
         <result property="bannerImgId" column="banner_img_id" />
         <result property="summary" column="summary" />
@@ -43,10 +44,10 @@
     <!-- ✅ 插入 blog_pdf -->
     <insert id="insertPdf" parameterType="com.weindependent.app.database.dataobject.BlogPdfDO">
         INSERT INTO blog_pdf (
-            file_name, file_path, download_url, pdf_file_generation_time,
+            file_name, file_path, file_key, download_url, pdf_file_generation_time,
             article_id, is_deleted, create_user_id, create_time, update_user_id, update_time
         ) VALUES (
-            #{fileName}, #{filePath}, #{downloadUrl}, #{pdfFileGenerationTime},
+            #{fileName}, #{filePath}, #{fileKey}, #{downloadUrl}, #{pdfFileGenerationTime},
             #{articleId}, #{isDeleted}, #{createUserId}, #{createTime}, #{updateUserId}, #{updateTime}
         )
     </insert>

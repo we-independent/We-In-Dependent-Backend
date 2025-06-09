@@ -1,7 +1,10 @@
 package com.weindependent.app.service.impl.dashboard;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.weindependent.app.convertor.BlogConverter;
@@ -9,23 +12,33 @@ import com.weindependent.app.database.dataobject.TagArticleRelationDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagArticleRelationMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardTagMapper;
 import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.utils.CommonUtil;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.database.dataobject.BlogImageDO;
+import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper;
 import com.weindependent.app.dto.BlogArticleQry;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.vo.UploadedFileVO;
+
+import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.fastjson.JSON;
+
+import io.opencensus.tags.Tag;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.service.IBlogArticleService;
@@ -51,7 +64,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Resource
     private DashboardBlogImageMapper blogImageMapper;
     @Resource
-    private FileService fileService;
+    private IFileService fileService;
     @Autowired
     private DashboardTagArticleRelationMapper dashboardTagArticleRelationMapper;
 
@@ -118,31 +131,49 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
         blogArticleDO.setCreateUserId(userId);
         blogArticleDO.setUpdateUserId(userId);
-        blogArticleDO.setCreateTime(LocalDateTime.now());
 
         if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
-            throw new RuntimeException("Failed to add Article to database");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ blogArticle.getId());
         }
 
-        //2. 新增 tag article relation
-        for ( Integer tagId : blogArticle.getTags()) {
+        // //2. 新增 tag article relation
+        // for ( Integer tagId : blogArticle.getTags()) {
+        //     TagArticleRelationDO relation = new TagArticleRelationDO();
+        //     relation.setArticleId(blogArticleDO.getId());
+        //     relation.setTagId(tagId);
+        //     relation.setCreateUserId(userId);
+        //     // relation.setCreateTime(LocalDateTime.now());
+        //     relation.setUpdateUserId(userId);
+
+        //     if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
+        //         throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to add TagArticleRelation to database, tagName: " + tagId + ", articleId: " + blogArticleDO.getId());
+        //     }
+        // }
+
+        //Hurely change to batch insert function
+        // 2. 批量构造 tag article relation 对象
+        List<TagArticleRelationDO> tagRelations = blogArticle.getTags().stream().map(tagId -> {
             TagArticleRelationDO relation = new TagArticleRelationDO();
             relation.setArticleId(blogArticleDO.getId());
             relation.setTagId(tagId);
             relation.setCreateUserId(userId);
-            relation.setCreateTime(LocalDateTime.now());
             relation.setUpdateUserId(userId);
+            return relation;
+        }).collect(Collectors.toList());
 
-            if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
-                throw new RuntimeException("Failed to add TagArticleRelation to database, tagName: " + tagId + ", articleId: " + blogArticleDO.getId());
-            }
+        // 3. 批量插入或更新
+        if (!tagRelations.isEmpty()) {
+            int upserted = dashboardTagArticleRelationMapper.updateAndInsertTagArticleRelations(tagRelations);
+            if (upserted == 0) {
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to add TagArticleRelation to database, tagName: " + blogArticle.getTags() + ", articleId: " + blogArticleDO.getId());
+             }
         }
 
         return 1;
     }
 
     @Override
-    public BlogImageDO insertBlogBanner(MultipartFile file) {
+    public ImageDO insertBlogBanner(MultipartFile file) {
         // Resize image first
         MultipartFile resizedFile;
         try {
@@ -153,19 +184,19 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         }
 
         // Then upload
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,"blog-banner" );
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.BLOG_BANNER);
 
-        BlogImageDO blogImageDO = new BlogImageDO();
-        blogImageDO.setCategory("blog-banner");
-        blogImageDO.setFileName(uploadedFileVO.getFileName());
-        blogImageDO.setFileKey(uploadedFileVO.getFileKey());
-        blogImageDO.setFileType(resizedFile.getContentType());
-        blogImageDO.setFilePath(uploadedFileVO.getFilePath());
-        int affectedRows = blogImageMapper.insert(blogImageDO);
+        ImageDO imageDo = new ImageDO();
+        imageDo.setCategory("blog-banner");
+        imageDo.setFileName(uploadedFileVO.getFileName());
+        imageDo.setFileKey(uploadedFileVO.getFileKey());
+        imageDo.setFileType(resizedFile.getContentType());
+        imageDo.setFilePath(uploadedFileVO.getFilePath());
+        int affectedRows = blogImageMapper.insert(imageDo);
         if (affectedRows != 1) {
             throw new RuntimeException("Failed to add image to database");
         }
-        return blogImageDO;
+        return imageDo;
     }
 
     /**
@@ -174,51 +205,92 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @param blogArticle 博客文章
      * @return 结果
      */
+    // @Override
+    // public int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
+
+        // //Hurely add null exception
+        // if (blogArticle.getId() == null) {
+        //     throw new IllegalArgumentException("Blog ID can not be null!");
+        // }
+
+        // BlogArticleDO oldBlog=blogArticleMapper.selectBlogArticleById(blogArticle.getId());
+        // if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
+        //     deleteImgById(oldBlog.getBannerImgId());
+        // }
+
+        // //1. 修改blogArticle信息
+        // BlogArticleDO blogArticleDO = new BlogArticleDO();
+        // BeanUtils.copyProperties(blogArticle, blogArticleDO);
+        // blogArticleDO.setUpdateUserId(userId);
+        // blogArticleDO.setUpdateTime(LocalDateTime.now());
+
+        // if (blogArticleMapper.updateBlogArticle(blogArticleDO ) != 1) {
+        //     throw new RuntimeException("Failed to update Article to database");
+        // }
+    
+    //     //2. 删除现有TagArticleRelation
+    //     dashboardTagArticleRelationMapper.deleteByArticleId(blogArticle.getId(), userId);
+
+    //     //3. 新增 tag article relation
+    //     for (Integer tagId : blogArticle.getTags()) {
+    //         TagArticleRelationDO relation = dashboardTagArticleRelationMapper.getRelationByTagIdAndArticleId(tagId, blogArticle.getId());
+    //         if (relation == null) {
+    //             relation = new TagArticleRelationDO();
+    //             relation.setArticleId(blogArticle.getId());
+    //             relation.setTagId(tagId);
+    //             relation.setCreateUserId(userId);
+    //             relation.setCreateTime(LocalDateTime.now());
+    //             relation.setUpdateUserId(userId);
+    //             relation.setUpdateTime(LocalDateTime.now());
+    //             if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
+    //                 throw new RuntimeException("Failed to add  tag article relation to database, tagId: " + tagId  + ", articleId: " + blogArticle.getId());
+    //             }
+    //         } else if (relation.getIsDeleted()) {
+    //             if (dashboardTagArticleRelationMapper.recoverById(relation.getId(),userId) != 1)
+    //                 throw new RuntimeException("Failed to recover tag article relation in database, tagId: " + tagId + ", articleId: " + blogArticle.getId());
+    //         }
+    //     }
+    //     return 1;
+    // }
+
     @Override
     public int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
-
-        //Hurely add null exception
-        if (blogArticle.getId() == null) {
-            throw new IllegalArgumentException("Blog ID can not be null!");
-        }
-
-        BlogArticleDO oldBlog=blogArticleMapper.selectBlogArticleById(blogArticle.getId());
-        if(!oldBlog.getBannerImgId().equals(blogArticle.getBannerImgId())){
-            deleteImgById(oldBlog.getBannerImgId());
-        }
-
-        //1. 修改blogArticle信息
+        System.out.println("前端传入 tags = " + blogArticle.getTags());
+        
+        // 1. 修改blogArticle信息
         BlogArticleDO blogArticleDO = new BlogArticleDO();
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
         blogArticleDO.setUpdateUserId(userId);
-        blogArticleDO.setUpdateTime(LocalDateTime.now());
-
-        if (blogArticleMapper.updateBlogArticle(blogArticleDO ) != 1) {
-            throw new RuntimeException("Failed to update Article to database");
+    
+        // 2. 更新文章和 banner（旧 banner 自动逻辑软删除）
+        int result = blogArticleMapper.updateBlogArticleWithBanner(blogArticleDO);
+        if (result == 0) {
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ blogArticle.getId());
         }
+        // 3. 删除不再使用的标签，保留依旧使用的标签
+        List<Integer> tagList = blogArticle.getTags();
+        dashboardTagArticleRelationMapper.deleteByArticleIdExcludeTags(blogArticle.getId(), tagList, userId);
+        
+        // 4. 构造需要 upsert 的标签关系对象
+        List<TagArticleRelationDO> tagRelations = tagList.stream().map(tagId -> {
+            TagArticleRelationDO relation = new TagArticleRelationDO();
+            relation.setArticleId(blogArticle.getId());
+            relation.setTagId(tagId);
+            relation.setCreateUserId(userId);
+            relation.setUpdateUserId(userId);
+            return relation;
+        }).collect(Collectors.toList());
 
-        //2. 删除现有TagArticleRelation
-        dashboardTagArticleRelationMapper.deleteByArticleId(blogArticle.getId(), userId);
-
-        //3. 新增 tag article relation
-        for (Integer tagId : blogArticle.getTags()) {
-            TagArticleRelationDO relation = dashboardTagArticleRelationMapper.getRelationByTagIdAndArticleId(tagId, blogArticle.getId());
-            if (relation == null) {
-                relation = new TagArticleRelationDO();
-                relation.setArticleId(blogArticle.getId());
-                relation.setTagId(tagId);
-                relation.setCreateUserId(userId);
-                relation.setCreateTime(LocalDateTime.now());
-                relation.setUpdateUserId(userId);
-                relation.setUpdateTime(LocalDateTime.now());
-                if (dashboardTagArticleRelationMapper.insertTagArticleRelation(relation) != 1) {
-                    throw new RuntimeException("Failed to add  tag article relation to database, tagId: " + tagId  + ", articleId: " + blogArticle.getId());
-                }
-            } else if (relation.getIsDeleted()) {
-                if (dashboardTagArticleRelationMapper.recoverById(relation.getId(),userId) != 1)
-                    throw new RuntimeException("Failed to recover tag article relation in database, tagId: " + tagId + ", articleId: " + blogArticle.getId());
+        // 5. 批量update and insert 
+        System.out.println("即将 upsert tag relations = " + JSON.toJSONString(tagRelations));
+        if(!tagRelations.isEmpty()){
+            int upserted = dashboardTagArticleRelationMapper.updateAndInsertTagArticleRelations(tagRelations);
+            if(upserted == 0){
+                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to upsert tag-article relations for articleId = " + blogArticle.getId());
             }
         }
+        System.out.println("tagRelations = " + JSON.toJSONString(tagRelations));
+
         return 1;
     }
 
@@ -228,15 +300,31 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @param ids 需要删除的博客文章主键
      * @return 结果
      */
+    // @Override
+    // public int deleteBlogArticleByIds(Integer[] ids, int updateUserId) {
+    //     for (Integer id : ids) {
+    //         BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
+    //         deleteImgById(blog.getBannerImgId());
+    //         dashboardTagArticleRelationMapper.deleteByArticleId(id, updateUserId);
+    //     }
+
+    //     return blogArticleMapper.deleteBlogArticleByIds(ids, updateUserId);
+    // }
+    //Hurely change to single query verion
     @Override
-    public int deleteBlogArticleByIds(Integer[] ids, int updateUserId) {
-        for (Integer id : ids) {
-            BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
-            deleteImgById(blog.getBannerImgId());
-            dashboardTagArticleRelationMapper.deleteByArticleId(id, updateUserId);
+    public int deleteBlogArticleByIds(List<Integer> ids, int updateUserId) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("Blog ID can not be null!");
+        }
+        // List<Integer> idList = Arrays.stream(ids).collect(Collectors.toList());
+
+        int result = blogArticleMapper.deleteBlogArticleWithRelations(ids, updateUserId);
+
+        if (result == 0) {
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ ids);
         }
 
-        return blogArticleMapper.deleteBlogArticleByIds(ids, updateUserId);
+        return result;
     }
 
     /**
@@ -245,11 +333,21 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @param id 博客文章主键
      * @return 结果
      */
+    // @Override
+    // public int deleteBlogArticleById(Integer id) {
+    //     BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
+    //     deleteImgById(blog.getBannerImgId());
+    //     return blogArticleMapper.deleteBlogArticleById(id);
+    // }
+
+    //Hurely change to single query version
     @Override
-    public int deleteBlogArticleById(Integer id) {
-        BlogArticleDO blog = blogArticleMapper.selectBlogArticleById(id);
-        deleteImgById(blog.getBannerImgId());
-        return blogArticleMapper.deleteBlogArticleById(id);
+    public int deleteBlogArticleById(List<Integer> id) {
+        if (id == null) {
+            throw new IllegalArgumentException("博客 ID 不能为空");
+        }
+        int userId = StpUtil.getLoginIdAsInt(); // 动态获取当前登录用户
+        return deleteBlogArticleByIds(id, userId);
     }
 
     /**
@@ -278,7 +376,10 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         return blogArticleDOS.stream().map(BlogConverter::toBlogVO).collect(Collectors.toList());
     }
 
-
+    @Override
+    public List<BlogArticleDO> searchByIdAndTitle(String keyword) {
+        return blogArticleMapper.searchByIdAndTitle(keyword);
+    }
 
     private void deleteImgById(Integer imgId){
         //Hurely add null exception handling
@@ -286,7 +387,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
             log.warn("deleteImgById 调用时传入的 imgId 为 null, 跳过删除");
             return;
         }
-        BlogImageDO image= blogImageMapper.findById(imgId);
+        ImageDO image= blogImageMapper.findById(imgId);
         if (image == null) {
             log.warn("未找到图片,imgId = {}，跳过删除", imgId);
             return;

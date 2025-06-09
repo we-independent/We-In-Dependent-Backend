@@ -13,9 +13,12 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.weindependent.app.service.FileService;
+import com.weindependent.app.config.GoogleDriveFolderProperties;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,36 +28,17 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Service
-public class FileServiceImpl implements FileService {
+public class FileServiceImpl implements IFileService {
     @Value("${google.drive.app-name}")
     private String appName;
 
-    @Value("${google.drive.folder.parent-id}")
-    private String parentFolderId;
-
-    @Value("${google.drive.folder.blog-id}")
-    private String blogFolderId;
-
-    @Value("${google.drive.folder.blog-banner-id}")
-    private String blogBannerFolderId;
-
-    @Value("${google.drive.folder.blog-pdf}")
-    private String blogPdfFolderId;
-
-    @Value("${google.drive.folder.event}")
-    private String eventFolderId;
-
-    @Value("${file.upload.tmp-folder}")
-    private String tmpFolder;
+    @Autowired
+    private GoogleDriveFolderProperties folderProps;
 
     private Drive drive;
-
-    private final Map<String, String> folderIdMap = new HashMap<>();
 
     @PostConstruct
     private void initDrive() {
@@ -65,11 +49,6 @@ public class FileServiceImpl implements FileService {
             this.drive = new Drive.Builder(httpTransport, new GsonFactory(), fromServiceAccount(configFileStream))
                     .setApplicationName(appName)
                     .build();
-
-            folderIdMap.put("blog", blogFolderId);
-            folderIdMap.put("blog-banner", blogBannerFolderId);
-            folderIdMap.put("blog-pdf", blogPdfFolderId);
-            folderIdMap.put("event", eventFolderId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Google Drive", e);
         }
@@ -81,7 +60,7 @@ public class FileServiceImpl implements FileService {
     private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE_APPDATA,DriveScopes.DRIVE,DriveScopes.DRIVE_METADATA,DriveScopes.DRIVE_READONLY,DriveScopes.DRIVE_METADATA_READONLY,DriveScopes.DRIVE_SCRIPTS);
 
     @Override
-    public UploadedFileVO uploadFile(MultipartFile file, String fileName, String category) {
+    public UploadedFileVO uploadFile(MultipartFile file, String fileName, GoogleDriveFileCategoryEnum category) {
         String mimeType = file.getContentType();
         ByteArrayContent byteArrayContent;
         try{
@@ -104,7 +83,7 @@ public class FileServiceImpl implements FileService {
 
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
-        String parentFolderId = folderIdMap.get(category);
+        String parentFolderId = folderProps.getIds().get(category);
         if (parentFolderId == null) {
             throw new RuntimeException("Invalid category: no folder mapped for category " + category);
         }
@@ -114,7 +93,7 @@ public class FileServiceImpl implements FileService {
         try{
             uploadedFile = drive.files()
                     .create(fileMetadata, byteArrayContent)
-                    .setFields("id,name,webViewLink")
+                    .setFields("id,name")
                     .execute();
         }
         catch (IOException e){
@@ -123,11 +102,10 @@ public class FileServiceImpl implements FileService {
 
 
         log.info("upload FolderId: {} FileId: {}, FileName: {}", parentFolderId, uploadedFile.getId(), uploadedFile.getName());
-
         UploadedFileVO uploadedFileVO = new UploadedFileVO();
         uploadedFileVO.setFileKey(uploadedFile.getId());
         uploadedFileVO.setFileName(uploadedFile.getName());
-        uploadedFileVO.setFilePath(uploadedFile.getWebViewLink());
+        uploadedFileVO.setFilePath("https://cdn.weindependent.org/image/" + uploadedFile.getId());
         fileMetadata.setMimeType(mimeType);
         return uploadedFileVO;
     }
@@ -156,6 +134,16 @@ public class FileServiceImpl implements FileService {
     private static HttpRequestInitializer fromServiceAccount(InputStream configJsonFile) throws IOException {
         GoogleCredentials credentials = ServiceAccountCredentials.fromStream(configJsonFile).createScoped(SCOPES);
         return new HttpCredentialsAdapter(credentials);
+    }
+
+
+    /**
+     * 暴露接口查重
+     */
+
+    @Override
+    public Drive getDrive() {
+        return this.drive;
     }
 
 }

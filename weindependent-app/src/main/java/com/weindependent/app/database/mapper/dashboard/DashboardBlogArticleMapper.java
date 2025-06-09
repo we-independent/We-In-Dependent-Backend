@@ -1,16 +1,18 @@
 package com.weindependent.app.database.mapper.dashboard;
 
-import java.util.List;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 博客文章Mapper接口
  * dashboard 查询包含 isDeleted=1 的 record
- * 
+ *
  * @author christina
- *    2025-03-23
+ * 2025-03-23
  */
 @Mapper
 public interface DashboardBlogArticleMapper {
@@ -46,6 +48,8 @@ public interface DashboardBlogArticleMapper {
      */
     int updateBlogArticle(BlogArticleDO blogArticle);
 
+    int updateBlogArticleWithBanner(BlogArticleDO blogArticleDO); //Hurely
+
     /**
      * 删除博客文章 , 软删除
      *
@@ -60,7 +64,9 @@ public interface DashboardBlogArticleMapper {
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    int deleteBlogArticleByIds(Integer[] ids, int updateUserId);
+    int deleteBlogArticleByIds(List<Integer> ids, int updateUserId);
+
+    int deleteBlogArticleWithRelations(@Param("ids") List<Integer> ids, @Param("updateUserId") Integer updateUserId); //Hurely
 
 
     /**
@@ -79,6 +85,14 @@ public interface DashboardBlogArticleMapper {
      * @return 结果
      */
     List<BlogArticleDO> searchByExactKeywords(String keyword);
+
+    /**
+     * 标题和id关键词搜索
+     *
+     * @param keyword 关键词
+     * @return 结果
+     */
+    List<BlogArticleDO> searchByIdAndTitle(String keyword);
 
     boolean existsById(int id);
 

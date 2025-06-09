@@ -9,6 +9,7 @@ public class BlogArticleSinglePageQry {
     private Integer id;
     private String articleSourceType;
     private String sourceUrl;
+    private String sourceUrlDisplayText;
     private Integer authorId;
     private String authorName;
     private String readingtime;

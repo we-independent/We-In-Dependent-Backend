@@ -28,12 +28,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <insert id="saveEvent">
-        INSERT IGNORE INTO save_event (user_id, event_id)
-        VALUES (#{userId}, #{eventId})
+        INSERT IGNORE INTO save_event (event_id, user_id)
+        SELECT e.id, #{userId}
+        FROM event e
+        WHERE e.id = #{eventId} AND e.is_deleted = 0;
     </insert>
 
     <delete id="unsaveEvent">
-        DELETE FROM save_event
+        DELETE IGNORE FROM save_event
         WHERE user_id = #{userId} AND event_id = #{eventId}
     </delete>
 

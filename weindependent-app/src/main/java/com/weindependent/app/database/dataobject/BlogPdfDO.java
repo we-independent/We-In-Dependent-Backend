@@ -26,6 +26,9 @@ public class BlogPdfDO
     /** 存储路径 */
     private String filePath;
 
+    /** Google Drive 文件ID */
+    private String fileKey;
+
     /** 下载url */
     private String downloadUrl;
 
