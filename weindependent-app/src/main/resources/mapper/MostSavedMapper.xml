@@ -69,22 +69,7 @@
         ORDER BY savedCount DESC, a.update_time DESC
         LIMIT #{needed}
     </select>
-    <select id="getMostSavedSince"
-            resultType="com.weindependent.app.database.dataobject.EditorPickDO">
-        select id, article_id, create_time, create_user_id, status
-            from we_independent_local.most_saved
-        where create_time > #{lastUpdateTime}
-    </select>
 
-    <update id="setAllMostSavedAsInvalid">
-        UPDATE  most_saved set status = 0 where status = 1;
-    </update>
 
-    <insert id="AddNewMostSaved">
-        insert into most_saved(`article_id`,`create_user_id`) select article_id, 1
-        from save_list_article
-        group by article_id
-        ORDER BY COUNT(*) DESC
-        LIMIT 2
-    </insert>
+
 </mapper>
