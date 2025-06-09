@@ -37,8 +37,6 @@ public class GetBlogListController {
     public GetBlogListController(BlogArticleListMapper blogArticleMapper) {
         this.blogArticleMapper = blogArticleMapper;
     }
-    @Autowired
-    private EditorPickService editorsPickService;
     
     @Autowired
     private BlogHeroService blogHeroService;

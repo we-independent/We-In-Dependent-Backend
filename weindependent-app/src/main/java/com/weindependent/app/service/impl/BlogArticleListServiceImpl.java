@@ -18,10 +18,8 @@ import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.BlogHeroService;
-import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.MostSavedService;
-import com.weindependent.app.vo.BlogArticleVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,8 +34,7 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
 
     @Autowired
     private BlogHeroMapper blogHeroMapper;
-    @Autowired
-    private EditorPickService editorsPickService;
+
     // @Autowired
     // private SavedCountService savedCountService;
     @Autowired
