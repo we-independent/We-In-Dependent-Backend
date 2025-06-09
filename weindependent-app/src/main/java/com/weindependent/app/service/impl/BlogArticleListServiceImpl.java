@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper;
+import com.weindependent.app.database.mapper.weindependent.BlogHeroMapper;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
 import com.weindependent.app.dto.BlogArticleCardQry;
@@ -16,6 +17,7 @@ import com.weindependent.app.dto.BlogCommentQry;
 import com.weindependent.app.enums.CategoryEnum;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.BlogHeroService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.service.IBlogArticleListService;
 import com.weindependent.app.service.MostSavedService;
@@ -30,18 +32,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BlogArticleListServiceImpl implements IBlogArticleListService {
     @Autowired
-    private final BlogArticleListMapper blogArticleListMapper;
+    private BlogArticleListMapper blogArticleListMapper;
+
+    @Autowired
+    private BlogHeroMapper blogHeroMapper;
     @Autowired
     private EditorPickService editorsPickService;
     // @Autowired
     // private SavedCountService savedCountService;
+    @Autowired
+    private BlogHeroService blogHeroService;
 
     @Autowired
     private MostSavedService mostSavedService;
 
-    public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleListMapper) {
-        this.blogArticleListMapper = blogArticleListMapper;
-    }
+    // public BlogArticleListServiceImpl(BlogArticleListMapper blogArticleListMapper) {
+    //     this.blogArticleListMapper = blogArticleListMapper;
+    // }
 
     @Override
     public PageInfo<BlogArticleListDO> selectBlogArticleList(BlogArticleListQry query) {
@@ -53,10 +60,24 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
 
         // 构造 SQL 排序子句
         String orderBy = query.getOrderBy();
+        log.info("🚨 orderBy = " + orderBy);
+
         if (orderBy == null || orderBy.trim().isEmpty() || "latest".equalsIgnoreCase(orderBy)) {
             query.setOrderClause("update_time DESC");
         } else if ("most_saved".equalsIgnoreCase(orderBy)) {
             query.setOrderClause("(SELECT COUNT(1) FROM save_list_article sa WHERE sa.article_id = blog_article.id) DESC, update_time DESC");
+        } else if ("editors_pick".equalsIgnoreCase(orderBy)) {
+            // query.setOrderClause("(SELECT is_editors_pick FROM blog_hero h WHERE h.article_id = blog_article.id AND sa.is_deleted = 0 LIMIT 1 ) DESC, update_time DESC");
+            List<Long> editorPickIds = blogHeroMapper.findArticleIdsByHeroType("Editor's Pick");
+            log.info("🔥 EditorPick Ids: "+editorPickIds); //TODO:delete
+            if (editorPickIds == null || editorPickIds.isEmpty()) {
+                return new PageInfo<>(Collections.emptyList());
+            }
+
+            // 将 ID 列表加入到 query 中（需要新增字段 List<Long> includeIds）
+            query.setIncludeIds(editorPickIds);
+            query.setOrderClause("FIELD(blog_article.id, " + editorPickIds.stream().map(String::valueOf).collect(Collectors.joining(",")) + ")");
+
         } else {
             // 默认回退
             query.setOrderClause("update_time DESC");
@@ -127,7 +148,8 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
                 item.setCategoryName(categoryName);
 
                 // 是否编辑推荐
-                boolean isEditorsPick = editorsPickService.isEditorPickArticle(item.getId());
+                // boolean isEditorsPick = editorsPickService.isEditorPickArticle(item.getId());
+                boolean isEditorsPick = blogHeroService.isEditorPick(item.getId());
                 item.setEditorsPick(isEditorsPick);
 
                 // // 查询并设置评论
@@ -215,6 +237,18 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
             query.setOrderClause("update_time DESC");
         } else if ("most_saved".equalsIgnoreCase(orderBy)) {
             query.setOrderClause("(SELECT COUNT(1) FROM save_list_article sa WHERE sa.article_id = blog_article.id) DESC, update_time DESC");
+        } else if ("editors_pick".equalsIgnoreCase(orderBy)) {
+            // query.setOrderClause("(SELECT is_editors_pick FROM blog_hero h WHERE h.article_id = blog_article.id AND sa.is_deleted = 0 LIMIT 1 ) DESC, update_time DESC");
+            List<Long> editorPickIds = blogHeroMapper.findArticleIdsByHeroType("Editor's Pick");
+            log.info("🔥 EditorPick Ids: "+editorPickIds); //TODO:delete
+            if (editorPickIds == null || editorPickIds.isEmpty()) {
+                return new PageInfo<>(Collections.emptyList());
+            }
+
+            // 将 ID 列表加入到 query 中（需要新增字段 List<Long> includeIds）
+            query.setIncludeIds(editorPickIds);
+            query.setOrderClause("FIELD(blog_article.id, " + editorPickIds.stream().map(String::valueOf).collect(Collectors.joining(",")) + ")");
+
         } else {
             // 默认回退
             query.setOrderClause("update_time DESC");

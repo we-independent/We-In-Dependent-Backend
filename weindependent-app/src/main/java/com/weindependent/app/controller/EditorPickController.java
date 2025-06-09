@@ -106,7 +106,7 @@ public class EditorPickController {
 
             try {
                 boolean isEditorPick = editorPickService.isEditorPickArticle(articleId);
-
+                
                 result.put("code", 200);
                 result.put("message", "success");
                 result.put("data", isEditorPick);

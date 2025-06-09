@@ -45,4 +45,30 @@
           AND tag.is_deleted = 0
           AND tag_article_relation.is_deleted = 0
     </select>
+
+    <select id="isEditorPickFromHero" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM blog_hero
+        WHERE article_id = #{articleId}
+          AND hero_type = 'editorPick'
+          AND is_deleted = 0
+    </select>
+
+    <select id="getEditorPickArticleIdsFromHero" resultType="java.lang.Integer">
+        SELECT article_id
+        FROM blog_hero
+        WHERE hero_type = 'Editor''s Pick'
+          AND is_deleted = 0
+        ORDER BY create_time DESC
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <select id="findArticleIdsByHeroType" resultType="long" parameterType="string">
+        SELECT article_id
+        FROM blog_hero
+        WHERE hero_type = #{heroType}
+        AND is_deleted = 0
+    </select>
 </mapper>

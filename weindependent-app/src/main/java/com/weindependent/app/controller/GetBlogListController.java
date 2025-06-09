@@ -13,8 +13,6 @@ import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.*;
 import com.weindependent.app.utils.PageInfoUtil;
-
-import com.weindependent.app.vo.BlogHomePageHeroVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +40,9 @@ public class GetBlogListController {
     @Autowired
     private EditorPickService editorsPickService;
     
+    @Autowired
+    private BlogHeroService blogHeroService;
+
     @Autowired
     private SavedCountService savedCountService;
 
@@ -75,7 +76,9 @@ public class GetBlogListController {
                 .map(BlogArticleListDO::getId)
                 .collect(Collectors.toList());
 
-        Map<Integer, Boolean> editorsPickMap = editorsPickService.getEditorsPickMapByArticleIds(articleIds);
+        // Map<Integer, Boolean> editorsPickMap = editorsPickService.getEditorsPickMapByArticleIds(articleIds);
+        Map<Integer, Boolean> editorsPickMap = blogHeroService.getEditorsPickMapByArticleIds(articleIds);
+        log.info("editorPick map: {}", editorsPickMap); //TODO:delet
         Map<Integer, Integer> savedCountMap;
         try {
             savedCountMap = savedCountService.getSavedCountMapByArticleIds(articleIds);
@@ -85,8 +88,6 @@ public class GetBlogListController {
         }
 
         final Map<Integer, Integer> finalSavedCountMap = savedCountMap;
-        log.info("当前页面文章 ID: " + articleIds);
-        log.info("收藏数 map: " + savedCountMap);
 
         // 将 DO 转换为前端 BlogCard DTO
         List<BlogArticleCardQry> resultList = pageInfo.getList().stream().map(article -> {

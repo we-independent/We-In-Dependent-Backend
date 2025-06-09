@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.EditorPickDO;
 import com.weindependent.app.database.mapper.weindependent.BlogArticleMapper;
 import com.weindependent.app.database.mapper.weindependent.EditorPickMapper;
+import com.weindependent.app.service.BlogHeroService;
 import com.weindependent.app.service.EditorPickService;
 import com.weindependent.app.vo.EditorPickVO;
 
@@ -24,6 +26,9 @@ public class EditorPickServiceImpl implements EditorPickService {
     
     @Resource
     private EditorPickMapper editorPickMapper;
+
+    @Autowired
+    private BlogHeroService blogHeroService;
 
     @Resource
     private BlogArticleMapper blogArticleMapper;
@@ -100,7 +105,8 @@ public class EditorPickServiceImpl implements EditorPickService {
 
     @Override
     public boolean isEditorPickArticle(Integer articleId) {
-        return editorPickMapper.isEditorPick(articleId);
+        // return editorPickMapper.isEditorPick(articleId);
+        return blogHeroService.isEditorPick(articleId);
     }
 
     //Hurely 新增
