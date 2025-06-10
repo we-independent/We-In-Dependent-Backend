@@ -15,11 +15,11 @@ public class NotificationSettingsDO {
     private Boolean updatesHolidayMessages;
 
     // //default 1-open
-    // // Donation and payments
-    // private Boolean donationsEnabled;
-    // private Boolean donationsDonationConfirmations;
-    // private Boolean donationsDonationUpdates;
-    // private Boolean donationsBillingIssues;
+    // Donation and payments
+    private Boolean donationsEnabled;
+    private Boolean donationsDonationConfirmations;
+    private Boolean donationsDonationUpdates;
+    private Boolean donationsBillingIssues;
 
     //default 1-open
     // Event confirmation and reminders

@@ -44,21 +44,21 @@
     <update id="updateField" parameterType="com.weindependent.app.dto.NotificationFieldUpdateQry">
         UPDATE user_notification_settings
         <set>
-            <if test="fieldName == 'updates_enabled'"> updates_enabled = #{fieldValue}, </if>
-            <if test="fieldName == 'updates_general_announcements'"> updates_general_announcements = #{fieldValue}, </if>
-            <if test="fieldName == 'updates_new_programs'"> updates_new_programs = #{fieldValue}, </if>
-            <if test="fieldName == 'updates_holiday_messages'"> updates_holiday_messages = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesEnabled'"> updates_enabled = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesGeneralAnnouncements'"> updates_general_announcements = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesNewPrograms'"> updates_new_programs = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesHolidayMessages'"> updates_holiday_messages = #{fieldValue}, </if>
 
-            <if test="fieldName == 'donations_enabled'"> donations_enabled = #{fieldValue}, </if>
-            <if test="fieldName == 'donations_donation_confirmations'"> donations_donation_confirmations = #{fieldValue}, </if>
-            <if test="fieldName == 'donations_donation_updates'"> donations_donation_updates = #{fieldValue}, </if>
-            <if test="fieldName == 'donations_billing_issues'"> donations_billing_issues = #{fieldValue}, </if>
+            <if test="fieldName == 'donationsEnabled'"> donations_enabled = #{fieldValue}, </if>
+            <if test="fieldName == 'donationsDonationConfirmations'"> donations_donation_confirmations = #{fieldValue}, </if>
+            <if test="fieldName == 'donationsDonationUpdates'"> donations_donation_updates = #{fieldValue}, </if>
+            <if test="fieldName == 'donationsBillingIssues'"> donations_billing_issues = #{fieldValue}, </if>
 
-            <if test="fieldName == 'events_enabled'"> events_enabled = #{fieldValue}, </if>
-            <if test="fieldName == 'events_rsvp_confirmations'"> events_rsvp_confirmations = #{fieldValue}, </if>
-            <if test="fieldName == 'events_event_updates'"> events_event_updates = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsEnabled'"> events_enabled = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsRsvpConfirmations'"> events_rsvp_confirmations = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsEventUpdates'"> events_event_updates = #{fieldValue}, </if>
 
-            <if test="fieldName == 'help_center_enabled'"> help_center_enabled = #{fieldValue}, </if>
+            <if test="fieldName == 'helpCenterEnabled'"> help_center_enabled = #{fieldValue}, </if>
             <!-- <if test="fieldName == 'help_center_response_and_update'"> help_center_response_and_update = #{fieldValue}, </if> -->
         </set>
         WHERE user_id = #{userId}

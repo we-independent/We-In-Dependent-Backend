@@ -18,6 +18,12 @@ public enum NotificationFieldEnum {
     UPDATES_GENERAL_ANNOUNCEMENTS("updatesGeneralAnnouncements", NotificationSettingsDO::getUpdatesGeneralAnnouncements),
     UPDATES_NEW_PROGRAMS("updatesNewPrograms", NotificationSettingsDO::getUpdatesNewPrograms),
     UPDATES_HOLIDAY_MESSAGES("updatesHolidayMessages", NotificationSettingsDO::getUpdatesHolidayMessages),
+    
+    // Donations
+    DONATIONS_ENABLED("donationsEnabled", NotificationSettingsDO::getDonationsEnabled),
+    DONATIONS_DONATION_CONFIRMATIONS("donationsDonationConfirmations", NotificationSettingsDO::getDonationsDonationConfirmations),
+    DONATIONS_DONATION_UPDATES("donationsDonationUpdates", NotificationSettingsDO::getDonationsDonationUpdates),
+    DONATIONS_BILLING_ISSUES("donationsBillingIssues", NotificationSettingsDO::getDonationsBillingIssues),
 
     // Events
     EVENTS_ENABLED("eventsEnabled", NotificationSettingsDO::getEventsEnabled),
