@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardNotificationBroadcastMsgMapper">
+
+    <resultMap id="MessageResult" type="com.weindependent.app.database.dataobject.NotificationBroadcastMessageDO">
+        <result property="id" column="id" />
+        <result property="type" column="type" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="isSent" column="is_sent" />
+        <result property="latestSentAt" column="latest_sent_at" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <insert id="insert" parameterType="NotificationBroadcastMessageDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notification_broadcast_message (type, title, content)
+        VALUES (#{type}, #{title}, #{content})
+    </insert>
+
+    <select id="findAll" resultMap="MessageResult">
+        SELECT * FROM notification_broadcast_message ORDER BY create_time DESC
+    </select>
+
+    <select id="findUnsentMessages" resultMap="MessageResult">
+        SELECT * FROM notification_broadcast_message WHERE is_sent = 0
+    </select>
+
+    <select id="findById" resultMap="MessageResult">
+        SELECT * FROM notification_broadcast_message WHERE id = #{id}
+    </select>
+
+    <update id="markAsSent">
+        UPDATE notification_broadcast_message
+        SET is_sent = 1, latest_sent_at = #{sentAt}
+        WHERE id = #{id}
+    </update>
+
+    <update id="markAsUnsent">
+        UPDATE notification_broadcast_message
+        SET is_sent = 0, latest_sent_at = NULL
+        WHERE id = #{id}
+    </update>
+
+    <update id="update" parameterType="NotificationBroadcastMessageDO">
+        UPDATE notification_broadcast_message
+        SET type = #{type},
+            title = #{title},
+            content = #{content}
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="delete">
+        DELETE FROM notification_broadcast_message WHERE id = #{id}
+    </delete>
+
+</mapper>

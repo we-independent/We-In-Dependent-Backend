@@ -1,5 +1,6 @@
 package com.weindependent.app.enums;
 
+
 public enum ErrorCode {
     SUCCESS(0, "success"),
     INVALID_PARAM(1, "Parameter exception"),
@@ -21,8 +22,9 @@ public enum ErrorCode {
     UNKONWN_CATEGORY(-6, "Unknown Category"),
     EVENT_NOT_EXIST(-7, "Event does not exist"),
     SPEAKER_NOT_EXIST(-8, "Speaker does not exist"),
-    NOTIFICATION_DISABLED(-9, "Notification is not allowed for this field by user");
-    
+    NOTIFICATION_DISABLED(-9, "Notification is not allowed for this field by user"),
+    UNKNOWN_NOTIFICATION_TYPE(-10, "Unknown nofitification");
+
     private int code;
     private final String title;
 

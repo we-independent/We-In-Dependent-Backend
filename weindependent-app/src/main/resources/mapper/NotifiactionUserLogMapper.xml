@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.NotificationUserLogDO">
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.NotificationUserLogDO">
+        INSERT INTO notification_user_log (id, user_id, message_id, sent_at, email)
+        VALUES (#{id}, #{userId}, #{messageId}, #{sentAt}, #{email})
+    </insert>
+
+</mapper>

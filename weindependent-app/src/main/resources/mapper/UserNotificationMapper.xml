@@ -68,4 +68,8 @@
         SELECT notification_enabled FROM t_system_user WHERE user_id = #{userId};
     </select> -->
 
+    <select id="findAll" resultType="com.weindependent.app.database.dataobject.NotificationSettingsDO">
+        SELECT * FROM user_notification_settings
+    </select>
+
 </mapper>
