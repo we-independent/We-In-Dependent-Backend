@@ -4,13 +4,13 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class EditorPickDO {
+public class BlogHeroDO {
     private Integer id;
     private Integer articleId;
+    private String heroType;
+    private Integer isDeleted;
+    private Date updateTime;
+    private Integer updateUserId;
     private Date createTime;
     private Integer createUserId;
-    private Integer status; // 0:无效/已删除, 1:有效
-    private Date updateTime;        
-    private Integer updateUserId; 
 }
-

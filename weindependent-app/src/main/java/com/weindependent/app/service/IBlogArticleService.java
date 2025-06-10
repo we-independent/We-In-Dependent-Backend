@@ -10,7 +10,6 @@ import com.weindependent.app.vo.BlogArticleEditVO;
 import com.weindependent.app.vo.BlogArticleVO;
 import com.weindependent.app.dto.BlogArticleQry;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -102,4 +101,5 @@ public interface IBlogArticleService {
     List<BlogArticleVO> searchByExactKeywords(String keyword);
 
 
+    List<BlogArticleDO>  searchByIdAndTitle(String keyword);
 }

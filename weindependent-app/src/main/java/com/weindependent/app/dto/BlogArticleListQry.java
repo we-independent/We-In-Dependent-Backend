@@ -2,6 +2,7 @@ package com.weindependent.app.dto;
 
 import lombok.Data;
 
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -28,6 +29,7 @@ public class BlogArticleListQry {
      * 默认 "latest"
      */
     private String orderBy = "latest";
+    private List<Long> includeIds;
     
     /**
      * 完整的排序子句，由 Service 层构造。

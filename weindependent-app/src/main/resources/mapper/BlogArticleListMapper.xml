@@ -38,6 +38,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>
+
+            <if test="includeIds != null and includeIds.size > 0">
+                AND id IN
+                <foreach collection="includeIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
         </where>
         ORDER BY ${orderClause}
     </select>
