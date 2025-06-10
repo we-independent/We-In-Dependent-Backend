@@ -223,6 +223,34 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="searchByIdAndTitle"
+            parameterType="String"
+            resultMap="BlogArticleResult">
+        SELECT id, title
+        FROM blog_article
+        WHERE is_deleted = 0
+        AND article_status = 'published'
+        <choose>
+            <!-- F1 (short codes) -->
+            <when test="keyword != null and keyword.length() &lt; 4">
+                AND (
+                title LIKE CONCAT('%', #{keyword}, '%')
+                OR CAST(id AS CHAR) LIKE CONCAT( #{keyword}, '%')
+                )
+            </when>
+
+            <otherwise>
+                AND(
+                MATCH(title) AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
+                OR id = #{keyword}
+                )
+            </otherwise>
+        </choose>
+
+        ORDER BY create_time DESC
+        limit 10
+    </select>
+
     <select id="existsById" parameterType="int" resultType="boolean">
         SELECT COUNT(*) &gt; 0 FROM blog_article WHERE id = #{id}
     </select>

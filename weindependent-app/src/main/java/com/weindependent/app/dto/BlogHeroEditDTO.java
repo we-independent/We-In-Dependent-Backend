@@ -3,8 +3,16 @@ package com.weindependent.app.dto;
 import lombok.Data;
 
 @Data
-public class EditorPickQry {
+public class BlogHeroEditDTO {
+    private Integer id;
     private Integer articleId;
-    private Integer categoryId;
-    
+    private String heroType;
 }
+
+
+
+
+
+
+
+

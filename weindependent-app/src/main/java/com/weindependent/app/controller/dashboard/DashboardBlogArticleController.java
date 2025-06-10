@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Tag(name = "博客文章管理")
 @RestController
-@RequestMapping("api/dashboard/blog")
+@RequestMapping("api/dashboard")
 public class DashboardBlogArticleController {
     private final IBlogArticleService blogArticleService;
 
@@ -47,7 +47,7 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章列表")
-    @PostMapping("/list")
+    @PostMapping("/blog/list")
     public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry) {
         return blogArticleService.selectBlogArticleList(blogArticleQry);
     }
@@ -58,7 +58,7 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章详细信息")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/blog/{id}")
     public BlogArticleEditVO getInfo(@PathVariable("id") Integer id) {
         return blogArticleService.selectBlogArticleByIdForEdit(id);
     }
@@ -69,7 +69,7 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增博客文章")
-    @PostMapping
+    @PostMapping("/blog")
     public boolean add(@RequestBody BlogArticleEditQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
         return blogArticleService.insertBlogArticle(blogArticle,userId) > 0;
@@ -81,7 +81,7 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
-    @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/blog/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ImageDO addBlogBanner(@RequestParam("file") MultipartFile file) {
         return blogArticleService.insertBlogBanner(file);
     }
@@ -92,7 +92,7 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章")
-    @PutMapping("/{id}")
+    @PutMapping("/blog/{id}")
     public boolean edit(@PathVariable("id") Integer id, @RequestBody @Valid BlogArticleEditQry blogArticle) {
         int userId = StpUtil.getLoginIdAsInt();
         blogArticle.setId(id);
@@ -105,7 +105,7 @@ public class DashboardBlogArticleController {
     @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除博客文章")
-@DeleteMapping("/{ids}")
+@DeleteMapping("/blog/{ids}")
 public boolean remove(@PathVariable @Valid List<Integer> ids) {
     // List<Integer> idList = Arrays.stream(ids.split(","))
     //                              .map(Integer::parseInt)
@@ -113,5 +113,13 @@ public boolean remove(@PathVariable @Valid List<Integer> ids) {
 
         int updateUserId = StpUtil.getLoginIdAsInt();
         return blogArticleService.deleteBlogArticleByIds(ids, updateUserId) > 0;
+    }
+
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询博客文章列表")
+    @GetMapping("/search-article-id-and-title/{keyword}")
+    public List<BlogArticleDO>  searchByIdAndTitle(@PathVariable String  keyword) {
+        return blogArticleService.searchByIdAndTitle(keyword);
     }
 }
