@@ -45,7 +45,7 @@
         ORDER BY e.event_time ASC
     </select>
 
-    <select id="getByMonth" resultType="com.weindependent.app.vo.event.RecentEventVO">
+    <select id="getUpcomingByMonth" resultType="com.weindependent.app.vo.event.RecentEventVO">
         SELECT
             e.id,
             e.title,
@@ -53,8 +53,14 @@
             e.location,
             e.event_time,
             f.file_path AS bannerUrl
+            <if test="userId != null">
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            </if>
         FROM event e
                  LEFT JOIN event_image f ON e.banner_id = f.id
+                <if test="userId != null">
+                    LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
+                </if>
         WHERE e.is_deleted = 0
           AND YEAR(e.event_time) = #{year}
           AND MONTH(e.event_time) = #{month}

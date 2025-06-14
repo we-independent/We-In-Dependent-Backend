@@ -59,8 +59,12 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public List<RecentEventVO> getByMonth(int year, int month) {
-        List<RecentEventVO> events = eventMapper.getByMonth(year,month);
+    public List<RecentEventVO> getUpcomingByMonth(int year, int month) {
+        Integer userId =null;
+        if(StpUtil.isLogin()){
+            userId=StpUtil.getLoginIdAsInt();
+        }
+        List<RecentEventVO> events = eventMapper.getUpcomingByMonth(userId,year,month);
         if(events == null ){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
