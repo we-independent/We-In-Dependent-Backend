@@ -7,6 +7,7 @@ public class RecentEventVO {
     private Long id;
     private String title;
     private String summary;
+    private String location;
     private String eventTime;
     private String bannerUrl;
     boolean isBookmarked;

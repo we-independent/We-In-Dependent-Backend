@@ -50,6 +50,7 @@
             e.id,
             e.title,
             e.summary,
+            e.location,
             e.event_time,
             f.file_path AS bannerUrl
         FROM event e
