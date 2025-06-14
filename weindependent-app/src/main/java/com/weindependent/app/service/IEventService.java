@@ -13,7 +13,7 @@ public interface IEventService {
     RecentEventVOs getPastEvents(int page, int size);
     List<RecentEventVO> getUpcomingByMonth(int year, int month);
     EventVO getEventById(Long id);
-    void register(Long id);
+    void register(Long id,String userTimeZone);
     void unregister(Long id);
     void bookmark(Long id);
     void unbookmark(Long id);
