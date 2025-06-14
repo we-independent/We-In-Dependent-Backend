@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -116,7 +117,7 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public void register(Long id) {
+    public void register(Long id, String userTimeZone) {
         Long userId = StpUtil.getLoginIdAsLong();
         EventVO eventVO =eventMapper.getById(id, null);
         if (eventVO == null) {
@@ -145,10 +146,19 @@ public class EventServiceImpl implements IEventService {
         }
 
         Map<String, String> sendMailParams = new HashMap<>();
+        ZoneId zoneId;
+        try {
+            zoneId = ZoneId.of(userTimeZone != null ? userTimeZone : "America/New_York");
+        } catch (DateTimeException e) {
+            zoneId = ZoneId.of("America/New_York"); // fallback if user passed an invalid string
+        }
+        String formattedTime = eventVO.getEventTime().atZone(zoneId)
+                .format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm a (z)"));
+
         sendMailParams.put("title", eventVO.getTitle());
         sendMailParams.put("username",user.getRealName());
         sendMailParams.put("link", eventVO.getLink());
-        sendMailParams.put("time", eventVO.getEventTime().toString());
+        sendMailParams.put("time", formattedTime);
         sendMailParams.put("location", eventVO.getLocation());
         emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
     }
