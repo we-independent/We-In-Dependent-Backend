@@ -96,7 +96,6 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public BlogArticleEditVO selectBlogArticleByIdForEdit(Integer id){
         BlogArticleEditVO blogArticleEditVO =  blogArticleMapper.selectBlogArticleEditVOById(id);
-        blogArticleEditVO.setBannerImgUrl(CommonUtil.convertToImgSrc(blogArticleEditVO.getBannerImgUrl(),200));
         List<Integer> tagIdList = dashboardTagArticleRelationMapper.getTagIdListByArticleId(id);
         blogArticleEditVO.setTagIdList(tagIdList);
         return blogArticleEditVO;
@@ -125,15 +124,15 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
      * @return 结果
      */
     @Override
-    public int insertBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
+    public int insertBlogArticle(BlogArticleEditQry blogArticle) {
         //1. 新增blogArticle信息
         BlogArticleDO blogArticleDO = new BlogArticleDO();
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
-        blogArticleDO.setCreateUserId(userId);
-        blogArticleDO.setUpdateUserId(userId);
+        blogArticleDO.setCreateUserId(StpUtil.getLoginIdAsInt());
+        blogArticleDO.setUpdateUserId(StpUtil.getLoginIdAsInt());
 
         if (blogArticleMapper.insertBlogArticle(blogArticleDO) != 1) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ blogArticle.getId());
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:" + blogArticle.getId());
         }
 
         // //2. 新增 tag article relation
@@ -156,8 +155,8 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
             TagArticleRelationDO relation = new TagArticleRelationDO();
             relation.setArticleId(blogArticleDO.getId());
             relation.setTagId(tagId);
-            relation.setCreateUserId(userId);
-            relation.setUpdateUserId(userId);
+            relation.setCreateUserId(StpUtil.getLoginIdAsInt());
+            relation.setUpdateUserId(StpUtil.getLoginIdAsInt());
             return relation;
         }).collect(Collectors.toList());
 
@@ -166,7 +165,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
             int upserted = dashboardTagArticleRelationMapper.updateAndInsertTagArticleRelations(tagRelations);
             if (upserted == 0) {
                 throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to add TagArticleRelation to database, tagName: " + blogArticle.getTags() + ", articleId: " + blogArticleDO.getId());
-             }
+            }
         }
 
         return 1;
@@ -254,13 +253,13 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     // }
 
     @Override
-    public int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId) {
+    public int updateBlogArticle(BlogArticleEditQry blogArticle) {
         System.out.println("前端传入 tags = " + blogArticle.getTags());
         
         // 1. 修改blogArticle信息
         BlogArticleDO blogArticleDO = new BlogArticleDO();
         BeanUtils.copyProperties(blogArticle, blogArticleDO);
-        blogArticleDO.setUpdateUserId(userId);
+        blogArticleDO.setUpdateUserId(StpUtil.getLoginIdAsInt());
     
         // 2. 更新文章和 banner（旧 banner 自动逻辑软删除）
         int result = blogArticleMapper.updateBlogArticleWithBanner(blogArticleDO);
@@ -269,15 +268,15 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         }
         // 3. 删除不再使用的标签，保留依旧使用的标签
         List<Integer> tagList = blogArticle.getTags();
-        dashboardTagArticleRelationMapper.deleteByArticleIdExcludeTags(blogArticle.getId(), tagList, userId);
+        dashboardTagArticleRelationMapper.deleteByArticleIdExcludeTags(blogArticle.getId(), tagList, StpUtil.getLoginIdAsInt());
         
         // 4. 构造需要 upsert 的标签关系对象
         List<TagArticleRelationDO> tagRelations = tagList.stream().map(tagId -> {
             TagArticleRelationDO relation = new TagArticleRelationDO();
             relation.setArticleId(blogArticle.getId());
             relation.setTagId(tagId);
-            relation.setCreateUserId(userId);
-            relation.setUpdateUserId(userId);
+            relation.setCreateUserId(StpUtil.getLoginIdAsInt());
+            relation.setUpdateUserId(StpUtil.getLoginIdAsInt());
             return relation;
         }).collect(Collectors.toList());
 
@@ -312,13 +311,13 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     // }
     //Hurely change to single query verion
     @Override
-    public int deleteBlogArticleByIds(List<Integer> ids, int updateUserId) {
+    public int deleteBlogArticleByIds(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("Blog ID can not be null!");
         }
         // List<Integer> idList = Arrays.stream(ids).collect(Collectors.toList());
 
-        int result = blogArticleMapper.deleteBlogArticleWithRelations(ids, updateUserId);
+        int result = blogArticleMapper.deleteBlogArticleWithRelations(ids, StpUtil.getLoginIdAsInt());
 
         if (result == 0) {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update article in database:"+ ids);
@@ -346,8 +345,7 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
         if (id == null) {
             throw new IllegalArgumentException("博客 ID 不能为空");
         }
-        int userId = StpUtil.getLoginIdAsInt(); // 动态获取当前登录用户
-        return deleteBlogArticleByIds(id, userId);
+        return deleteBlogArticleByIds(id);
     }
 
     /**
@@ -359,7 +357,6 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public List<BlogArticleVO> searchByContent(String keyword) {
         List<BlogArticleDO> blogArticleDOS = blogArticleMapper.searchByContent(keyword);
-
         return blogArticleDOS.stream().map(BlogConverter::toBlogVO).collect(Collectors.toList());
     }
 
@@ -372,7 +369,6 @@ public class DashboardBlogArticleServiceImpl implements IBlogArticleService
     @Override
     public List<BlogArticleVO> searchByExactKeywords(String keyword) {
         List<BlogArticleDO> blogArticleDOS = blogArticleMapper.searchByExactKeywords(keyword);
-
         return blogArticleDOS.stream().map(BlogConverter::toBlogVO).collect(Collectors.toList());
     }
 

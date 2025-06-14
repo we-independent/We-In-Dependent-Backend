@@ -71,8 +71,8 @@ public class DashboardBlogArticleController {
     @Operation(summary = "新增博客文章")
     @PostMapping("/blog")
     public boolean add(@RequestBody BlogArticleEditQry blogArticle) {
-        int userId = StpUtil.getLoginIdAsInt();
-        return blogArticleService.insertBlogArticle(blogArticle,userId) > 0;
+
+        return blogArticleService.insertBlogArticle(blogArticle) > 0;
     }
 
     /**
@@ -94,9 +94,9 @@ public class DashboardBlogArticleController {
     @Operation(summary = "修改博客文章")
     @PutMapping("/blog/{id}")
     public boolean edit(@PathVariable("id") Integer id, @RequestBody @Valid BlogArticleEditQry blogArticle) {
-        int userId = StpUtil.getLoginIdAsInt();
+
         blogArticle.setId(id);
-        return blogArticleService.updateBlogArticle(blogArticle, userId) > 0;
+        return blogArticleService.updateBlogArticle(blogArticle) > 0;
     }
 
     /**
@@ -110,9 +110,7 @@ public boolean remove(@PathVariable @Valid List<Integer> ids) {
     // List<Integer> idList = Arrays.stream(ids.split(","))
     //                              .map(Integer::parseInt)
     //                              .collect(Collectors.toList());
-
-        int updateUserId = StpUtil.getLoginIdAsInt();
-        return blogArticleService.deleteBlogArticleByIds(ids, updateUserId) > 0;
+        return blogArticleService.deleteBlogArticleByIds(ids) > 0;
     }
 
     @SignatureAuth
