@@ -116,7 +116,7 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public EventRegisterDetailVO register(Long id) {
+    public void register(Long id) {
         Long userId = StpUtil.getLoginIdAsLong();
         EventVO eventVO =eventMapper.getById(id, null);
         if (eventVO == null) {
@@ -150,16 +150,7 @@ public class EventServiceImpl implements IEventService {
         sendMailParams.put("link", eventVO.getLink());
         sendMailParams.put("time", eventVO.getEventTime().toString());
         sendMailParams.put("location", eventVO.getLocation());
-        // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
         emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
-
-        EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();
-        if (eventVO.getLink() != null) {
-            eventRegisterDetailVO.setLink(eventVO.getLink());
-            eventRegisterDetailVO.setIcsText(generateIcsCalendarText(eventVO));
-            eventRegisterDetailVO.setGoogleCalendarLink(generateGoogleCalendarLink(eventVO));
-        }
-        return eventRegisterDetailVO;
     }
 
     @Override
@@ -242,44 +233,6 @@ public class EventServiceImpl implements IEventService {
         return recentEventVOS;
     }
 
-    private String generateGoogleCalendarLink(EventVO eventVO) {
-        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String endUtc = eventVO.getEventTime().plusHours(1).atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String description = "Link: "+eventVO.getLink();
-
-        return String.format(
-                "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%s&dates=%s/%s&details=%s&location=%s",
-                eventVO.getTitle(), startUtc, endUtc,description, eventVO.getLocation()
-        );
-    }
-
-    private String generateIcsCalendarText(EventVO eventVO) {
-        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String endUtc = eventVO.getEventTime().plusHours(1).atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String description = "Link: "+eventVO.getLink();
-
-        return String.format(
-                "BEGIN:VCALENDAR\n" +
-                        "VERSION:2.0\n" +
-                        "BEGIN:VEVENT\n" +
-                        "SUMMARY:%s\n" +
-                        "DESCRIPTION:%s\n" +
-                        "DTSTART:%s\n" +
-                        "DTEND:%s\n" +
-                        "LOCATION:%s\n" +
-                        "END:VEVENT\n" +
-                        "END:VCALENDAR",
-                eventVO.getTitle(),
-                description,
-                startUtc,
-                endUtc,
-                eventVO.getLocation()
-        );
-    }
     @Override
     public List<EventVO> searchEventsNatural(String keyword) {
         return eventMapper.searchEventsNatural(keyword);
