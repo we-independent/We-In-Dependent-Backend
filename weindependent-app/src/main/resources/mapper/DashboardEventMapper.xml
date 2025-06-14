@@ -5,8 +5,8 @@
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventMapper">
 
     <insert id="create" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO event (title, summary, content, event_time, location, link, video_link, category_id, banner_id, create_user_id, update_user_id)
-        VALUES (#{title}, #{summary}, #{content}, #{eventTime}, #{location}, #{link}, #{videoLink}, #{categoryId}, #{bannerId}, #{createUserId}, #{updateUserId});
+        INSERT INTO event (title, summary, content, event_time, duration, location, link, video_link, category_id, banner_id, create_user_id, update_user_id)
+        VALUES (#{title}, #{summary}, #{content}, #{eventTime},#{duration}, #{location}, #{link}, #{videoLink}, #{categoryId}, #{bannerId}, #{createUserId}, #{updateUserId});
     </insert>
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.database.dataobject.EventDO">
@@ -106,6 +106,7 @@
                 e.summary = #{summary},
                 e.content = #{content},
                 e.event_time = #{eventTime},
+                e.duration= ${duration},
                 e.location = #{location},
                 e.link = #{link},
                 e.category_id = #{categoryId},

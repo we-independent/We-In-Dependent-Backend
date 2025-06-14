@@ -9,6 +9,7 @@
             e.title,
             e.summary,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
             <if test="userId != null">
                 , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
@@ -29,6 +30,7 @@
             e.title,
             e.summary,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
             <if test="userId != null">
                 , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
@@ -52,6 +54,7 @@
             e.summary,
             e.location,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
             <if test="userId != null">
                 , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
@@ -72,6 +75,7 @@
         e.title,
         e.content,
         e.event_time,
+        e.duration,
         e.location,
         e.banner_id,
         e.link,
@@ -143,6 +147,7 @@
             e.title,
             e.summary,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
         FROM event_user_register r
                  JOIN event e ON r.event_id = e.id
@@ -159,6 +164,7 @@
             e.title,
             e.summary,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
         FROM event_user_register r
                  JOIN event e ON r.event_id = e.id
@@ -175,6 +181,7 @@
             e.title,
             e.summary,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
         FROM event_user_viewed v
                  JOIN event e ON v.event_id = e.id
@@ -190,6 +197,7 @@
             e.title,
             e.summary,
             e.event_time,
+            e.duration,
             f.file_path AS bannerUrl
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
