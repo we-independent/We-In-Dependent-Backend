@@ -54,7 +54,7 @@ public class EventController {
             @RequestParam @NotNull @Min(1900) @Max(2100) Integer year,
             @RequestParam @NotNull @Min(1) @Max(12) Integer month
     ) {
-        return IEventService.getByMonth(year, month);
+        return IEventService.getUpcomingByMonth(year, month);
     }
 
 
