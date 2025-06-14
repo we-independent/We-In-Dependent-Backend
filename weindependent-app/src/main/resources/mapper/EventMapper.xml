@@ -251,4 +251,24 @@
     </select>
 
 
+    <select id="getPastEventsFiltered" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT DISTINCT e.*
+        FROM event e
+        LEFT JOIN tag_event_relation ter ON e.id = ter.event_id
+        <where>
+            e.is_deleted = 0
+            AND e.event_time &lt; NOW()
+            <if test="tagIds != null and tagIds.size() > 0">
+                AND ter.tag_id IN
+                <foreach item="id" collection="tagIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+
+
+
 </mapper>

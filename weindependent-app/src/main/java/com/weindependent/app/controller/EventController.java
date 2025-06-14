@@ -6,6 +6,7 @@ import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
+import com.weindependent.app.dto.EventFilterQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -132,5 +133,12 @@ public class EventController {
     @GetMapping("/search/boolean")
     public List<EventVO> searchEventsBoolean(@RequestParam String keyword) {
         return IEventService.searchEventsBoolean(keyword);
+    }
+
+    @Operation(summary = "Get past events with optional filters")
+    @SignatureAuth
+    @PostMapping("/past/filter")
+    public RecentEventVOs filterPastEventsByTags(@RequestBody EventFilterQry filter) {
+        return IEventService.filterPastEventsByTags(filter);
     }
 }

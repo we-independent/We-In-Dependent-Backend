@@ -28,4 +28,7 @@ public interface EventMapper {
     List<RecentEventVO> getBookmarkedEvents(int userId);
     List<EventVO> searchEventsNatural(@Param("keyword") String keyword);
     List<EventVO> searchEventsBoolean(@Param("keyword") String keyword);
+    List<RecentEventVO> getPastEventsFiltered(
+            @Param("tagIds") List<Integer> tagIds
+    );
 }

@@ -16,6 +16,7 @@ import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
+import com.weindependent.app.dto.EventFilterQry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
@@ -292,5 +293,20 @@ public class EventServiceImpl implements IEventService {
         } catch (Exception e) {
             log.error("Failed to record event view: userId={}, eventId={}", userId, eventId, e);
         }
+    }
+
+    @Override
+    public RecentEventVOs filterPastEventsByTags(EventFilterQry filter) {
+        List<RecentEventVO> events = eventMapper.getPastEventsFiltered(
+                filter.getTagIds()
+        );
+
+        if (events == null || events.isEmpty()) {
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "No events found");
+        }
+
+        RecentEventVOs result = new RecentEventVOs();
+        result.setEvents(events);
+        return result;
     }
 }

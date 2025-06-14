@@ -4,6 +4,7 @@ import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
+import com.weindependent.app.dto.EventFilterQry;
 
 import java.util.List;
 
@@ -22,4 +23,5 @@ public interface IEventService {
     RecentEventVOs getBookmarkedEvents(int page, int size);
     List<EventVO> searchEventsNatural(String keyword);
     List<EventVO> searchEventsBoolean(String keyword);
+    RecentEventVOs filterPastEventsByTags(EventFilterQry filter);
 }
