@@ -1,5 +1,6 @@
 package com.weindependent.app.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
@@ -67,26 +68,31 @@ public class EventController {
 
     @Operation(summary = "Register an event by ID")
     @SignatureAuth
+    @SaCheckLogin
     @PostMapping("/register/{id}")
     public void register(@PathVariable Long id ,@RequestParam(required = false) String userTimeZone ) { IEventService.register(id,userTimeZone);}
 
     @Operation(summary = "Unregister an event by ID")
     @SignatureAuth
+    @SaCheckLogin
     @DeleteMapping("/register/{id}")
     public void unregister(@PathVariable Long id) {IEventService.unregister(id);}
 
     @Operation(summary = "Bookmark an event by ID")
     @SignatureAuth
+    @SaCheckLogin
     @PostMapping("/bookmark/{id}")
     public void bookmark(@PathVariable Long id) {IEventService.bookmark(id);}
 
     @Operation(summary = "Unbookmark an event by ID")
     @SignatureAuth
+    @SaCheckLogin
     @DeleteMapping("/bookmark/{id}")
     public void unbookmark(@PathVariable Long id) {IEventService.unbookmark(id);}
 
     @Operation(summary = "List All registered upcoming events 已註冊活動列表")
     @SignatureAuth
+    @SaCheckLogin
     @GetMapping("/registered/upcoming")
     public RecentEventVOs getRegisteredUpcomingEvents(
             @RequestParam(defaultValue = "1") int page,
@@ -96,6 +102,7 @@ public class EventController {
 
     @Operation(summary = "List all registered past events 已參加活動列表")
     @SignatureAuth
+    @SaCheckLogin
     @GetMapping("/registered/past")
     public RecentEventVOs getRegisteredPastEvents(
             @RequestParam(defaultValue = "1") int page,
@@ -105,6 +112,7 @@ public class EventController {
 
     @Operation(summary = "List All bookmarked events")
     @SignatureAuth
+    @SaCheckLogin
     @GetMapping("/bookmarked")
     public RecentEventVOs getBookMarkedEvents(
             @RequestParam(defaultValue = "1") int page,
@@ -114,6 +122,7 @@ public class EventController {
 
     @Operation(summary = "List all viewed  events ")
     @SignatureAuth
+    @SaCheckLogin
     @GetMapping("/viewed")
     public RecentEventVOs getViewedEvents(
             @RequestParam(defaultValue = "1") int page,

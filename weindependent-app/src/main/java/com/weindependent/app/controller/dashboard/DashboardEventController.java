@@ -1,5 +1,6 @@
 package com.weindependent.app.controller.dashboard;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
