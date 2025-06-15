@@ -34,4 +34,5 @@ public interface EventMapper {
     List<RecentEventVO> getPastEventsFiltered(
             @Param("tagIds") List<Integer> tagIds
     );
+    boolean isRegistered(Long eventId, int userId);
 }

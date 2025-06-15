@@ -11,7 +11,6 @@ import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.service.UserService;
-import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Resource;
 import java.time.DateTimeException;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -119,15 +117,6 @@ public class EventServiceImpl implements IEventService {
     @Override
     public void register(Long id, String userTimeZone) {
         Long userId = StpUtil.getLoginIdAsLong();
-        EventVO eventVO =eventMapper.getById(id, null);
-        if (eventVO == null) {
-            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
-        }
-
-        UserDO user= userService.findUserById(userId);
-        if(user == null){
-            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "User does not exist");
-        }
 
         int affectedRow = 0;
         try {
@@ -143,6 +132,23 @@ public class EventServiceImpl implements IEventService {
         }
         if(affectedRow == 0){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Cannot find event");
+        }
+
+        sendRegisterConfirmationEmail(id,userId, userTimeZone);
+    }
+
+    @Override
+    @Async
+    public void sendRegisterConfirmationEmail(Long eventId, Long userId, String userTimeZone) {
+        EventVO eventVO =eventMapper.getById(eventId, null);
+
+        if (eventVO == null) {
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
+        }
+
+        UserDO user= userService.findUserById(userId);
+        if(user == null){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "User does not exist");
         }
 
         Map<String, String> sendMailParams = new HashMap<>();
@@ -286,5 +292,11 @@ public class EventServiceImpl implements IEventService {
         RecentEventVOs result = new RecentEventVOs();
         result.setEvents(events);
         return result;
+    }
+
+    @Override
+    public boolean isRegistered(Long eventId) {
+        int userId = StpUtil.getLoginIdAsInt();
+        return eventMapper.isRegistered (eventId,userId);
     }
 }

@@ -1,9 +1,11 @@
 package com.weindependent.app.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
+import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEventService;
-import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
@@ -159,5 +161,17 @@ public class EventController {
     @PostMapping("/past/filter")
     public RecentEventVOs filterPastEventsByTags(@RequestBody EventFilterQry filter) {
         return IEventService.filterPastEventsByTags(filter);
+    }
+
+    @Operation(summary = "Resend register event email")
+    @SignatureAuth
+    @SaCheckLogin
+    @PostMapping("/resend-register-confirmation-email/{eventId}")
+    public void resendConfirmationEmail(@PathVariable Long eventId, @RequestParam(required = false) String userTimeZone ) throws Exception {
+        if(!IEventService.isRegistered(eventId)){
+            throw new Exception("Event not found, or user not registered to this event");
+        }
+        Long userId =StpUtil.getLoginIdAsLong();
+        IEventService.sendRegisterConfirmationEmail(eventId,userId,userTimeZone);
     }
 }
