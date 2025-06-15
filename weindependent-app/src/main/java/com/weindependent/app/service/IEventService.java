@@ -20,7 +20,8 @@ public interface IEventService {
     RecentEventVOs getRegisteredUpcomingEvents(Integer pageNum, Integer pageSize);
     RecentEventVOs getRegisteredPastEvents(Integer pageNum, Integer pageSize);
     RecentEventVOs getViewedEvents(int page, int size);
-    RecentEventVOs getBookmarkedEvents(int page, int size);
+    RecentEventVOs getBookmarkedPastEvents(int page, int size);
+    RecentEventVOs getBookmarkedUpcomingEvents(int page, int size);
     List<EventVO> searchEventsNatural(String keyword);
     List<EventVO> searchEventsBoolean(String keyword);
     RecentEventVOs filterPastEventsByTags(EventFilterQry filter);

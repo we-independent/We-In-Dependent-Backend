@@ -233,10 +233,21 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public RecentEventVOs getBookmarkedEvents(int pageNum, int pageSize) {
+    public RecentEventVOs getBookmarkedPastEvents(int pageNum, int pageSize) {
         int userId = StpUtil.getLoginIdAsInt();
         Page page = PageHelper.startPage(pageNum, pageSize);
-        List<RecentEventVO> events = eventMapper.getBookmarkedEvents(userId);
+        List<RecentEventVO> events = eventMapper.getBookmarkedPastEvents(userId);
+        RecentEventVOs recentEventVOS = new RecentEventVOs();
+        recentEventVOS.setEvents(events);
+        recentEventVOS.setPages(page.getPages());
+        return recentEventVOS;
+    }
+
+    @Override
+    public RecentEventVOs getBookmarkedUpcomingEvents(int pageNum, int pageSize) {
+        int userId = StpUtil.getLoginIdAsInt();
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        List<RecentEventVO> events = eventMapper.getBookmarkedUpcomingEvents(userId);
         RecentEventVOs recentEventVOS = new RecentEventVOs();
         recentEventVOS.setEvents(events);
         recentEventVOS.setPages(page.getPages());
