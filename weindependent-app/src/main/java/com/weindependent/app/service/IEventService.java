@@ -1,6 +1,5 @@
 package com.weindependent.app.service;
 
-import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
@@ -14,6 +13,7 @@ public interface IEventService {
     List<RecentEventVO> getUpcomingByMonth(int year, int month);
     EventVO getEventById(Long id);
     void register(Long id,String userTimeZone);
+    void sendRegisterConfirmationEmail(Long eventId, Long userId, String userTimeZone);
     void unregister(Long id);
     void bookmark(Long id);
     void unbookmark(Long id);
@@ -25,4 +25,5 @@ public interface IEventService {
     List<EventVO> searchEventsNatural(String keyword);
     List<EventVO> searchEventsBoolean(String keyword);
     RecentEventVOs filterPastEventsByTags(EventFilterQry filter);
+    boolean isRegistered(Long id);
 }

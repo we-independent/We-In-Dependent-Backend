@@ -24,6 +24,14 @@
         ORDER BY e.event_time DESC
     </select>
 
+    <select id="isRegistered" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM event_user_register
+            WHERE event_id = #{eventId} AND user_id = #{userId}
+        )
+    </select>
+
     <select id="getUpcoming" parameterType="map" resultType="com.weindependent.app.vo.event.RecentEventVO">
         SELECT
             e.id,
