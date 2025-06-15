@@ -110,17 +110,27 @@ public class EventController {
         return IEventService.getRegisteredPastEvents(page,size);
     }
 
-    @Operation(summary = "List All bookmarked events")
+    @Operation(summary = "List All bookmarked past events")
     @SignatureAuth
     @SaCheckLogin
-    @GetMapping("/bookmarked")
-    public RecentEventVOs getBookMarkedEvents(
+    @GetMapping("/bookmarked/past")
+    public RecentEventVOs getBookMarkedPastEvents(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return IEventService.getBookmarkedEvents(page,size);
+        return IEventService.getBookmarkedPastEvents(page,size);
     }
 
-    @Operation(summary = "List all viewed  events ")
+    @Operation(summary = "List All bookmarked upcoming events")
+    @SignatureAuth
+    @SaCheckLogin
+    @GetMapping("/bookmarked/upcoming")
+    public RecentEventVOs getBookMarkedUpcomingEvents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return IEventService.getBookmarkedUpcomingEvents(page,size);
+    }
+
+    @Operation(summary = "List all viewed events ")
     @SignatureAuth
     @SaCheckLogin
     @GetMapping("/viewed")
