@@ -4,10 +4,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.weindependent.app.convertor.EventConverter;
-import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
-import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventSpeakerRelationMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardSpeakerMapper;
@@ -42,8 +40,7 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
 
     private final Integer RESIZE_WIDTH = 1729;
     private final Integer RESIZE_HEIGHT = 438;
-    @Autowired
-    private DashboardEventImageMapper dashboardEventImageMapper;
+
     @Autowired
     private DashboardEventMapper dashboardEventMapper;
     @Autowired
