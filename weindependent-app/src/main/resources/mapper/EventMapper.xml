@@ -250,7 +250,6 @@
             e.content,
             e.event_time,
             e.location,
-            e.banner_id,
             e.link,
             e.category_id,
             c.name AS categoryName,
