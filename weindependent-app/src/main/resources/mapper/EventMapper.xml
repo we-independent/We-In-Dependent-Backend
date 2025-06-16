@@ -205,7 +205,7 @@
             e.event_time,
             e.duration,
             e.location,
-            e.banner_url
+            e.banner_url,
             true AS isBookmarked
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
@@ -223,7 +223,7 @@
             e.event_time,
             e.duration,
             e.location,
-            e.banner_url
+            e.banner_url,
             true AS isBookmarked
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
