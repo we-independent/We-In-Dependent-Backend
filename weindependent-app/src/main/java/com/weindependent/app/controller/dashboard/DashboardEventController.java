@@ -63,7 +63,7 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageDO createBanner(@RequestParam("file") MultipartFile file) {
+    public String createBanner(@RequestParam("file") MultipartFile file) {
         return IDashboardEventService.insertEventBanner(file);
     }
 
