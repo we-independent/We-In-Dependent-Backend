@@ -14,8 +14,8 @@ public class EventVO {
     private Integer duration;
     private String link;
     private String videoLink;
-    private Integer categoryId;
-    private String categoryName;
+    private Integer tagId;
+    private String tagName;
     private String location;
     // private Integer speakerId;
     // private String speakerName;
