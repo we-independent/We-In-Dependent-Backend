@@ -5,8 +5,8 @@
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardEventMapper">
 
     <insert id="create" parameterType="com.weindependent.app.database.dataobject.EventDO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO event (title, summary, content, event_time, duration, location, link, video_link, category_id, banner_id, create_user_id, update_user_id)
-        VALUES (#{title}, #{summary}, #{content}, #{eventTime},#{duration}, #{location}, #{link}, #{videoLink}, #{categoryId}, #{bannerId}, #{createUserId}, #{updateUserId});
+        INSERT INTO event (title, summary, content, event_time, duration, location, link, video_link, tag_id, banner_id, create_user_id, update_user_id)
+        VALUES (#{title}, #{summary}, #{content}, #{eventTime},#{duration}, #{location}, #{link}, #{videoLink}, #{tagId}, #{bannerId}, #{createUserId}, #{updateUserId});
     </insert>
 
     <select id="getById" parameterType="map" resultType="com.weindependent.app.database.dataobject.EventDO">
@@ -19,7 +19,7 @@
     <select id="list" parameterType="com.weindependent.app.dto.EventListQry" resultType="com.weindependent.app.vo.event.dashboard.DashboardEventVO">
         SELECT
             e.*,
-            c.name AS categoryName,
+            t.name AS tagName,
             ei.file_path AS bannerFilePath,
             cu.real_name AS createUserName,
             uu.real_name AS updateUserName,
@@ -30,7 +30,7 @@
              LEFT JOIN t_system_user cu ON e.create_user_id = cu.id
              LEFT JOIN t_system_user uu ON e.update_user_id = uu.id
              <!-- LEFT JOIN t_system_user su ON e.speaker_user_id = su.id -->
-             LEFT JOIN category c ON e.category_id = c.id
+             LEFT JOIN event_tag t ON e.tag_id = t.id
         <where>
             <if test="title != null and title != ''">
                 AND e.title LIKE CONCAT('%', #{title}, '%')
@@ -41,8 +41,8 @@
             <!-- <if test="speakerUserId != null">
                 AND e.speaker_user_id = #{speakerUserId}
             </if> -->
-            <if test="categoryId != null">
-                AND e.category_id = #{categoryId}
+            <if test="tagId != null">
+                AND e.tag_id = #{tagId}
             </if>
             <if test="createUserId != null">
                 AND e.create_user_id = #{createUserId}
@@ -109,7 +109,7 @@
                 e.duration= ${duration},
                 e.location = #{location},
                 e.link = #{link},
-                e.category_id = #{categoryId},
+                e.tag_id = #{tagId},
                 <!-- e.speaker_user_id = #{speakerUserId}, -->
                 e.update_user_id = #{updateUserId},
                 e.banner_id = #{bannerId},
