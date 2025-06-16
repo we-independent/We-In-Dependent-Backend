@@ -23,7 +23,7 @@ public class EventDO {
     private Integer tagId;
     private String link;
     private String videoLink;
-    private Long bannerId;
+    private String bannerUrl;
     private boolean isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

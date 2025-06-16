@@ -20,7 +20,7 @@ public interface IDashboardEventService {
     EventDO create(EventQry eventQry);
     void delete(List<Long> ids);
     void update(Long id, EventQry eventQry);
-    ImageDO insertEventBanner(MultipartFile file);
+    String insertEventBanner(MultipartFile file);
     UserVOs getRegisteredUsers(Long id, Integer page, Integer size);
     UserVOs getBookmarkedUsers(Long id, Integer page, Integer size);
     EventDO getById(Long id);

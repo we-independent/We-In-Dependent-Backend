@@ -10,12 +10,11 @@
             e.summary,
             e.event_time,
             e.duration,
-            f.file_path AS bannerUrl
+            e.banner_url
             <if test="userId != null">
                 , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
             </if>
         FROM event e
-             LEFT JOIN event_image f ON e.banner_id = f.id
              <if test="userId != null">
                  LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
              </if>
@@ -40,12 +39,11 @@
             e.location,
             e.event_time,
             e.duration,
-            f.file_path AS bannerUrl
+            e.banner_url
             <if test="userId != null">
                 , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
             </if>
         FROM event e
-             LEFT JOIN event_image f ON e.banner_id = f.id
              <if test="userId != null">
                  LEFT JOIN event_user_bookmark b
                    ON e.id = b.event_id
@@ -65,12 +63,11 @@
             e.location,
             e.event_time,
             e.duration,
-            f.file_path AS bannerUrl
+            e.banner_url
             <if test="userId != null">
                 , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
             </if>
         FROM event e
-                 LEFT JOIN event_image f ON e.banner_id = f.id
                 <if test="userId != null">
                     LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
                 </if>
@@ -92,7 +89,7 @@
         e.tag_id,
         e.video_link as videoLink,
         t.name AS tagName,
-        f.file_path AS bannerUrl
+        e.banner_url
         <!-- u.id AS speakerId,
         u.real_name AS speakerName,
         s.title AS speakerTitle,
@@ -107,7 +104,6 @@
         <!-- LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
         LEFT JOIN event_speaker s ON s.user_id = u.id
         LEFT JOIN event_speaker_image img ON s.banner_id = img.id -->
-        LEFT JOIN event_image f ON e.banner_id = f.id
         <if test="userId != null">
             LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
         </if>
@@ -159,10 +155,9 @@
             e.event_time,
             e.duration,
             e.location,
-            f.file_path AS bannerUrl
+            e.banner_url
         FROM event_user_register r
                  JOIN event e ON r.event_id = e.id
-                 LEFT JOIN event_image f ON e.banner_id = f.id
         WHERE r.user_id = #{userId}
           AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) > NOW()
@@ -177,10 +172,9 @@
             e.event_time,
             e.duration,
             e.location,
-            f.file_path AS bannerUrl
+            e.banner_url
         FROM event_user_register r
                  JOIN event e ON r.event_id = e.id
-                 LEFT JOIN event_image f ON e.banner_id = f.id
         WHERE r.user_id = #{userId}
           AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &lt;= NOW()
@@ -195,10 +189,9 @@
             e.event_time,
             e.duration,
             e.location,
-            f.file_path AS bannerUrl
+            e.banner_url
         FROM event_user_viewed v
                  JOIN event e ON v.event_id = e.id
-                 LEFT JOIN event_image f ON e.banner_id = f.id
         WHERE v.user_id = #{userId}
           AND e.is_deleted = 0
         ORDER BY v.create_time DESC
@@ -212,11 +205,10 @@
             e.event_time,
             e.duration,
             e.location,
-            f.file_path AS bannerUrl,
+            e.banner_url,
             true AS isBookmarked
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
-                 LEFT JOIN event_image f ON e.banner_id = f.id
         WHERE b.user_id = #{userId}
           AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &lt;= NOW()
@@ -231,11 +223,10 @@
             e.event_time,
             e.duration,
             e.location,
-            f.file_path AS bannerUrl,
+            e.banner_url,
             true AS isBookmarked
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
-                 LEFT JOIN event_image f ON e.banner_id = f.id
         WHERE b.user_id = #{userId}
           AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &gt; NOW()
@@ -264,9 +255,8 @@
             e.link,
             e.category_id,
             c.name AS categoryName,
-            f.file_path AS bannerUrl
+            e.banner_url
         FROM event e
-                 LEFT JOIN event_image f ON e.banner_id = f.id
                  LEFT JOIN category c ON e.category_id = c.id
         WHERE
                         e.is_deleted = 0
@@ -289,9 +279,8 @@
             e.link,
             e.category_id,
             c.name AS categoryName,
-            f.file_path AS bannerUrl
+            e.banner_url
         FROM event e
-                 LEFT JOIN event_image f ON e.banner_id = f.id
                  LEFT JOIN category c ON e.category_id = c.id
         WHERE
                         e.is_deleted = 0
