@@ -84,7 +84,6 @@
         e.event_time,
         e.duration,
         e.location,
-        e.banner_id,
         e.link,
         e.tag_id,
         e.video_link as videoLink,
