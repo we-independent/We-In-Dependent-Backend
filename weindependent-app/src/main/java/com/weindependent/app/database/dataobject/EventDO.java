@@ -20,7 +20,7 @@ public class EventDO {
     private Integer duration;
     private String location;
     // private Long speakerUserId;
-    private Integer categoryId;
+    private Integer tagId;
     private String link;
     private String videoLink;
     private Long bannerId;

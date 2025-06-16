@@ -89,9 +89,9 @@
         e.location,
         e.banner_id,
         e.link,
-        e.category_id,
+        e.tag_id,
         e.video_link as videoLink,
-        c.name AS categoryName,
+        t.name AS tagName,
         f.file_path AS bannerUrl
         <!-- u.id AS speakerId,
         u.real_name AS speakerName,
@@ -111,7 +111,7 @@
         <if test="userId != null">
             LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
         </if>
-        LEFT JOIN category c on e.category_id = c.id
+        LEFT JOIN event_tag t on e.tag_id = t.id
         WHERE e.id = #{id}
         AND e.is_deleted = 0
     </select>

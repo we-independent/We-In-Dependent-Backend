@@ -30,7 +30,7 @@ public class EventQry {
 
     private String link;
 
-    private Integer categoryId;
+    private Integer tagId;
 
     private Long bannerId;
 }
