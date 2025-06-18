@@ -9,12 +9,16 @@
         VALUES (#{title}, #{summary}, #{content}, #{eventTime},#{duration}, #{location}, #{link}, #{videoLink}, #{tagId}, #{bannerUrl}, #{createUserId}, #{updateUserId});
     </insert>
 
-    <select id="getById" parameterType="map" resultType="com.weindependent.app.database.dataobject.EventDO">
+    <select id="getById" parameterType="map" resultType="com.weindependent.app.vo.event.dashboard.DashboardEventVO">
         SELECT
             e.*,
             t.name AS tagName,
+            cu.real_name AS createUserName,
+            uu.real_name AS updateUserName
         FROM event e
             LEFT JOIN event_tag t ON e.tag_id = t.id
+            LEFT JOIN t_system_user cu ON e.create_user_id = cu.id
+            LEFT JOIN t_system_user uu ON e.update_user_id = uu.id
         WHERE e.id = #{id}
     </select>
 
