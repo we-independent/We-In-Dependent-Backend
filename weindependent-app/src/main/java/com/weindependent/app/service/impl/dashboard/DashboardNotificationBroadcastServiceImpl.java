@@ -24,6 +24,7 @@ import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IDashboardNotificationBroadcastService;
 import com.weindependent.app.service.IEmailService;
+import com.weindependent.app.service.IFileService;
 import com.weindependent.app.service.impl.EmailServiceImpl;
 
 import cn.hutool.core.util.StrUtil;

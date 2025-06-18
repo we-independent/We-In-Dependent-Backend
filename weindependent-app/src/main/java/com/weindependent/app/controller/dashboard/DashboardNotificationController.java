@@ -3,11 +3,17 @@ package com.weindependent.app.controller.dashboard;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.NotificationBroadcastMessageDO;
+import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.service.IDashboardNotificationBroadcastService;
+import com.weindependent.app.service.IFileService;
+import com.weindependent.app.vo.UploadedFileVO;
+
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "General WI Notification 管理")
 @RestController
@@ -24,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardNotificationController {
     @Autowired
     private IDashboardNotificationBroadcastService broadcastService;
+    
+    @Autowired
+    private IFileService fileService;
 
     // 创建广播消息
     @SignatureAuth
@@ -73,4 +84,13 @@ public class DashboardNotificationController {
         return broadcastService.listAll();
     }
     
+    // 上传、更换emai中的图片
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "上传邮件通知 banner 图片")
+    @PostMapping(value = "/file/notification/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UploadedFileVO uploadNotificationEmailImg(@RequestParam("file") MultipartFile file) {
+        return fileService.uploadFile(file, file.getOriginalFilename(), GoogleDriveFileCategoryEnum.GENERAL_NOTIFICATION);
+    }
+
 }
