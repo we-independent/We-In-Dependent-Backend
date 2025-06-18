@@ -13,6 +13,7 @@ public class DashboardEventVO {
     private String summary;
     private String content;
     private LocalDateTime eventTime;
+    private Integer duration;
     private String location;
     // private Long speakerUserId;
     // private String speakerName;
@@ -20,6 +21,7 @@ public class DashboardEventVO {
     private String bannerFilePath;
     private boolean isDeleted;
     private String link;
+    private String videoLink;
     private Integer tagId;
     private String tagName;
     private LocalDateTime createTime;
