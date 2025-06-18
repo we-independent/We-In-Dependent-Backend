@@ -16,6 +16,8 @@ public class BlogArticleEditVO {
 
     private Integer authorId;
 
+    private Integer readingTimeInMinutes;
+
     private Integer bannerImgId;
 
     private String bannerImgUrl;
