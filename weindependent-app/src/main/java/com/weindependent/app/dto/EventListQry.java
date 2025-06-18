@@ -11,6 +11,7 @@ public class EventListQry {
     private Long speakerUserId;
     private String location;
     private Integer tagId;
+    private String tagName;
     private Integer createUserId;
     private LocalDateTime eventTimeStart;
     private LocalDateTime eventTimeEnd;

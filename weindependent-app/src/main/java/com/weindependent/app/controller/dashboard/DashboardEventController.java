@@ -52,7 +52,7 @@ public class DashboardEventController {
     @SaCheckRole("admin")
     @SignatureAuth
     @GetMapping("/{id}")
-    public EventDO getById(@PathVariable Long id)  {
+    public DashboardEventVO getById(@PathVariable Long id)  {
         return IDashboardEventService.getById(id);
     }
 
