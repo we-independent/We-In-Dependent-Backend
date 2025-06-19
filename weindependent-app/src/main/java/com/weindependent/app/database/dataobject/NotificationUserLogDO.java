@@ -16,5 +16,5 @@ public class NotificationUserLogDO {
     private LocalDateTime sentAt;
     private String status; // "success" or "failed"
     private String errorMessage;
-
+    private String email;
 }

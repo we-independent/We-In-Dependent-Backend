@@ -154,7 +154,8 @@ public void resend(Long id) {
                     user.getId(),
                     LocalDateTime.now(),
                     "success",
-                    null
+                    null,
+                    user.getAccount()
                 ));
         } catch (Exception e) {
             emailService.send(user.getAccount(), mailType, params);
@@ -164,7 +165,8 @@ public void resend(Long id) {
                     user.getId(),
                     LocalDateTime.now(),
                     "fail",
-                    e.getMessage()
+                    e.getMessage(),
+                    user.getAccount()
                 ));
         }
     }
