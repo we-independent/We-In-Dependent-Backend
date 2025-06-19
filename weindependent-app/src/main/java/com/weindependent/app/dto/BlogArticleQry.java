@@ -21,6 +21,8 @@ public class BlogArticleQry {
     /** 作者ID */
     private Integer authorId;
 
+    /**  阅读时间（以分钟为单位） **/
+    private Integer readingTimeInMinutes;
 
     /** 文章标题 */
     private String title;

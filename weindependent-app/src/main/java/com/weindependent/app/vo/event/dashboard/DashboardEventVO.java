@@ -16,12 +16,12 @@ public class DashboardEventVO {
     private String location;
     // private Long speakerUserId;
     // private String speakerName;
-    private Long bannerId;
+    private String bannerUrl;
     private String bannerFilePath;
     private boolean isDeleted;
     private String link;
-    private Integer categoryId;
-    private String categoryName;
+    private Integer tagId;
+    private String tagName;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private Long createUserId;

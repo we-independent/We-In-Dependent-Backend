@@ -13,7 +13,9 @@ public interface EventMapper {
     List<RecentEventVO> getUpcoming(Integer userId);
     List<RecentEventVO> getPast(Integer userId);
     void recordUserViewEvent(Integer userId, Long eventId);
-    List<RecentEventVO> getByMonth(@Param("year") Integer year,
+    List<RecentEventVO> getUpcomingByMonth(
+                                    @Param("userId") Integer userId,
+                                    @Param("year") Integer year,
                                    @Param("month") Integer month);
     EventVO getById(@Param("id") Long id,
                     @Param("userId") Integer userId);
@@ -25,7 +27,12 @@ public interface EventMapper {
     List<RecentEventVO> getRegisteredUpcomingEvents(Integer userId);
     List<RecentEventVO> getRegisteredPastEvents(Integer userId);
     List<RecentEventVO> getViewedEvents(int userId);
-    List<RecentEventVO> getBookmarkedEvents(int userId);
+    List<RecentEventVO> getBookmarkedPastEvents(int userId);
+    List<RecentEventVO> getBookmarkedUpcomingEvents(int userId);
     List<EventVO> searchEventsNatural(@Param("keyword") String keyword);
     List<EventVO> searchEventsBoolean(@Param("keyword") String keyword);
+    List<RecentEventVO> getPastEventsFiltered(
+            @Param("tagIds") List<Integer> tagIds
+    );
+    boolean isRegistered(Long eventId, int userId);
 }
