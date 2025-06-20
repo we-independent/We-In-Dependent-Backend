@@ -1,0 +1,223 @@
+# 应用服务 WEB 访问端口
+server:
+ port: 8080
+frontend:
+ url: ${FRONTEND_URL:http://localhost:5173}
+
+
+spring:
+ servlet:
+   multipart:
+     enabled: true
+     max-file-size: 10MB
+     max-request-size: 10MB
+
+
+ mvc:
+   pathmatch:
+     matching-strategy: ant-path-matcher
+ datasource:
+   url: jdbc:mysql://mysql.sqlpub.com:3306/weindependent?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&connectTimeout=10000&socketTimeout=30000&autoReconnect=true&failOverReadOnly=false&maxReconnects=3&initialTimeout=2
+   username: wi_user
+   password: P1q7SrJqSRwH87Dn
+   driver-class-name: com.mysql.cj.jdbc.Driver
+   type: com.alibaba.druid.pool.DruidDataSource
+   druid:
+     initial-size: 5
+     min-idle: 5
+     max-active: 20
+     max-wait: 60000
+     test-on-borrow: true
+     test-on-return: false
+     test-while-idle: true
+     time-between-eviction-runs-millis: 60000
+     min-evictable-idle-time-millis: 300000
+     validation-query: SELECT 1 FROM DUAL
+     validation-query-timeout: 3
+     remove-abandoned: true
+     remove-abandoned-timeout: 180
+     log-abandoned: true
+     filters: stat,wall,log4j
+     connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=1000;druid.stat.slowSqlLogLevel=WARN
+     stat-view-servlet:
+       enabled: true
+       url-pattern: /druid/*
+       reset-enable: false
+       login-username: admin
+       login-password: admin
+     web-stat-filter:
+       enabled: true
+       url-pattern: /*
+       exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+     filter:
+       stat:
+         enabled: true
+         slow-sql-millis: 1000
+         log-slow-sql: true
+         merge-sql: true
+         connection-log-enabled: true
+         connection-log-error-enabled: true
+         sql-log-enabled: true
+         sql-log-error-enabled: true
+       wall:
+         enabled: true
+         config:
+           comment-allow: true
+       log4j2:
+         enabled: true
+         statement-log-enabled: true
+         statement-executable-sql-log-enable: true
+         statement-create-after-log-enabled: false
+         statement-close-after-log-enabled: false
+         statement-parameter-set-log-enabled: false
+         statement-prepare-after-log-enabled: false
+         statement-log-error-enabled: true
+         result-set-log-enabled: false
+ email:
+   host: smtp.zoho.com
+   port: 587
+   username: info@weindependent.org
+   password: V2VJbmRlcGVuZGVudDIwMjUhISE=
+   senderName: info@weindependent.org
+   protocol: smtp
+   encoding: UTF-8
+
+
+#下面这些内容是为了让MyBatis映射
+#指定Mybatis的Mapper文件
+mybatis:
+ #  config-location: classpath:mybatis-config.xml
+ #  mapper-locations: classpath:com.weindependent.app.mapper/*.xml
+ mapper-locations: classpath:mapper/*.xml
+ #指定Mybatis的实体目录
+ #  type-aliases-package: com.weindependent.app.entity
+ type-aliases-package: com.weindependent.app.database.dataobject
+ configuration:
+   map-underscore-to-camel-case: true
+   call-setters-on-nulls: true
+   default-statement-timeout: 30
+   default-fetch-size: 100
+   log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+# 分页配置参数
+pagehelper:
+ page-size-zero: true
+ helper-dialect: mysql
+ reasonable: false
+ support-methods-arguments: true
+ params: count=countSql
+
+
+# Sa-Token
+sa-token:
+ # token名称 (同时也是cookie名称)
+ token-name: satoken
+ # token有效期，单位s 默认30天, -1代表永不过期
+ timeout: 604800
+ # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+ active-timeout: -1
+ # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+ is-concurrent: true
+ # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+ is-share: false
+ # token风格
+ token-style: uuid
+ # jwt秘钥
+ jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+ # 是否输出操作日志
+ is-log: false
+
+
+#是否激活 swagger true or false
+swagger:
+ enable: true
+
+
+springdoc:
+ swagger-ui:
+   enabled: true # 开启swagger界面
+   disable-swagger-default-url: true
+
+
+service:
+ weindependent:
+   thread-pool:
+     corePoolSize: 8
+     maximumPoolSize: 32
+     keepAliveTime: 10000
+
+
+file:
+ upload:
+   tmp-folder: files
+
+
+logging:
+ level:
+   com.alibaba.druid.sql: DEBUG
+   # # Hurely debug order sort
+   # org.mybatis: DEBUG
+   # level.com.weindependent: DEBUG
+   # 添加详细的日志配置来诊断卡住问题
+   com.weindependent.app: DEBUG
+   org.springframework.web: DEBUG
+   org.springframework.security: DEBUG
+   org.springframework.transaction: DEBUG
+   com.alibaba.druid.pool: DEBUG
+   org.apache.ibatis: DEBUG
+   org.springframework.boot.autoconfigure: DEBUG
+   org.springframework.boot.web.embedded.tomcat: DEBUG
+   org.springframework.boot.web.servlet.context: DEBUG
+   # 数据库连接池监控
+   com.alibaba.druid.stat: DEBUG
+   # 数据库连接详细监控
+   com.alibaba.druid.pool.DruidDataSource: DEBUG
+   com.alibaba.druid.pool.DruidConnectionHolder: DEBUG
+   com.alibaba.druid.pool.DruidPooledConnection: DEBUG
+   com.alibaba.druid.pool.DruidPooledPreparedStatement: DEBUG
+   com.alibaba.druid.pool.DruidPooledResultSet: DEBUG
+   # MySQL驱动监控
+   com.mysql.cj.jdbc: DEBUG
+   com.mysql.cj.jdbc.ConnectionImpl: DEBUG
+   com.mysql.cj.jdbc.StatementImpl: DEBUG
+   # HTTP请求响应时间监控
+   org.springframework.web.servlet.mvc.method.annotation: DEBUG
+   # 线程池监控
+   org.springframework.scheduling: DEBUG
+   # 缓存监控
+   org.springframework.cache: DEBUG
+   # 邮件服务监控
+   org.springframework.mail: DEBUG
+   # Google Drive API监控
+   com.google.api: DEBUG
+   # Sa-Token监控
+   cn.dev33.satoken: DEBUG
+   # 添加数据库事务监控
+   org.springframework.orm.jpa: DEBUG
+   org.springframework.jdbc: DEBUG
+   org.springframework.jdbc.core: DEBUG
+   org.springframework.jdbc.datasource: DEBUG
+
+
+google:
+ client:
+   id: 542544138093-qd5117ig05qslhod86vcnoao2ddmv6o3.apps.googleusercontent.com
+   secret: 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
+ redirect:
+   uri: http://localhost:8080/auth/temp/google-login-callback
+ scope: openid profile email
+ token:
+   uri: https://oauth2.googleapis.com/token
+ user:
+   info:
+     uri: https://www.googleapis.com/oauth2/v3/userinfo
+ drive:
+   app-name: weindependent
+   folder:
+     ids:
+       blog-banner: 1UEvRtfjQH2Zk3HUVNmIbFk7uPt-iNRgE
+       blog-pdf: 1XNTL2bOnjIjj-eWvEcalgnv3E23X9f63
+       event-banner: 1m0OAEE2uZQvir7b6Np6WErtCCDHyPheD
+       event-speaker-banner: 1j5E7YwFBFJWnMEiISanHgSVJJS977jbv
+       user-profile-image: 1HrjJKCmiptPGaa0l9Z9DckhW8T6cPOhi

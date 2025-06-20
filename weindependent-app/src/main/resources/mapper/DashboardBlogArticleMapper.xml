@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogArticleMapper">
+
+    <resultMap type="BlogArticleDO" id="BlogArticleResult">
+        <result property="id"    column="id"    />
+        <result property="articleSourceType"    column="article_source_type"    />
+        <result property="sourceUrl"    column="source_url"    />
+        <result property="sourceUrlDisplayText"    column="source_url_display_text"    />
+        <result property="authorId"    column="author_id"    />
+        <result property="bannerImgId"    column="banner_img_id"    />
+        <result property="summary"    column="summary"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="articleStatus"    column="article_status"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="isDeleted"    column="is_deleted"    />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateUserId"    column="update_user_id"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap type="com.weindependent.app.vo.BlogArticleEditVO" id="BlogArticleEditVOResult">
+        <result property="id"    column="id"    />
+        <result property="articleSourceType"    column="article_source_type"    />
+        <result property="sourceUrl"    column="source_url"    />
+        <result property="sourceUrlDisplayText"    column="source_url_display_text"    />
+        <result property="authorId"    column="author_id"    />
+        <result property="bannerImgId"    column="banner_img_id"    />
+        <result property="bannerImgUrl"    column="file_path"    />
+        <result property="summary"    column="summary"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="articleStatus"    column="article_status"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="isDeleted"    column="is_deleted"    />
+
+    </resultMap>
+
+    <sql id="selectBlogArticleVo">
+        select id, article_source_type, source_url, source_url_display_text, author_id, banner_img_id, summary, title, content, article_status, category_id, is_deleted, create_user_id, create_time, update_user_id, update_time from blog_article
+    </sql>
+
+    <select id="selectBlogArticleList" parameterType="BlogArticleDO" resultMap="BlogArticleResult">
+        <include refid="selectBlogArticleVo"/>
+        <where>
+            <if test="articleSourceType != null  and articleSourceType != ''"> and article_source_type = #{articleSourceType}</if>
+            <if test="sourceUrl != null  and sourceUrl != ''"> and source_url = #{sourceUrl}</if>
+            <if test="sourceUrlDisplayText != null  and sourceUrlDisplayText != ''"> and source_url_display_text = #{sourceUrlDisplayText}</if>
+            <if test="authorId != null "> and author_id = #{authorId}</if>
+            <if test="bannerImgId != null "> and banner_img_id = #{bannerImgId}</if>
+            <if test="summary != null  and summary != ''"> and summary = #{summary}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="articleStatus != null  and articleStatus != ''"> and article_status = #{articleStatus}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+            <if test="createUserId != null "> and create_user_id = #{createUserId}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateUserId != null "> and update_user_id = #{updateUserId}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+
+    <select id="selectBlogArticleById" parameterType="Integer" resultMap="BlogArticleResult">
+        <include refid="selectBlogArticleVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBlogArticle" parameterType="BlogArticleDO" useGeneratedKeys="true" keyProperty="id">
+        insert into blog_article
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="articleSourceType != null and articleSourceType != ''">article_source_type,</if>
+            <if test="sourceUrl != null">source_url,</if>
+            <if test="sourceUrlDisplayText != null">source_url_display_text,</if>
+            <if test="authorId != null">author_id,</if>
+            <if test="bannerImgId != null">banner_img_id,</if>
+            <if test="summary != null">summary,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="articleStatus != null and articleStatus != ''">article_status,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="createUserId != null">create_user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateUserId != null">update_user_id,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="articleSourceType != null and articleSourceType != ''">#{articleSourceType},</if>
+            <if test="sourceUrl != null">#{sourceUrl},</if>
+            <if test="sourceUrlDisplayText != null">#{sourceUrlDisplayText},</if>
+            <if test="authorId != null">#{authorId},</if>
+            <if test="bannerImgId != null">#{bannerImgId},</if>
+            <if test="summary != null">#{summary},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="articleStatus != null and articleStatus != ''">#{articleStatus},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBlogArticle" parameterType="BlogArticleDO">
+        update blog_article
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="articleSourceType != null and articleSourceType != ''">article_source_type = #{articleSourceType},</if>
+            <if test="sourceUrl != null">source_url = #{sourceUrl},</if>
+            <if test="sourceUrlDisplayText != null">source_url_display_text = #{sourceUrlDisplayText},</if>
+            <if test="authorId != null">author_id = #{authorId},</if>
+            <if test="bannerImgId != null">banner_img_id = #{bannerImgId},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="articleStatus != null and articleStatus != ''">article_status = #{articleStatus},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="createUserId != null">create_user_id = #{createUserId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteBlogArticleById" parameterType="Integer">
+        update blog_article set is_deleted = 1 where id = #{id}
+    </update>
+
+    <update id="deleteBlogArticleByIds" >
+        update blog_article
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- Hurely simplify query -->
+    <update id="deleteBlogArticleWithRelations" parameterType="map">
+        UPDATE blog_article a
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        LEFT JOIN tag_article_relation r ON a.id = r.article_id
+        SET
+            a.is_deleted = 1,
+            a.update_user_id = #{updateUserId},
+            i.is_deleted = 1,
+            r.is_deleted = 1,
+            r.update_user_id = #{updateUserId}
+        WHERE a.id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateBlogArticleWithBanner" parameterType="BlogArticleDO">
+        UPDATE blog_article a
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        SET
+            a.article_source_type = #{articleSourceType},
+            a.source_url = #{sourceUrl},
+            a.source_url_display_text = #{sourceUrlDisplayText},
+            a.author_id = #{authorId},
+            a.banner_img_id = #{bannerImgId},
+            a.summary = #{summary},
+            a.title = #{title},
+            a.is_deleted = 0,
+            a.content = #{content},
+            a.article_status = #{articleStatus},
+            a.category_id = #{categoryId},
+            a.update_user_id = #{updateUserId},
+            i.is_deleted = CASE
+                WHEN a.banner_img_id != #{bannerImgId} THEN 1
+                ELSE i.is_deleted
+            END
+        WHERE a.id = #{id}
+    </update>
+
+
+    <!-- Natural Language Mode -->
+    <select id="searchByContent"
+            parameterType="String"
+            resultMap="BlogArticleResult">
+        SELECT id, title, summary, create_time
+        FROM blog_article
+        WHERE is_deleted = 0
+          AND article_status = 'published'
+          AND MATCH(title, content) AGAINST(#{keyword} IN NATURAL LANGUAGE MODE)
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- Boolean Mode -->
+    <select id="searchByExactKeywords"
+            parameterType="String"
+            resultMap="BlogArticleResult">
+        SELECT id, title, summary, create_time
+        FROM blog_article
+        WHERE is_deleted = 0
+          AND article_status = 'published'
+        <choose>
+            <!-- F1 (short codes) -->
+            <when test="keyword != null and keyword.length() &lt; 4">
+                AND (
+                title   LIKE CONCAT('%', #{keyword}, '%')
+                OR  content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </when>
+
+            <otherwise>
+                AND MATCH(title, content)
+                AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
+            </otherwise>
+        </choose>
+
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="searchByIdAndTitle"
+            parameterType="String"
+            resultMap="BlogArticleResult">
+        SELECT id, title
+        FROM blog_article
+        WHERE is_deleted = 0
+        AND article_status = 'published'
+        <choose>
+            <!-- F1 (short codes) -->
+            <when test="keyword != null and keyword.length() &lt; 4">
+                AND (
+                title LIKE CONCAT('%', #{keyword}, '%')
+                OR CAST(id AS CHAR) LIKE CONCAT( #{keyword}, '%')
+                )
+            </when>
+
+            <otherwise>
+                AND(
+                MATCH(title) AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
+                OR id = #{keyword}
+                )
+            </otherwise>
+        </choose>
+
+        ORDER BY create_time DESC
+        limit 10
+    </select>
+
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(*) &gt; 0 FROM blog_article WHERE id = #{id}
+    </select>
+
+    <select id="selectBlogArticleEditVOById" resultMap="BlogArticleEditVOResult">
+        select a.id, article_source_type, source_url, source_url_display_text, author_id, banner_img_id, bi.file_path, summary, title, content, article_status, category_id, a.is_deleted
+        from blog_article as a
+        left join blog_image bi on a.banner_img_id = bi.id and bi.is_deleted = 0
+        where a.id = #{id}
+    </select>
+
+
+</mapper>

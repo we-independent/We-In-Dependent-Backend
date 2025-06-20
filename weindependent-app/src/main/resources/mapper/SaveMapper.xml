@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.SaveMapper">
+    
+    <insert id="saveBlog">
+        INSERT IGNORE INTO save_list_article (list_id, article_id)
+        VALUES (#{listId}, #{blogId})
+    </insert>
+
+    <delete id="unsaveBlog">
+        DELETE IGNORE FROM save_list_article
+        WHERE list_id = #{listId} AND article_id = #{blogId}
+    </delete>
+
+   <select id = "existBlogId" resultType="boolean">
+        SELECT 1 FROM blog_article WHERE id = #{blogId} LIMIT 1
+    </select>
+
+    <insert id="saveEvent">
+        INSERT IGNORE INTO save_event (event_id, user_id)
+        SELECT e.id, #{userId}
+        FROM event e
+        WHERE e.id = #{eventId} AND e.is_deleted = 0;
+    </insert>
+
+    <delete id="unsaveEvent">
+        DELETE IGNORE FROM save_event
+        WHERE user_id = #{userId} AND event_id = #{eventId}
+    </delete>
+
+   <select id = "existEventId" resultType="boolean">
+        SELECT 1 FROM event WHERE id = #{eventId} LIMIT 1
+    </select>
+
+
+</mapper>

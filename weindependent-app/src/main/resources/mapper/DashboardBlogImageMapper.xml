@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogImageMapper">
+    <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.ImageDO">
+        SELECT * FROM blog_image
+      <where>
+          <if test="category!=null and category!=''">
+              AND category = #{category}
+          </if>
+          <if test="fileName!=null and fileName!=''">
+              AND file_name = #{fileName}
+          </if>
+          <if test="fileType!=null and fileType!=''">
+              AND file_type = #{fileType}
+          </if>
+          <if test="fileId!=null and fileId!=''">
+              AND file_id = #{fileId}
+          </if>
+          <if test="filePath!=null and filePath!=''">
+              AND file_path = #{filePath}
+          </if>
+          <if test="isDeleted!=null">
+              is_deleted = #{isDeleted}
+          </if>
+      </where>
+
+    </select>
+
+    <select id="findById" parameterType="int" resultType="com.weindependent.app.database.dataobject.ImageDO">
+        SELECT * FROM blog_image WHERE id = #{id}
+    </select>
+
+    <select id="getAllImages" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM blog_image
+    </select>
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.ImageDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO blog_image (category, file_name,file_key, file_type, file_path)
+        VALUES (#{category}, #{fileName},#{fileKey}, #{fileType}, #{filePath})
+    </insert>
+
+    <update id="update" parameterType="com.weindependent.app.database.dataobject.ImageDO">
+        UPDATE blog_image
+        <set>
+            <if test="category != null">category = #{category},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="fileKey != null">file_key = #{fileKey},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

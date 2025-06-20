@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.UserMapper">
+    <select id="query" parameterType="map" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user
+      <where>
+          <if test="username!=null and username!=''">
+              AND account = #{username}
+          </if>
+          <if test="email!=null and email!=''">
+              AND email = #{email}
+          </if>
+          <if test="password!=null and password!=''">
+              AND password = #{password}
+          </if>
+      </where>
+
+    </select>
+
+    <select id="getAllUsers" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user
+    </select>
+
+    <select id="findByAccount" parameterType="string" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE account = #{account}
+    </select>
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        INSERT INTO t_system_user (account, password, real_name, login_provider, language
+        <if test="visaType != null and visaType != ''"> ,visa_type</if>
+        <if test="notificationEnabled != null">, notification_enabled</if>
+        )
+        VALUES (#{account}, #{password}, #{realName}, #{loginProvider}, #{language}
+        <if test="visaType != null and visaType != ''">,#{visaType}</if>
+        <if test="notificationEnabled != null">, #{notificationEnabled}</if>
+        )
+        ON DUPLICATE KEY UPDATE last_login_time = NOW();
+    </insert>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="com.weindependent.app.database.dataobject.UserDO">
+        SELECT * FROM t_system_user WHERE id = #{id}
+    </select>
+
+    <update id="updatePassword" parameterType="map">
+        UPDATE t_system_user SET password = #{password} WHERE id = #{id}
+    </update>
+
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(*) &gt; 0 FROM t_system_user WHERE id = #{id}
+    </select>
+
+    <update id="updateUser" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        UPDATE t_system_user
+        <set>
+            <if test="realName != null and realName != ''">real_name = #{realName},</if>
+            <if test="language != null and language != ''">language = #{language},</if>
+            <if test="visaType != null and visaType != ''">visa_type = #{visaType},</if>
+            <if test="profileImageId != null">profile_image_id = #{profileImageId},</if>
+            <if test="isVisaPublic != null">is_visa_public = #{isVisaPublic},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="changePassword" parameterType="com.weindependent.app.database.dataobject.UserDO">
+        UPDATE t_system_user
+        <set>
+            password = #{newPassword}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUserById" parameterType="long">
+        DELETE FROM t_system_user WHERE id = #{userId}
+    </delete>
+
+
+</mapper>

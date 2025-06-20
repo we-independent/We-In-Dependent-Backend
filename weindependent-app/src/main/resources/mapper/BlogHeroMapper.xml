@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogHeroMapper">
+    <resultMap type="com.weindependent.app.vo.websiteoperation.BlogHeroVO" id="BlogHomeHeroVOResult">
+        <result property="id" column="id"/>
+        <result property="heroType" column="hero_type"/>
+        <result property="articleId" column="article_id"/>
+        <result property="articleTitle" column="article_title"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="bannerImageUrl" column="banner_image_url"/>
+
+        <collection property="tagVOList" ofType="com.weindependent.app.vo.TagVO" column="article_id"
+                    select="selectTagVOList"/>
+    </resultMap>
+
+    <resultMap id="TagVOResult" type="com.weindependent.app.vo.TagVO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+
+    <select id="selectCurrentBlogHeroVOList" resultMap="BlogHomeHeroVOResult">
+        select h.id,
+               h.hero_type,
+               h.article_id,
+               a.title     AS article_title,
+               a.category_id,
+               c.name      AS category_name,
+               i.file_path AS banner_image_url
+        from blog_hero as h
+                 left join blog_article as a on h.article_id = a.id and h.is_deleted = 0
+                 left join category as c on a.category_id = c.id and a.is_deleted = 0
+                 left join blog_image as i on a.banner_img_id = i.id
+        where h.is_deleted = 0
+    </select>
+
+    <select id="selectTagVOList" resultMap="TagVOResult">
+        SELECT tag.id,
+               name
+        FROM tag_article_relation
+                 left join tag on tag_article_relation.tag_id = tag.id
+        WHERE tag_article_relation.article_id = #{id}
+          AND tag.is_deleted = 0
+          AND tag_article_relation.is_deleted = 0
+    </select>
+
+    <select id="isEditorPickFromHero" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM blog_hero
+        WHERE article_id = #{articleId}
+          AND hero_type = 'Editor''s Pick'
+          AND is_deleted = 0
+    </select>
+
+    <select id="getEditorPickArticleIdsFromHero" resultType="java.lang.Integer">
+        SELECT article_id
+        FROM blog_hero
+        WHERE hero_type = 'Editor''s Pick'
+          AND is_deleted = 0
+        ORDER BY create_time DESC
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <select id="findArticleIdsByHeroType" resultType="long" parameterType="string">
+        SELECT article_id
+        FROM blog_hero
+        WHERE hero_type = #{heroType}
+        AND is_deleted = 0
+    </select>
+</mapper>

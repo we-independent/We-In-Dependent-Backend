@@ -1,0 +1,125 @@
+package com.weindependent.app.controller.dashboard;
+
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
+import com.github.pagehelper.PageInfo;
+import com.weindependent.app.annotation.SignatureAuth;
+import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.weindependent.app.database.dataobject.ImageDO;
+import com.weindependent.app.dto.BlogArticleEditQry;
+import com.weindependent.app.dto.BlogArticleQry;
+import com.weindependent.app.vo.BlogArticleEditVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+
+import com.weindependent.app.service.IBlogArticleService;
+import org.springframework.web.multipart.MultipartFile;
+
+
+/**
+ * 博客文章Controller
+ * 
+ * @author christina
+ *    2025-03-23
+ */
+@Tag(name = "博客文章管理")
+@RestController
+@RequestMapping("api/dashboard")
+public class DashboardBlogArticleController {
+    private final IBlogArticleService blogArticleService;
+
+    public DashboardBlogArticleController(IBlogArticleService blogArticleService) {
+        this.blogArticleService = blogArticleService;
+    }
+
+    /**
+     * 查询博客文章列表
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询博客文章列表")
+    @PostMapping("/blog/list")
+    public PageInfo<BlogArticleDO> list(@RequestBody BlogArticleQry blogArticleQry) {
+        return blogArticleService.selectBlogArticleList(blogArticleQry);
+    }
+
+    /**
+     * 查询博客文章详细信息
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询博客文章详细信息")
+    @GetMapping(value = "/blog/{id}")
+    public BlogArticleEditVO getInfo(@PathVariable("id") Integer id) {
+        return blogArticleService.selectBlogArticleByIdForEdit(id);
+    }
+
+    /**
+     * 新增博客文章
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "新增博客文章")
+    @PostMapping("/blog")
+    public boolean add(@RequestBody BlogArticleEditQry blogArticle) {
+        int userId = StpUtil.getLoginIdAsInt();
+        return blogArticleService.insertBlogArticle(blogArticle,userId) > 0;
+    }
+
+    /**
+     * 新增博客图片
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "新增博客banner图片")
+    @PostMapping(value = "/blog/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImageDO addBlogBanner(@RequestParam("file") MultipartFile file) {
+        return blogArticleService.insertBlogBanner(file);
+    }
+
+    /**
+     * 修改博客文章
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "修改博客文章")
+    @PutMapping("/blog/{id}")
+    public boolean edit(@PathVariable("id") Integer id, @RequestBody @Valid BlogArticleEditQry blogArticle) {
+        int userId = StpUtil.getLoginIdAsInt();
+        blogArticle.setId(id);
+        return blogArticleService.updateBlogArticle(blogArticle, userId) > 0;
+    }
+
+    /**
+     * 删除博客文章
+     */
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "删除博客文章")
+@DeleteMapping("/blog/{ids}")
+public boolean remove(@PathVariable @Valid List<Integer> ids) {
+    // List<Integer> idList = Arrays.stream(ids.split(","))
+    //                              .map(Integer::parseInt)
+    //                              .collect(Collectors.toList());
+
+        int updateUserId = StpUtil.getLoginIdAsInt();
+        return blogArticleService.deleteBlogArticleByIds(ids, updateUserId) > 0;
+    }
+
+    @SignatureAuth
+    @SaCheckRole("admin")
+    @Operation(summary = "查询博客文章列表")
+    @GetMapping("/search-article-id-and-title/{keyword}")
+    public List<BlogArticleDO>  searchByIdAndTitle(@PathVariable String  keyword) {
+        return blogArticleService.searchByIdAndTitle(keyword);
+    }
+}
