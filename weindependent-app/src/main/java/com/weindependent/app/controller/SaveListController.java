@@ -3,8 +3,10 @@ package com.weindependent.app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.weindependent.app.database.dataobject.BlogArticleDO;
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.SaveListDO;
+import com.weindependent.app.dto.BlogArticleCardQry;
+import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.SaveListQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
@@ -35,11 +37,17 @@ public class SaveListController {
     @Autowired
     private SaveListService saveListService;
 
+    /**
+     * 返回某用户的某收藏夹下的所有文章
+     * @param query pageNum = ?, pageSize = ?. default page num = 1, size = 9.
+     * @param listId 收藏夹id
+     * @return a page contains blog card info, default 9 card info per page.
+     */
     @Operation(summary = "返回收藏夹下的所有文章")
     @GetMapping("/get-all-articles/{listId}")
-    public List<BlogArticleDO> getSavedBlogs(@PathVariable int listId) {
+    public PageInfo<BlogArticleCardQry> getSavedBlogs(BlogArticleListQry query, @PathVariable int listId) {
         int userId = StpUtil.getLoginIdAsInt();
-        return saveListService.getSavedBlogs(userId, listId);
+        return saveListService.getSavedBlogs(query, userId, listId);
     }
 
     @Operation(summary = "根据user id和list name建立新收藏夹")

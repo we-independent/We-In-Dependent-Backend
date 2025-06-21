@@ -4,22 +4,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.SaveListMapper">
 
-    <select id="getSavedBlogsFromList" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
-        SELECT ba.*
-        FROM blog_article ba
-        INNER JOIN save_list_article sa ON ba.id = sa.article_id
-        WHERE sa.list_id = #{listId}
+    <select id="getSavedBlogsFromList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT a.id,
+                a.title,
+                a.update_time AS time,
+                a.category_id AS category,
+                "We Independent" AS author,
+                i.file_path AS imageUrl,
+            CASE 
+                WHEN a.content IS NULL THEN 0
+                ELSE CEIL((CHAR_LENGTH(a.content) - CHAR_LENGTH(REPLACE(a.content, ' ', '')) + 1) / 200) 
+            END AS readingTime,
+            CASE 
+                WHEN ep.id IS NOT NULL AND ep.status = 1 THEN TRUE
+                ELSE FALSE
+            END AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM save_list sl
+            JOIN save_list_article sla ON sl.list_id = sla.list_id
+            JOIN blog_article a ON a.id = sla.article_id
+            LEFT JOIN blog_image i ON a.banner_img_id = i.id
+            LEFT JOIN (
+                SELECT article_id, COUNT(*) AS savedCount
+                FROM save_list_article
+                GROUP BY article_id
+            ) s ON a.id = s.article_id
+            LEFT JOIN editor_picks ep ON a.id = ep.article_id
+        WHERE sl.user_id = #{userId}
+            AND sl.list_id = #{listId}
+            AND a.is_deleted = 0
+            AND a.article_status = 'published'
+        ORDER BY sla.saved_at DESC;
+
     </select>
 
-    <select id = "findDefaultListByUserId" resultType="com.weindependent.app.database.dataobject.SaveListDO">
+    <select id = "findDefaultListByUserId" resultType="Integer">
         SELECT list_id
         FROM save_list
         WHERE user_id = #{userId} AND is_default = TRUE LIMIT 1 
     </select>
 
     <insert id = "createList" useGeneratedKeys="true" keyProperty="listId">
-        INSERT INTO save_list (user_id, name, is_default)
-        VALUES (#{userId}, #{name}, #{isDefault})
+        INSERT INTO save_list (user_id, name, is_default, created_at, last_edited_time)
+        VALUES (#{userId}, #{name}, #{isDefault}, NOW(), NOW())
     </insert>
 
     <delete id = "deleteList">
@@ -28,9 +55,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <select id = "getSavedList" resultType="com.weindependent.app.database.dataobject.SaveListDO">
-        SELECT *
-        From save_list
-        WHERE user_id = #{userId}
+        SELECT sl.*,
+           COUNT(sla.article_id) AS article_count
+        FROM save_list sl
+        LEFT JOIN save_list_article sla ON sl.list_id = sla.list_id
+        WHERE sl.user_id = #{userId}
+        GROUP BY sl.list_id
     </select>
 
     <select id="checkListOwnership" resultType="boolean">

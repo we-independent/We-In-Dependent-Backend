@@ -1,5 +1,9 @@
 package com.weindependent.app.service;
 
+import com.github.pagehelper.PageInfo;
+import com.weindependent.app.dto.BlogArticleCardQry;
+import com.weindependent.app.dto.BlogArticleListQry;
+
 /**
  * @author Elly
  * 2025-04-17
@@ -12,6 +16,9 @@ public interface SaveService {
     int unsaveBlog(int userId, Integer listId, int blogId);
 
     boolean blogIsSaved(int userId, int blogId);
+
+    /*显示所有收藏文章(published + not deleted) */
+    PageInfo<BlogArticleCardQry> allSavedArticles(BlogArticleListQry query, int userId);
     
     /*收藏活动 */
     int saveEvent(int userId, int eventId);

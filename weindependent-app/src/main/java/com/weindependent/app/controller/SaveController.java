@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.PageInfo;
+import com.weindependent.app.dto.BlogArticleCardQry;
+import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.SaveListQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
@@ -76,6 +79,18 @@ public class SaveController {
         else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
             throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
         }
+    }
+
+    /** 显示所有收藏的文章 ordered by saved time descendent
+     * @param query pageNum = ?, pageSize = ?. default page num = 1, size = 9.
+     * @return PageInfo with data match with frontend blog card
+    */
+    @Operation(summary = "显示用户收藏的所有文章(不论list)")
+    @GetMapping("blogs/all-saved-articles")
+    public PageInfo<BlogArticleCardQry> allSavedArticles(@RequestBody BlogArticleListQry query){
+        int userId = StpUtil.getLoginIdAsInt();
+        PageInfo<BlogArticleCardQry> result = saveService.allSavedArticles(query, userId);
+        return result;
     }
 
     @Operation(summary = "用户登录后检查blog是否被该用户收藏")

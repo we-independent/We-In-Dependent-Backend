@@ -1,7 +1,10 @@
 package com.weindependent.app.database.mapper.weindependent;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import com.weindependent.app.dto.BlogArticleCardQry;
 /**
  * @author Elly
  * 2025-04-17
@@ -16,6 +19,11 @@ public interface SaveMapper {
     int unsaveBlog(@Param("listId") int listId, @Param("blogId") int blogId);
 
     boolean blogIsSaved(@Param("userId")int userId, @Param("blogId") int blogId);
+
+    /*显示收藏的所有文章 */
+    List<BlogArticleCardQry> allSavedArticles(@Param("userId") int userId);
+
+    int updateSaveListMetadata(@Param("listId") int listId, @Param("blogId") int blogId);
 
     boolean existBlogId(@Param("blogId") int blogId);
 

@@ -6,8 +6,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <insert id="saveBlog">
         INSERT IGNORE INTO save_list_article (list_id, article_id)
-        VALUES (#{listId}, #{blogId})
+        VALUES (#{listId}, #{blogId});  
     </insert>
+
+    <update id="updateSaveListMetadata">
+        UPDATE save_list sl
+        JOIN save_list_article sla ON sl.list_id = sla.list_id
+        JOIN blog_article a ON sla.article_id = a.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        SET sl.last_edited_time = sla.saved_at,
+            sl.last_edited_image = i.file_path
+        WHERE sl.list_id = #{listId}
+        AND sla.article_id = #{blogId}
+    </update>
 
     <delete id="unsaveBlog">
         DELETE IGNORE FROM save_list_article
@@ -21,6 +32,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             JOIN save_list_article sla ON sl.list_id = sla.list_id
             WHERE sl.user_id = #{userId} AND sla.article_id = #{blogId}
         )
+    </select>
+
+    <select id = "allSavedArticles" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT a.id,
+                a.title,
+                a.update_time AS time,
+                a.category_id AS category,
+                "We Independent" AS author,
+                i.file_path AS imageUrl,
+            CASE 
+                WHEN a.content IS NULL THEN 0
+                ELSE CEIL((CHAR_LENGTH(a.content) - CHAR_LENGTH(REPLACE(a.content, ' ', '')) + 1) / 200) 
+            END AS readingTime,
+            CASE 
+                WHEN ep.id IS NOT NULL AND ep.status = 1 THEN TRUE
+                ELSE FALSE
+            END AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM save_list sl
+        JOIN save_list_article sla ON sl.list_id = sla.list_id
+        JOIN blog_article a ON a.id = sla.article_id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        LEFT JOIN editor_picks ep ON a.id = ep.article_id
+        WHERE sl.user_id = #{userId}
+            AND a.is_deleted = 0
+            AND a.article_status = 'published'
+        ORDER BY sla.saved_at DESC
     </select>
 
    <select id = "existBlogId" resultType="boolean">

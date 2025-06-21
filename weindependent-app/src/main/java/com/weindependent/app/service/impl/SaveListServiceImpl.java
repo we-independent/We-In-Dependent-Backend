@@ -5,9 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.SaveListDO;
 import com.weindependent.app.database.mapper.weindependent.SaveListMapper;
+import com.weindependent.app.dto.BlogArticleCardQry;
+import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.SaveListService;
@@ -18,10 +22,14 @@ public class SaveListServiceImpl implements SaveListService{
     private SaveListMapper saveListMapper;
 
     /*获取某收藏夹中所有文章 */
-    public List<BlogArticleDO> getSavedBlogs(int userId, int listId) {
+    public PageInfo<BlogArticleCardQry> getSavedBlogs(BlogArticleListQry query, int userId, int listId) {
         if (!checkListOwnership(userId, listId)) 
             throw new ResponseException(ErrorCode.UNAUTHORIZED_ACCESS.getCode(), ErrorCode.UNAUTHORIZED_ACCESS.getTitle());
-        else return saveListMapper.getSavedBlogsFromList(listId);
+        List<BlogArticleCardQry> list = saveListMapper.getSavedBlogsFromList(listId);
+        int pageNum = (query.getPageNum() != null && query.getPageNum() > 0) ? query.getPageNum() : 1;
+        int pageSize = (query.getPageSize() != null && query.getPageSize() > 0) ? query.getPageSize() : 9;
+        PageHelper.startPage(pageNum, pageSize);
+        return new PageInfo<>(list);
     }   
     /*获取所有收藏夹 */
     public List<SaveListDO>getSavingList(int userId){
