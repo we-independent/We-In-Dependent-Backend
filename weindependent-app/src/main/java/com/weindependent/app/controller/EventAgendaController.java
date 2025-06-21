@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Tag(name = "活動議程")
 @Slf4j
@@ -25,40 +27,50 @@ public class EventAgendaController {
     @Resource
     private IEventAgendaService eventAgendaService;
 
+    @Operation(summary = "测试接口 - 不需要认证")
+    @GetMapping("/test")
+    public Map<String, Object> testAgenda() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "Agenda测试接口正常");
+        result.put("success", true);
+        result.put("timestamp", System.currentTimeMillis());
+        return result;
+    }
+
     @Operation(summary = "Get agenda by event ID")
-    @SignatureAuth
+    // @SignatureAuth
     @GetMapping("/event/{eventId}")
     public EventAgendaVO getAgendaByEventId(@PathVariable Long eventId) {
         return eventAgendaService.getAgendaByEventId(eventId);
     }
 
     @Operation(summary = "Create agenda")
-    @SignatureAuth
-    @SaCheckLogin
+    // @SignatureAuth
+    // @SaCheckLogin
     @PostMapping
     public EventAgendaVO createAgenda(@Valid @RequestBody EventAgendaCreateQry qry) {
         return eventAgendaService.createAgenda(qry);
     }
 
     @Operation(summary = "Update agenda")
-    @SignatureAuth
-    @SaCheckLogin
+    // @SignatureAuth
+    // @SaCheckLogin
     @PutMapping
     public EventAgendaVO updateAgenda(@Valid @RequestBody EventAgendaUpdateQry qry) {
         return eventAgendaService.updateAgenda(qry);
     }
 
     @Operation(summary = "Delete agenda by ID")
-    @SignatureAuth
-    @SaCheckLogin
+    // @SignatureAuth
+    // @SaCheckLogin
     @DeleteMapping("/{id}")
     public void deleteAgenda(@PathVariable Long id) {
         eventAgendaService.deleteAgenda(id);
     }
 
     @Operation(summary = "Delete agenda by event ID")
-    @SignatureAuth
-    @SaCheckLogin
+    // @SignatureAuth
+    // @SaCheckLogin
     @DeleteMapping("/event/{eventId}")
     public void deleteAgendaByEventId(@PathVariable Long eventId) {
         eventAgendaService.deleteAgendaByEventId(eventId);

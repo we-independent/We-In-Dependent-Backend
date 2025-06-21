@@ -10,7 +10,6 @@ import com.weindependent.app.dto.EventAgendaItemUpdateQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEventAgendaItemService;
-import com.weindependent.app.service.IEventAgendaService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventAgendaItemVO;
 import com.weindependent.app.vo.event.EventAgendaVO;
@@ -34,9 +33,6 @@ public class EventAgendaItemServiceImpl implements IEventAgendaItemService {
 
     @Resource
     private EventAgendaMapper eventAgendaMapper;
-
-    @Resource
-    private IEventAgendaService eventAgendaService;
 
     @Resource
     private IEventService eventService;

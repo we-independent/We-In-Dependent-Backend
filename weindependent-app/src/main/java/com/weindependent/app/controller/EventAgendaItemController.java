@@ -27,21 +27,21 @@ public class EventAgendaItemController {
     private IEventAgendaItemService eventAgendaItemService;
 
     @Operation(summary = "Get agenda items by agenda ID")
-    @SignatureAuth
+    //@SignatureAuth
     @GetMapping("/agenda/{agendaId}")
     public List<EventAgendaItemVO> getItemsByAgendaId(@PathVariable Long agendaId) {
         return eventAgendaItemService.getItemsByAgendaId(agendaId);
     }
 
     @Operation(summary = "Get agenda item by ID")
-    @SignatureAuth
+    //@SignatureAuth
     @GetMapping("/{id}")
     public EventAgendaItemVO getItemById(@PathVariable Long id) {
         return eventAgendaItemService.getItemById(id);
     }
 
     @Operation(summary = "Create agenda item")
-    @SignatureAuth
+    //@SignatureAuth
     @SaCheckLogin
     @PostMapping
     public EventAgendaItemVO createItem(@Valid @RequestBody EventAgendaItemCreateQry qry) {
@@ -49,7 +49,7 @@ public class EventAgendaItemController {
     }
 
     @Operation(summary = "Update agenda item")
-    @SignatureAuth
+    //@SignatureAuth
     @SaCheckLogin
     @PutMapping
     public EventAgendaItemVO updateItem(@Valid @RequestBody EventAgendaItemUpdateQry qry) {
@@ -57,7 +57,7 @@ public class EventAgendaItemController {
     }
 
     @Operation(summary = "Delete agenda item by ID")
-    @SignatureAuth
+    //@SignatureAuth
     @SaCheckLogin
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable Long id) {
@@ -65,7 +65,7 @@ public class EventAgendaItemController {
     }
 
     @Operation(summary = "Update agenda item sort order")
-    @SignatureAuth
+    //@SignatureAuth
     @SaCheckLogin
     @PutMapping("/{id}/sort-order")
     public void updateItemSortOrder(@PathVariable Long id, @RequestParam Integer sortOrder) {

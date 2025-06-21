@@ -71,11 +71,6 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to create event");
         }
 
-        if (eventDO.getBannerId() != null) {
-            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
-                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
-            };
-        }
         return eventDO;
     }
 
@@ -95,12 +90,6 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         if(dashboardEventMapper.update(eventDO)==0){
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString()+". Check if the image is not used by other event.");
         };
-
-        if (eventDO.getBannerId() != null) {
-            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
-                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
-            };
-        }
 
     }
 

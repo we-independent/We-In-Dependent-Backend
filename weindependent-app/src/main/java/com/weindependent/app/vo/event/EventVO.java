@@ -25,7 +25,6 @@ public class EventVO {
     // private Long speakerBannerId;
     // private String speakerBannerUrl;
     private List<EventSpeakerVO> speakers;
-    private Long bannerId;
     private String bannerUrl;
     private boolean isBookMarked;
 }

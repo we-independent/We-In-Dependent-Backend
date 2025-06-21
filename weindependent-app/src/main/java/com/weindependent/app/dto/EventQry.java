@@ -31,6 +31,4 @@ public class EventQry {
     private String link;
 
     private Integer tagId;
-
-    private Long bannerId;
 }

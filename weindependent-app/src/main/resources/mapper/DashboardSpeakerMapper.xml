@@ -38,11 +38,11 @@
                s.background,
                s.description,
                s.banner_id,
-               img.file_path AS bannerUrl,
+               NULL AS bannerUrl,
                s.create_time,
                s.update_time
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        <!-- LEFT JOIN event_speaker_image img ON s.banner_id = img.id -->
         ORDER BY s.update_time DESC
     </select>
 
