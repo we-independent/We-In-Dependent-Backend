@@ -12,6 +12,7 @@ public class BlogConverter {
         blogVO.setSourceUrl(blogDO.getSourceUrl());
         blogVO.setSourceUrlDisplayText(blogDO.getSourceUrlDisplayText());
         blogVO.setAuthorId(blogDO.getAuthorId());
+        blogVO.setReadingTimeInMinutes(blogDO.getReadingTimeInMinutes());
         blogVO.setBannerImgId(blogDO.getBannerImgId());
         blogVO.setSummary(blogDO.getSummary());
         blogVO.setTitle(blogDO.getTitle());

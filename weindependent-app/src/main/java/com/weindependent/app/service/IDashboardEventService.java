@@ -20,10 +20,10 @@ public interface IDashboardEventService {
     EventDO create(EventQry eventQry);
     void delete(List<Long> ids);
     void update(Long id, EventQry eventQry);
-    ImageDO insertEventBanner(MultipartFile file);
+    String insertEventBanner(MultipartFile file);
     UserVOs getRegisteredUsers(Long id, Integer page, Integer size);
     UserVOs getBookmarkedUsers(Long id, Integer page, Integer size);
-    EventDO getById(Long id);
+    DashboardEventVO getById(Long id);
     void addSpeakersToEvent(Long eventId, List<Long> speakerIds);
     void updateSpeakersOfEvent(Long eventId, List<Long> speakerIds);
     List<DashboardSpeakerVO> getSpeakersByEventId(Long eventId);

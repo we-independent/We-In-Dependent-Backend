@@ -25,6 +25,10 @@ public class CommonUtil {
         if(driveUrl == null || driveUrl.isEmpty())
             return driveUrl;
 
+        if(driveUrl.startsWith("http://") || driveUrl.startsWith("https://")) {
+            return driveUrl; // Already a full URL
+        }
+        
         String regex = "https://drive.google.com/file/d/([a-zA-Z0-9_-]+)(?:/view.*)?";
         String fileId;
 

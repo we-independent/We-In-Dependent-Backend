@@ -20,9 +20,12 @@ public class BlogArticleEditQry {
 
     /** 原始文章链接显示文字 */
     private String sourceUrlDisplayText;
-    
+
     /** 作者ID */
     private Integer authorId;
+
+    /**  阅读时间（以分钟为单位） **/
+    private Integer readingTimeInMinutes;
 
     /** bannerID */
     private Integer bannerImgId;

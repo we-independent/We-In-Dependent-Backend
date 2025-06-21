@@ -11,19 +11,19 @@ import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.service.UserService;
-import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
+import com.weindependent.app.dto.EventFilterQry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import java.time.DateTimeException;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -58,8 +58,12 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public List<RecentEventVO> getByMonth(int year, int month) {
-        List<RecentEventVO> events = eventMapper.getByMonth(year,month);
+    public List<RecentEventVO> getUpcomingByMonth(int year, int month) {
+        Integer userId =null;
+        if(StpUtil.isLogin()){
+            userId=StpUtil.getLoginIdAsInt();
+        }
+        List<RecentEventVO> events = eventMapper.getUpcomingByMonth(userId,year,month);
         if(events == null ){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
@@ -111,17 +115,8 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public EventRegisterDetailVO register(Long id) {
+    public void register(Long id, String userTimeZone) {
         Long userId = StpUtil.getLoginIdAsLong();
-        EventVO eventVO =eventMapper.getById(id, null);
-        if (eventVO == null) {
-            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
-        }
-
-        UserDO user= userService.findUserById(userId);
-        if(user == null){
-            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "User does not exist");
-        }
 
         int affectedRow = 0;
         try {
@@ -139,22 +134,39 @@ public class EventServiceImpl implements IEventService {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Cannot find event");
         }
 
+        sendRegisterConfirmationEmail(id,userId, userTimeZone);
+    }
+
+    @Override
+    @Async
+    public void sendRegisterConfirmationEmail(Long eventId, Long userId, String userTimeZone) {
+        EventVO eventVO =eventMapper.getById(eventId, null);
+
+        if (eventVO == null) {
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
+        }
+
+        UserDO user= userService.findUserById(userId);
+        if(user == null){
+            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "User does not exist");
+        }
+
         Map<String, String> sendMailParams = new HashMap<>();
+        ZoneId zoneId;
+        try {
+            zoneId = ZoneId.of(userTimeZone != null ? userTimeZone : "America/New_York");
+        } catch (DateTimeException e) {
+            zoneId = ZoneId.of("America/New_York"); // fallback if user passed an invalid string
+        }
+        String formattedTime = eventVO.getEventTime().atZone(zoneId)
+                .format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm a (z)"));
+
         sendMailParams.put("title", eventVO.getTitle());
         sendMailParams.put("username",user.getRealName());
         sendMailParams.put("link", eventVO.getLink());
-        sendMailParams.put("time", eventVO.getEventTime().toString());
+        sendMailParams.put("time", formattedTime);
         sendMailParams.put("location", eventVO.getLocation());
-        // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
         emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
-
-        EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();
-        if (eventVO.getLink() != null) {
-            eventRegisterDetailVO.setLink(eventVO.getLink());
-            eventRegisterDetailVO.setIcsText(generateIcsCalendarText(eventVO));
-            eventRegisterDetailVO.setGoogleCalendarLink(generateGoogleCalendarLink(eventVO));
-        }
-        return eventRegisterDetailVO;
     }
 
     @Override
@@ -227,54 +239,27 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public RecentEventVOs getBookmarkedEvents(int pageNum, int pageSize) {
+    public RecentEventVOs getBookmarkedPastEvents(int pageNum, int pageSize) {
         int userId = StpUtil.getLoginIdAsInt();
         Page page = PageHelper.startPage(pageNum, pageSize);
-        List<RecentEventVO> events = eventMapper.getBookmarkedEvents(userId);
+        List<RecentEventVO> events = eventMapper.getBookmarkedPastEvents(userId);
         RecentEventVOs recentEventVOS = new RecentEventVOs();
         recentEventVOS.setEvents(events);
         recentEventVOS.setPages(page.getPages());
         return recentEventVOS;
     }
 
-    private String generateGoogleCalendarLink(EventVO eventVO) {
-        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String endUtc = eventVO.getEventTime().plusHours(1).atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String description = "Link: "+eventVO.getLink();
-
-        return String.format(
-                "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%s&dates=%s/%s&details=%s&location=%s",
-                eventVO.getTitle(), startUtc, endUtc,description, eventVO.getLocation()
-        );
+    @Override
+    public RecentEventVOs getBookmarkedUpcomingEvents(int pageNum, int pageSize) {
+        int userId = StpUtil.getLoginIdAsInt();
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        List<RecentEventVO> events = eventMapper.getBookmarkedUpcomingEvents(userId);
+        RecentEventVOs recentEventVOS = new RecentEventVOs();
+        recentEventVOS.setEvents(events);
+        recentEventVOS.setPages(page.getPages());
+        return recentEventVOS;
     }
 
-    private String generateIcsCalendarText(EventVO eventVO) {
-        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String endUtc = eventVO.getEventTime().plusHours(1).atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
-        String description = "Link: "+eventVO.getLink();
-
-        return String.format(
-                "BEGIN:VCALENDAR\n" +
-                        "VERSION:2.0\n" +
-                        "BEGIN:VEVENT\n" +
-                        "SUMMARY:%s\n" +
-                        "DESCRIPTION:%s\n" +
-                        "DTSTART:%s\n" +
-                        "DTEND:%s\n" +
-                        "LOCATION:%s\n" +
-                        "END:VEVENT\n" +
-                        "END:VCALENDAR",
-                eventVO.getTitle(),
-                description,
-                startUtc,
-                endUtc,
-                eventVO.getLocation()
-        );
-    }
     @Override
     public List<EventVO> searchEventsNatural(String keyword) {
         return eventMapper.searchEventsNatural(keyword);
@@ -292,5 +277,26 @@ public class EventServiceImpl implements IEventService {
         } catch (Exception e) {
             log.error("Failed to record event view: userId={}, eventId={}", userId, eventId, e);
         }
+    }
+
+    @Override
+    public RecentEventVOs filterPastEventsByTags(EventFilterQry filter) {
+        List<RecentEventVO> events = eventMapper.getPastEventsFiltered(
+                filter.getTagIds()
+        );
+
+        if (events == null || events.isEmpty()) {
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "No events found");
+        }
+
+        RecentEventVOs result = new RecentEventVOs();
+        result.setEvents(events);
+        return result;
+    }
+
+    @Override
+    public boolean isRegistered(Long eventId) {
+        int userId = StpUtil.getLoginIdAsInt();
+        return eventMapper.isRegistered (eventId,userId);
     }
 }
