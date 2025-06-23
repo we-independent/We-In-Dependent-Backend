@@ -8,7 +8,7 @@ import com.weindependent.app.database.dataobject.SaveListDO;
 import com.weindependent.app.dto.BlogArticleCardQry;
 
 public interface SaveListMapper {
-    List<BlogArticleCardQry> getSavedBlogsFromList(@Param("listId") int listId);
+    List<BlogArticleCardQry> getSavedBlogsFromList(@Param("userId") int userId, @Param("listId") int listId);
 
     Integer findDefaultListByUserId(@Param("userId") int userId);
 

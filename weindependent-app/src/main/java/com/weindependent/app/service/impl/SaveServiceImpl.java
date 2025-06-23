@@ -45,6 +45,7 @@ public class SaveServiceImpl implements SaveService{
             else {
                 int result = saveBlogToList(listId, blogId);
                 saveMapper.updateSaveListMetadata(userId, blogId);///update last_edited time and image for list
+                System.out.println("save blog to list result is"+result);
                 return result;
             }
         }

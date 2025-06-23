@@ -25,7 +25,7 @@ public class SaveListServiceImpl implements SaveListService{
     public PageInfo<BlogArticleCardQry> getSavedBlogs(BlogArticleListQry query, int userId, int listId) {
         if (!checkListOwnership(userId, listId)) 
             throw new ResponseException(ErrorCode.UNAUTHORIZED_ACCESS.getCode(), ErrorCode.UNAUTHORIZED_ACCESS.getTitle());
-        List<BlogArticleCardQry> list = saveListMapper.getSavedBlogsFromList(listId);
+        List<BlogArticleCardQry> list = saveListMapper.getSavedBlogsFromList(userId, listId);
         int pageNum = (query.getPageNum() != null && query.getPageNum() > 0) ? query.getPageNum() : 1;
         int pageSize = (query.getPageSize() != null && query.getPageSize() > 0) ? query.getPageSize() : 9;
         PageHelper.startPage(pageNum, pageSize);

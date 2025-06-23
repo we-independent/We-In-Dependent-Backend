@@ -14,7 +14,6 @@ import com.weindependent.app.service.SaveListService;
 
 import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -25,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * @author Elly
@@ -50,6 +50,10 @@ public class SaveListController {
         return saveListService.getSavedBlogs(query, userId, listId);
     }
 
+    /**
+     * create a new list for a user with a list name
+     * @param saveBlogQry must contains list name
+     */
     @Operation(summary = "根据user id和list name建立新收藏夹")
     @PostMapping("/create-list")
     public void createList(@RequestBody SaveListQry saveBlogQry){
@@ -66,7 +70,7 @@ public class SaveListController {
     }
     @Operation(summary = "返回用户所有收藏夹")
     @GetMapping("get-all-list")
-    public List<SaveListDO> getSavingLists(@RequestBody SaveListQry saveBlogQry) {
+    public List<SaveListDO> getSavingLists() {
         int userId = StpUtil.getLoginIdAsInt();
         return saveListService.getSavingList(userId);
     }
@@ -82,6 +86,10 @@ public class SaveListController {
         }
     }
 
+    /**
+     * update list name
+     * @param saveBlogQry must have list id, list name
+     */
     @Operation(summary = "更改收藏夹名字")
     @PostMapping("update-list-name")
     public void setListOrder(@RequestBody SaveListQry saveBlogQry){
