@@ -123,6 +123,11 @@
         WHERE e.id = #{id}
     </update>
 
+    <select id="getAllBannerUrls" resultType="java.lang.String">
+        SELECT banner_url FROM event
+    </select>
+
+
 
 
 </mapper>
