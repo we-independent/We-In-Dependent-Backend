@@ -15,8 +15,7 @@ public class DashboardEventVO {
     private LocalDateTime eventTime;
     private Integer duration;
     private String location;
-    // private Long speakerUserId;
-    // private String speakerName;
+    private String speakerNameList;
     private String bannerUrl;
     private String bannerFilePath;
     private boolean isDeleted;
