@@ -22,8 +22,8 @@ public interface IEventService {
     RecentEventVOs getViewedEvents(int page, int size);
     RecentEventVOs getBookmarkedPastEvents(int page, int size);
     RecentEventVOs getBookmarkedUpcomingEvents(int page, int size);
-    List<EventVO> searchEventsNatural(String keyword);
-    List<EventVO> searchEventsBoolean(String keyword);
+    RecentEventVOs searchEventsNatural(String keyword);
+    RecentEventVOs searchEventsBoolean(String keyword);
     RecentEventVOs filterPastEventsByTags(EventFilterQry filter);
     boolean isRegistered(Long id);
 }
