@@ -23,4 +23,6 @@ public interface SaveListMapper {
 
     int updateListName(@Param("userId")int userId, @Param("listId")int listId, @Param("name") String name);
 
+    List<SaveListDO> findArticleBelongsList(@Param("userId")int userId, @Param("blogId") int blogId);
+
 }

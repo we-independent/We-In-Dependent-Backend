@@ -77,4 +77,8 @@ public class SaveListServiceImpl implements SaveListService{
     private boolean checkListOwnership(int userId, int listId){
         return saveListMapper.checkListOwnership(userId, listId);
     }
+
+    public List<SaveListDO>findArticleBelongsList(int userId, int blogId){
+        return saveListMapper.findArticleBelongsList(userId, blogId);
+    }
 }

@@ -22,4 +22,5 @@ public interface SaveListService {
 
     /* 更新list名字 */
     int updateListName(int userId, int listId, String name);
+    List<SaveListDO>findArticleBelongsList(int userId, int blogId);
 }

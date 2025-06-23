@@ -103,4 +103,15 @@ public class SaveListController {
         }
     }
 
+    /**
+     * find all lists that saves a blog by a user
+     * @param blogId the blog id that is searched
+     * @return a list of user's saved blog lists that contains this blog
+     */
+    @Operation(summary = "查找某文章所属收藏架")
+    @GetMapping("/find-article/{blogId}")
+    public List<SaveListDO> findArticleBelongsList(@PathVariable int blogId){
+        int userId = StpUtil.getLoginIdAsInt();
+        return saveListService.findArticleBelongsList(userId, blogId);
+    }
 }
