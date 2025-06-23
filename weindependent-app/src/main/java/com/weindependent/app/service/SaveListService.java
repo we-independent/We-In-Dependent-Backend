@@ -16,4 +16,5 @@ public interface SaveListService {
     int createDefaultList(int userId);
     /*删除收藏夹 */
     int deleteList(int userId, int listId);
+    List<SaveListDO>findArticleBelongsList(int userId, int blogId);
 }

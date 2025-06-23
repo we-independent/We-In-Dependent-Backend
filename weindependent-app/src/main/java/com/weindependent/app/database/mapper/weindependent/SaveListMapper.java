@@ -22,4 +22,6 @@ public interface SaveListMapper {
     /*检查user是否拥有某收藏夹 */
     int checkListOwnership(@Param("userId")int userId, @Param("listId")int listId);
 
+    List<SaveListDO> findArticleBelongsList(@Param("userId")int userId, @Param("blogId") int blogId);
+
 }
