@@ -38,8 +38,8 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     @Autowired
     private IFileService fileService;
 
-    private final Integer RESIZE_WIDTH = 1729;
-    private final Integer RESIZE_HEIGHT = 438;
+    private final Integer RESIZE_WIDTH = 768;
+    private final Integer RESIZE_HEIGHT = 422;
 
     @Autowired
     private DashboardEventMapper dashboardEventMapper;

@@ -41,11 +41,13 @@ public class GoogleDriveCleanup {
                     .execute()
                     .getFiles();
 
+            Instant tenDaysAgo = Instant.now().minus(java.time.Duration.ofDays(10));
+
             for (File file : files) {
-                if (!usedFileIds.contains(file.getId())) {
+                if (!usedFileIds.contains("https://cdn.weindependent.org/image/"+file.getId())) {
                     long createdMillis = file.getCreatedTime().getValue();
-                    if (createdMillis < Instant.now().minus(java.time.Duration.ofDays(10)).toEpochMilli()) { // created 10 days or longer before
-                        log.info("Deleting unused file: {}", file.getName());
+                    if (Instant.ofEpochMilli(createdMillis).isBefore(tenDaysAgo)) {
+                        log.info("Marked for deletion: {}", file.getName());
                         fileService.deleteFile(file.getId());
                     }
                 }
