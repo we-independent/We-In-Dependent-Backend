@@ -50,7 +50,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-    int insertBlogArticle(BlogArticleEditQry blogArticle, Integer userId);
+    int insertBlogArticle(BlogArticleEditQry blogArticle);
 
     /**
      * 新增博客图片
@@ -66,7 +66,7 @@ public interface IBlogArticleService {
      * @param blogArticle 博客文章
      * @return 结果
      */
-     int updateBlogArticle(BlogArticleEditQry blogArticle, Integer userId);
+     int updateBlogArticle(BlogArticleEditQry blogArticle);
 
     /**
      * 批量删除博客文章
@@ -74,7 +74,7 @@ public interface IBlogArticleService {
      * @param ids 需要删除的博客文章主键集合
      * @return 结果
      */
-    int deleteBlogArticleByIds(List<Integer> ids, int updateUserId);
+    int deleteBlogArticleByIds(List<Integer> ids);
 
     /**
      * 删除博客文章信息
