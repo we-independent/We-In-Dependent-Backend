@@ -1,5 +1,6 @@
 package com.weindependent.app.scheduler;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
 import com.weindependent.app.config.GoogleDriveFolderProperties;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 import java.util.*;
 import javax.annotation.Resource;
 
@@ -40,11 +43,13 @@ public class GoogleDriveCleanup {
 
             for (File file : files) {
                 if (!usedFileIds.contains(file.getId())) {
-                    log.info("Deleting unused file: {}", file.getName());
-                    fileService.deleteFile(file.getId());
+                    long createdMillis = file.getCreatedTime().getValue();
+                    if (createdMillis < Instant.now().minus(java.time.Duration.ofDays(10)).toEpochMilli()) { // created 10 days or longer before
+                        log.info("Deleting unused file: {}", file.getName());
+                        fileService.deleteFile(file.getId());
+                    }
                 }
             }
-
         } catch (Exception e) {
             log.error("Failed to clean up unused Google Drive files", e);
         }
