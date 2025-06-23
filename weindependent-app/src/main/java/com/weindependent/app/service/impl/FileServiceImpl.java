@@ -36,7 +36,7 @@ public class FileServiceImpl implements IFileService {
     private String appName;
 
     @Autowired
-    private GoogleDriveFolderProperties folderProps;
+    public GoogleDriveFolderProperties folderProps;
 
     private Drive drive;
 

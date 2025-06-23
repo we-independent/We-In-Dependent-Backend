@@ -35,6 +35,8 @@ public interface DashboardEventMapper {
     List<UserDO> getBookmarkedUsers(Long id);
 
     DashboardEventVO getById(Long id);
+
+    List<String> getAllBannerUrls();
 }
 
 
