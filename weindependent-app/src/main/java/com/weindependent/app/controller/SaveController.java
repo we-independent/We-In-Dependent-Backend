@@ -87,7 +87,7 @@ public class SaveController {
     @Operation(summary = "显示用户收藏的所有文章(不论list)")
     @PostMapping("/all-saved-articles")
     public PageInfo<BlogArticleCardQry> allSavedArticles(@RequestBody BlogArticleListQry query){
-        int userId = StpUtil.getLoginIdAsInt();
+        int userId =StpUtil.getLoginIdAsInt();
         PageInfo<BlogArticleCardQry> result = saveService.allSavedArticles(query, userId);
         return result;
     }
