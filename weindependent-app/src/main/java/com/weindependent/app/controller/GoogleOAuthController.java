@@ -53,7 +53,7 @@ public class GoogleOAuthController {
 
     UserDO foundUser = userService.findUserByAccount(email);
     if (foundUser == null || foundUser.getId() == null) {
-      GoogleUserVO googleUserDTO = new GoogleUserVO();
+        GoogleUserVO googleUserDTO = new GoogleUserVO();
         googleUserDTO.setUsername(name);
         googleUserDTO.setEmail(email);
         googleUserDTO.setNewUser(true);

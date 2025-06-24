@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class GoogleUserVO {
     private Long id;
-    private String token;
     private String email;
     private String username;
     private String language;
