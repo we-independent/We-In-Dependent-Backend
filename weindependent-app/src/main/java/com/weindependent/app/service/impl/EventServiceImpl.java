@@ -261,13 +261,19 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public List<EventVO> searchEventsNatural(String keyword) {
-        return eventMapper.searchEventsNatural(keyword);
+    public RecentEventVOs searchEventsNatural(String keyword) {
+        List<RecentEventVO> events = eventMapper.searchEventsNatural(keyword);
+        RecentEventVOs result = new RecentEventVOs();
+        result.setEvents(events);
+        return result;
     }
 
     @Override
-    public List<EventVO> searchEventsBoolean(String keyword) {
-        return eventMapper.searchEventsBoolean(keyword);
+    public RecentEventVOs searchEventsBoolean(String keyword) {
+        List<RecentEventVO> events = eventMapper.searchEventsBoolean(keyword);
+        RecentEventVOs result = new RecentEventVOs();
+        result.setEvents(events);
+        return result;
     }
 
     @Async

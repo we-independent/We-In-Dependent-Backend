@@ -10,6 +10,7 @@ import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
 import com.weindependent.app.dto.EventFilterQry;
+import com.weindependent.app.dto.PastEventSearchRequestQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +42,41 @@ public class EventController {
         return IEventService.getUpcomingEvents(page,size);
     }
 
-    @Operation(summary = "Get past events")
+    @Operation(summary = "Search or filter past events with keyword, mode, or filters")
     @SignatureAuth
-    @GetMapping("/past")
-    public RecentEventVOs getPastEvents(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return IEventService.getPastEvents(page, size);
+    @PostMapping("/past")
+    public RecentEventVOs getPastEventsCombined(@RequestBody(required = false) PastEventSearchRequestQry request) {
+        if (request == null || (request.getKeyword() == null && request.getFilter() == null)) {
+            return IEventService.getPastEvents(1, 10);
+        }
+
+        int page = request.getPage();
+        int size = request.getSize();
+
+        if (request.getKeyword() != null) {
+            String mode = request.getMode() != null ? request.getMode() : "natural";
+            switch (mode.toLowerCase()) {
+                case "boolean":
+                    return IEventService.searchEventsBoolean(request.getKeyword());
+                case "natural":
+                default:
+                    return IEventService.searchEventsNatural(request.getKeyword());
+            }
+        } else if (request.getFilter() != null) {
+            return IEventService.filterPastEventsByTags(request.getFilter());
+        } else {
+            return IEventService.getPastEvents(page, size);
+        }
     }
+
+//    @Operation(summary = "Get past events")
+//    @SignatureAuth
+//    @GetMapping("/past")
+//    public RecentEventVOs getPastEvents(
+//            @RequestParam(defaultValue = "1") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        return IEventService.getPastEvents(page, size);
+//    }
 
     @Operation(summary = "Get upcoming events by month")
     @SignatureAuth
@@ -59,7 +87,6 @@ public class EventController {
     ) {
         return IEventService.getUpcomingByMonth(year, month);
     }
-
 
     @Operation(summary = "Get event by ID")
     @SignatureAuth
@@ -142,26 +169,26 @@ public class EventController {
         return IEventService.getViewedEvents(page,size);
     }
 
-    @Operation(summary = "Search events using full-text search in natural language mode")
-    @SignatureAuth
-    @GetMapping("/search/natural")
-    public List<EventVO> searchEventsNatural(@RequestParam String keyword) {
-        return IEventService.searchEventsNatural(keyword);
-    }
-
-    @Operation(summary = "Search events using full-text search in boolean mode")
-    @SignatureAuth
-    @GetMapping("/search/boolean")
-    public List<EventVO> searchEventsBoolean(@RequestParam String keyword) {
-        return IEventService.searchEventsBoolean(keyword);
-    }
-
-    @Operation(summary = "Get past events with optional filters")
-    @SignatureAuth
-    @PostMapping("/past/filter")
-    public RecentEventVOs filterPastEventsByTags(@RequestBody EventFilterQry filter) {
-        return IEventService.filterPastEventsByTags(filter);
-    }
+//    @Operation(summary = "Search events using full-text search in natural language mode")
+//    @SignatureAuth
+//    @GetMapping("/search/natural")
+//    public RecentEventVOs searchEventsNatural(@RequestParam String keyword) {
+//        return IEventService.searchEventsNatural(keyword);
+//    }
+//
+//    @Operation(summary = "Search events using full-text search in boolean mode")
+//    @SignatureAuth
+//    @GetMapping("/search/boolean")
+//    public RecentEventVOs searchEventsBoolean(@RequestParam String keyword) {
+//        return IEventService.searchEventsBoolean(keyword);
+//    }
+//
+//    @Operation(summary = "Get past events with optional filters")
+//    @SignatureAuth
+//    @PostMapping("/past/filter")
+//    public RecentEventVOs filterPastEventsByTags(@RequestBody EventFilterQry filter) {
+//        return IEventService.filterPastEventsByTags(filter);
+//    }
 
     @Operation(summary = "Resend register event email")
     @SignatureAuth

@@ -243,7 +243,7 @@
 
 
     <!-- Natural Language Mode -->
-    <select id="searchEventsNatural" parameterType="string" resultType="com.weindependent.app.vo.event.EventVO">
+    <select id="searchEventsNatural" parameterType="string" resultType="com.weindependent.app.vo.event.RecentEventVO">
         SELECT
             e.id,
             e.title,
@@ -251,11 +251,11 @@
             e.event_time,
             e.location,
             e.link,
-            e.category_id,
-            c.name AS categoryName,
+            e.tag_id,
+            t.name AS tagName,
             e.banner_url
         FROM event e
-                 LEFT JOIN category c ON e.category_id = c.id
+                 LEFT JOIN event_tag t ON e.tag_id = t.id
         WHERE
                         e.is_deleted = 0
                     AND MATCH(e.title, e.summary, e.content)
@@ -266,20 +266,19 @@
 
 
     <!-- Boolean Mode -->
-    <select id="searchEventsBoolean" parameterType="string" resultType="com.weindependent.app.vo.event.EventVO">
+    <select id="searchEventsBoolean" parameterType="string" resultType="com.weindependent.app.vo.event.RecentEventVO">
         SELECT
             e.id,
             e.title,
             e.content,
             e.event_time,
             e.location,
-            e.banner_id,
             e.link,
-            e.category_id,
-            c.name AS categoryName,
+            e.tag_id,
+            t.name AS tagName,
             e.banner_url
         FROM event e
-                 LEFT JOIN category c ON e.category_id = c.id
+                 LEFT JOIN event_tag t ON e.tag_id = t.id
         WHERE
                         e.is_deleted = 0
                     AND MATCH(e.title, e.summary, e.content)
@@ -289,16 +288,25 @@
 
 
     <select id="getPastEventsFiltered" resultType="com.weindependent.app.vo.event.RecentEventVO">
-        SELECT DISTINCT e.*
-        FROM event e
-        LEFT JOIN tag_event_relation ter ON e.id = ter.event_id
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_time,
+            e.location,
+            e.link,
+            e.tag_id,
+            e.banner_url,
+            t.name AS tag_name
+        FROM
+            event e
+        JOIN
+            event_tag t ON e.tag_id = t.id
         <where>
-            e.is_deleted = 0
-            AND e.event_time &lt; NOW()
             <if test="tagIds != null and tagIds.size() > 0">
-                AND ter.tag_id IN
-                <foreach item="id" collection="tagIds" open="(" separator="," close=")">
-                    #{id}
+                e.tag_id IN
+                <foreach item="tagId" collection="tagIds" open="(" separator="," close=")">
+                    #{tagId}
                 </foreach>
             </if>
         </where>

@@ -28,7 +28,12 @@
             t.name AS tagName,
             cu.real_name AS createUserName,
             uu.real_name AS updateUserName,
-            <!-- su.real_name AS speakerName, -->
+            (
+                SELECT GROUP_CONCAT(CONCAT(s.first_name, ' ', s.last_name) SEPARATOR ', ')
+                FROM event_speaker_relation esr
+                JOIN event_speaker s ON esr.speaker_id = s.id
+                WHERE esr.event_id = e.id
+            ) AS speakerNameList,
             CEIL(COUNT(*) OVER() / #{pageSize}) AS pages
         FROM event e
              LEFT JOIN t_system_user cu ON e.create_user_id = cu.id
@@ -112,16 +117,16 @@
                 e.location = #{location},
                 e.link = #{link},
                 e.tag_id = #{tagId},
-                <!-- e.speaker_user_id = #{speakerUserId}, -->
                 e.update_user_id = #{updateUserId},
-                e.banner_url= #{bannerUrl}
-                e.video_link = #{videoLink},
-                ei.is_deleted = CASE
-                WHEN e.banner_id != #{bannerId} THEN 1
-                ELSE ei.is_deleted
-        END
+                e.banner_url= #{bannerUrl},
+                e.video_link = #{videoLink}
         WHERE e.id = #{id}
     </update>
+
+    <select id="getAllBannerUrls" resultType="java.lang.String">
+        SELECT banner_url FROM event
+    </select>
+
 
 
 
