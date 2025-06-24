@@ -117,14 +117,9 @@
                 e.location = #{location},
                 e.link = #{link},
                 e.tag_id = #{tagId},
-                <!-- e.speaker_user_id = #{speakerUserId}, -->
                 e.update_user_id = #{updateUserId},
-                e.banner_url= #{bannerUrl}
-                e.video_link = #{videoLink},
-                ei.is_deleted = CASE
-                WHEN e.banner_id != #{bannerId} THEN 1
-                ELSE ei.is_deleted
-        END
+                e.banner_url= #{bannerUrl},
+                e.video_link = #{videoLink}
         WHERE e.id = #{id}
     </update>
 
