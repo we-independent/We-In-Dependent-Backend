@@ -12,8 +12,8 @@ public class UpdateUserQry {
   private String language;
   // @NotBlank(message = "VisaType is required")
   private String visaType;
-  @NotNull(message = "profileImageId is required")
-  private Integer profileImageId;
+  @NotNull(message = "avatar is required")
+  private String avatar;
   @NotNull(message = "isVisaPublic is required")
   private Boolean isVisaPublic;
   private Boolean notificationEnabled;
