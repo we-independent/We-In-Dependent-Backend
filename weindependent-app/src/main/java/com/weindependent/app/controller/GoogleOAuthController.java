@@ -2,12 +2,10 @@ package com.weindependent.app.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.convertor.UserConvertor;
-import com.weindependent.app.dto.GoogleUserDTO;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.service.GoogleOAuthService;
 import com.weindependent.app.database.dataobject.UserDO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
+import com.weindependent.app.vo.user.GoogleUserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +41,7 @@ public class GoogleOAuthController {
   @Operation(summary = "Google Login")
   @GetMapping("/google-login")
   @CrossOrigin(origins = "*")
-  public GoogleUserDTO googleLogin(@RequestParam("code") String code) {
+  public GoogleUserVO googleLogin(@RequestParam("code") String code) {
     Map<String, String> userInfo = googleOAuthService.exchangeCodeForUserInfo(code);
     if (!userInfo.containsKey("email")) {
       throw new RuntimeException("Failed to retrieve user info from Google");
@@ -55,16 +53,16 @@ public class GoogleOAuthController {
 
     UserDO foundUser = userService.findUserByAccount(email);
     if (foundUser == null || foundUser.getId() == null) {
-        GoogleUserDTO googleUserDTO = new GoogleUserDTO();
-        googleUserDTO.setRealName(name);
-        googleUserDTO.setAccount(email);
+      GoogleUserVO googleUserDTO = new GoogleUserVO();
+        googleUserDTO.setUsername(name);
+        googleUserDTO.setEmail(email);
         googleUserDTO.setNewUser(true);
       return googleUserDTO;
     }
 
     StpUtil.login(foundUser.getId());
     log.info("User {} google logged in successfully using email {}", name, email);
-    return UserConvertor.toGoogleUserDTOEntity(foundUser,false);
+    return UserConvertor.toGoogleUserVO(foundUser,false);
   }
 
   /**
