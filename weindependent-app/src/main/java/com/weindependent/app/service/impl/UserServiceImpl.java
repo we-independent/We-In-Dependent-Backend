@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ImageDO createProfileImg(MultipartFile file) {
+    public String createProfileImg(MultipartFile file) {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file,
@@ -190,16 +190,8 @@ public class UserServiceImpl implements UserService {
         UploadedFileVO uploadedFileVO =
             fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
 
-        ImageDO imageDo = new ImageDO();
-        imageDo.setFileName(uploadedFileVO.getFileName());
-        imageDo.setFileKey(uploadedFileVO.getFileKey());
-        imageDo.setFileType(resizedFile.getContentType());
-        imageDo.setFilePath(uploadedFileVO.getFilePath());
-        int affectedRows = profileImageMapper.create(imageDo);
-        if (affectedRows != 1) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
-        }
-        return imageDo;
+
+        return uploadedFileVO.getFilePath();
     }
 
 

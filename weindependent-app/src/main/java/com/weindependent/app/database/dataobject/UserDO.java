@@ -20,4 +20,5 @@ public class UserDO {
     private Boolean isVisaPublic;
     // nullable default 0
     private Boolean notificationEnabled;
+    private String avatar;
 }

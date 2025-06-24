@@ -57,8 +57,8 @@
             <if test="realName != null and realName != ''">real_name = #{realName},</if>
             <if test="language != null and language != ''">language = #{language},</if>
             <if test="visaType != null and visaType != ''">visa_type = #{visaType},</if>
-            <if test="profileImageId != null">profile_image_id = #{profileImageId},</if>
             <if test="isVisaPublic != null">is_visa_public = #{isVisaPublic},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
         </set>
         WHERE id = #{id}
     </update>
