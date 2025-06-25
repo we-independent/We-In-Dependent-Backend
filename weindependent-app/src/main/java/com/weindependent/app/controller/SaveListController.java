@@ -45,7 +45,7 @@ public class SaveListController {
     @Operation(summary = "返回收藏夹下的所有文章")
     @PostMapping("/get-all-articles/{listId}")
     public PageInfo<BlogArticleCardQry> getSavedBlogs(@RequestBody BlogArticleListQry query, @PathVariable int listId) {
-        int userId = StpUtil.getLoginIdAsInt();
+        int userId = 145;//StpUtil.getLoginIdAsInt();
         return saveListService.getSavedBlogs(query, userId, listId);
     }
 
@@ -70,7 +70,7 @@ public class SaveListController {
     @Operation(summary = "返回用户所有收藏夹")
     @GetMapping("get-all-list")
     public List<SaveListDO> getSavingLists() {
-        int userId = StpUtil.getLoginIdAsInt();
+        int userId = 145;//StpUtil.getLoginIdAsInt();
         return saveListService.getSavingList(userId);
     }
 

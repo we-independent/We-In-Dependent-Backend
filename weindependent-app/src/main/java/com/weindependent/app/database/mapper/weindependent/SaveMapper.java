@@ -23,8 +23,6 @@ public interface SaveMapper {
     /*显示收藏的所有文章 */
     List<BlogArticleCardQry> allSavedArticles(@Param("userId") int userId);
 
-    int updateSaveListMetadata(@Param("listId") int listId, @Param("blogId") int blogId);
-
     boolean existBlogId(@Param("blogId") int blogId);
 
     boolean existEventId(@Param("eventId") int eventId);

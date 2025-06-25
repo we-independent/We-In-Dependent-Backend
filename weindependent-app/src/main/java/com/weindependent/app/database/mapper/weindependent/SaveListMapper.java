@@ -25,4 +25,8 @@ public interface SaveListMapper {
 
     List<SaveListDO> findArticleBelongsList(@Param("userId")int userId, @Param("blogId") int blogId);
 
+    int updateSaveToListMetadata(@Param("listId") int listId, @Param("blogId") int blogId);
+
+    int updateDeleteFromListMetadata(@Param("listId") int listId, @Param("blogId") int blogId);
+
 }
