@@ -40,7 +40,7 @@ public class SaveController {
     @Operation(summary = "将文章储存到收藏夹")
     @PostMapping("/blogs/{blogId}")
     public void saveBlog(@PathVariable int blogId, @RequestBody SaveListQry saveBlogQry) throws Exception{
-        int userId = 145;//StpUtil.getLoginIdAsInt();
+        int userId = StpUtil.getLoginIdAsInt();
         int resultCode = saveService.saveBlog(userId, saveBlogQry.getListId(), blogId);
         
         if (resultCode == ErrorCode.SUCCESS.getCode()) return;
@@ -66,7 +66,7 @@ public class SaveController {
     @Operation(summary = "将文章从收藏夹删除")
     @DeleteMapping("/blogs/{blogId}")
     public void unsaveBlog(@PathVariable int blogId, @RequestBody SaveListQry saveBlogQry) {
-        int userId = 145;//StpUtil.getLoginIdAsInt();
+        int userId = StpUtil.getLoginIdAsInt();
         int resultCode = saveService.unsaveBlog(userId, saveBlogQry.getListId(), blogId);
         if (resultCode == ErrorCode.SUCCESS.getCode()) return;
         else if (resultCode == ErrorCode.USER_NOT_EXIST.getCode()){
@@ -87,7 +87,7 @@ public class SaveController {
     @Operation(summary = "显示用户收藏的所有文章(不论list)")
     @PostMapping("/all-saved-articles")
     public PageInfo<BlogArticleCardQry> allSavedArticles(@RequestBody BlogArticleListQry query){
-        int userId =145;//StpUtil.getLoginIdAsInt();
+        int userId =StpUtil.getLoginIdAsInt();
         PageInfo<BlogArticleCardQry> result = saveService.allSavedArticles(query, userId);
         return result;
     }
