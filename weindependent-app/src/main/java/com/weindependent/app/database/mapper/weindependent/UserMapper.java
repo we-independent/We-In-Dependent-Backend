@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.*;
 public interface UserMapper {
     UserDO query(Map<String, String> paramMap);
     List<UserDO> getAllUsers();
+    List<String> getAllAvatars();
     UserDO findByAccount(String account);
     int insert(UserDO user);
     UserDO findById(String id);

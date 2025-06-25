@@ -75,5 +75,10 @@
         DELETE FROM t_system_user WHERE id = #{userId}
     </delete>
 
+    <select id="getAllAvatars" resultType="java.lang.String">
+        SELECT avatar FROM t_system_user
+    </select>
+
+
 
 </mapper>
