@@ -15,7 +15,6 @@ import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
-import com.weindependent.app.dto.EventFilterQry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
@@ -261,18 +260,22 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public RecentEventVOs searchEventsNatural(String keyword) {
+    public RecentEventVOs searchEventsNatural(String keyword, int pageNum, int pageSize) {
         List<RecentEventVO> events = eventMapper.searchEventsNatural(keyword);
+        Page page = PageHelper.startPage(pageNum, pageSize);
         RecentEventVOs result = new RecentEventVOs();
         result.setEvents(events);
+        result.setPages(page.getPages());
         return result;
     }
 
     @Override
-    public RecentEventVOs searchEventsBoolean(String keyword) {
+    public RecentEventVOs searchEventsBoolean(String keyword, int pageNum, int pageSize) {
         List<RecentEventVO> events = eventMapper.searchEventsBoolean(keyword);
+        Page page = PageHelper.startPage(pageNum, pageSize);
         RecentEventVOs result = new RecentEventVOs();
         result.setEvents(events);
+        result.setPages(page.getPages());
         return result;
     }
 
@@ -286,10 +289,9 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public RecentEventVOs filterPastEventsByTags(EventFilterQry filter) {
-        List<RecentEventVO> events = eventMapper.getPastEventsFiltered(
-                filter.getTagIds()
-        );
+    public RecentEventVOs filterPastEventsByTags(List<Integer> filter, int pageNum, int pageSize) {
+        List<RecentEventVO> events = eventMapper.getPastEventsFiltered(filter);
+        Page page = PageHelper.startPage(pageNum, pageSize);
 
         if (events == null || events.isEmpty()) {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "No events found");
@@ -297,6 +299,7 @@ public class EventServiceImpl implements IEventService {
 
         RecentEventVOs result = new RecentEventVOs();
         result.setEvents(events);
+        result.setPages(page.getPages());
         return result;
     }
 
