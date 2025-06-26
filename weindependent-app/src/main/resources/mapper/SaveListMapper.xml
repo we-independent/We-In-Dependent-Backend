@@ -41,7 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id = "findDefaultListByUserId" resultType="Integer">
         SELECT list_id
         FROM save_list
-        WHERE user_id = #{userId} AND is_default = TRUE LIMIT 1 
+        WHERE user_id = #{userId} AND is_default = TRUE
     </select>
 
     <insert id = "createList" useGeneratedKeys="true" keyProperty="listId">
@@ -62,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         LEFT JOIN blog_article a ON sla.article_id = a.id AND a.is_deleted = 0 AND a.article_status = 'published'
         WHERE sl.user_id = #{userId}
         GROUP BY sl.list_id
+        ORDER BY sl.last_edited_time DESC
     </select>
 
     <select id="checkListOwnership" resultType="boolean">
@@ -84,4 +85,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         JOIN save_list_article sla ON sl.list_id = sla.list_id
         WHERE sl.user_id = #{userId} AND sla.article_id = #{blogId};
     </select>
+
+    <update id="updateSaveToListMetadata">
+        UPDATE save_list sl
+        JOIN save_list_article sla ON sl.list_id = sla.list_id
+        JOIN blog_article a ON sla.article_id = a.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        SET sl.last_edited_time = sla.saved_at,
+            sl.last_edited_image = i.file_path
+        WHERE sl.list_id = #{listId}
+        AND sla.article_id = #{blogId}
+    </update>
+
+    <update id="updateDeleteFromListMetadata">
+        UPDATE save_list sl
+        JOIN (
+            SELECT sla.list_id, sla.saved_at, i.file_path
+            FROM save_list_article sla
+            JOIN blog_article a ON a.id = sla.article_id
+            LEFT JOIN blog_image i ON a.banner_img_id = i.id
+            WHERE sla.list_id = #{listId}
+            ORDER BY sla.saved_at DESC
+            LIMIT 1
+        ) latest ON sl.list_id = latest.list_id
+        SET 
+        sl.last_edited_time = NOW(),
+        sl.last_edited_image = latest.file_path
+        WHERE sl.list_id = #{listId}
+    </update>
+
+    
 </mapper>
