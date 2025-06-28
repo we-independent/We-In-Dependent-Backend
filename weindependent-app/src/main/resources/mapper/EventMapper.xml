@@ -12,7 +12,7 @@
             e.duration,
             e.banner_url
             <if test="userId != null">
-                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS bookmarked
             </if>
         FROM event e
              <if test="userId != null">
@@ -41,7 +41,7 @@
             e.duration,
             e.banner_url
             <if test="userId != null">
-                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS bookmarked
             </if>
         FROM event e
              <if test="userId != null">
@@ -65,7 +65,7 @@
             e.duration,
             e.banner_url
             <if test="userId != null">
-                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS bookmarked
             </if>
         FROM event e
                 <if test="userId != null">
@@ -97,7 +97,7 @@
         s.banner_id AS speakerBannerId,
         img.file_path AS speakerBannerUrl -->
         <if test="userId != null">
-            , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS bookmarked
         </if>
         FROM event e
         <!-- LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
@@ -205,7 +205,7 @@
             e.duration,
             e.location,
             e.banner_url,
-            true AS isBookmarked
+            true AS bookmarked
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
         WHERE b.user_id = #{userId}
@@ -223,7 +223,7 @@
             e.duration,
             e.location,
             e.banner_url,
-            true AS isBookmarked
+            true AS bookmarked
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
         WHERE b.user_id = #{userId}
