@@ -13,5 +13,5 @@ public class RecentEventVO {
     private Instant eventTime;
     private Integer duration;
     private String bannerUrl;
-    private boolean bookmarked;
+    boolean isBookmarked;
 }
