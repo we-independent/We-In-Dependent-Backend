@@ -14,6 +14,4 @@ public interface BlogArticleMapper {
     List<BlogArticleDO> findByIds(@Param("ids") List<Integer> ids);
 
     List<BlogArticleDO> findPublishedArticles(@Param("offset") Integer offset, @Param("limit") Integer limit);
-
-    List<String> suggestTitles(@Param("keywords") List<String> keywords);
 }
