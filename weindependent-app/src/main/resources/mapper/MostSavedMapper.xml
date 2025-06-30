@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.MostSavedMapper">
+
+    <select id="getSavedCountsByArticleIds"
+            parameterType="list"
+            resultType="com.weindependent.app.database.dataobject.SavedCountDO">
+        SELECT
+            article_id AS articleId,
+            COUNT(*) AS savedCount
+        FROM save_list_article
+        WHERE article_id IN
+        <foreach item="id" collection="articleIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY article_id
+    </select>
+
+    <select id="findTopSavedBlogs" parameterType="int" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT
+            ba.id AS id,
+            ba.title AS title,
+            ba.update_time AS time,
+        ba.content AS content,
+        bi.file_path AS imageUrl,
+        ba.category_id AS category,
+        c.name AS categoryName,
+        (SELECT COUNT(*) FROM save_list_article sla WHERE sla.article_id = ba.id) AS savedCount,
+        (CASE WHEN ep.id IS NOT NULL THEN true ELSE false END) AS editorsPick
+        FROM blog_article ba
+            LEFT JOIN blog_image bi ON ba.banner_img_id = bi.id
+            LEFT JOIN category c ON ba.category_id = c.id
+            LEFT JOIN editor_picks ep ON ba.id = ep.article_id AND ep.status = 1
+        WHERE ba.is_deleted = 0
+        ORDER BY savedCount DESC, ba.update_time DESC
+            LIMIT #{topN}
+    </select>
+
+    <select id="getMostSavedArticlesExcludeList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT
+            a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            "WeIndependent" AS author,
+            i.file_path AS imageUrl,
+            NULL AS readingTime,
+            NULL AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM blog_article a
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        WHERE a.is_deleted = 0
+            AND a.article_status = 'published'
+            AND COALESCE(s.savedCount, 0) > 0
+            AND a.category_id IN ("1","2","3","4","7")
+        <if test="excludeArticleId != null and excludeArticleId.size() > 0">
+            AND a.id NOT IN
+            <foreach collection="excludeArticleId" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY savedCount DESC, a.update_time DESC
+        LIMIT #{needed}
+    </select>
+
+
+
+</mapper>

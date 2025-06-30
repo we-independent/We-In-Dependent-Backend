@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardBlogHeroMapper">
+    <select id="selectBlogHeroDOById" resultType="com.weindependent.app.database.dataobject.BlogHeroDO">
+        select id,
+               article_id,
+               hero_type,
+               is_deleted,
+               create_user_id,
+               create_time,
+               update_user_id,
+               update_time
+        from blog_hero
+        where id = #{id}
+    </select>
+    <select id="selectCurrentBlogHeroDOList"
+            resultType="com.weindependent.app.vo.websiteoperation.DashboardBlogHeroVO">
+        select hero.id,
+               hero.article_id,
+               a.title      as article_title,
+               hero.hero_type,
+               hero.is_deleted,
+               hero.create_user_id,
+               u1.real_name as create_user_name,
+               hero.create_time,
+               hero.update_user_id,
+               u2.real_name as update_user_name,
+               hero.update_time
+        from blog_hero as hero
+                 left join blog_article a on a.id = hero.article_id
+                 left join t_system_user u1 on u1.id = hero.create_user_id
+                 left join t_system_user u2 on u2.id = hero.update_user_id
+        where hero.is_deleted = 0
+        order by hero.id desc;
+    </select>
+    <select id="selectPreviousBlogHeroDOList"
+            resultType="com.weindependent.app.vo.websiteoperation.DashboardBlogHeroVO">
+        select hero.id,
+               hero.article_id,
+               a.title      as article_title,
+               hero.hero_type,
+               hero.is_deleted,
+               hero.create_user_id,
+               u1.real_name as create_user_name,
+               hero.create_time,
+               hero.update_user_id,
+               u2.real_name as update_user_name,
+               hero.update_time
+        from blog_hero as hero
+                 left join blog_article a on a.id = hero.article_id
+                 left join t_system_user u1 on u1.id = hero.create_user_id
+                 left join t_system_user u2 on u2.id = hero.update_user_id
+        where hero.is_deleted = 1
+        order by hero.id desc;
+    </select>
+    <insert id="insert"  parameterType="BlogHeroDO"  useGeneratedKeys="true" keyProperty="id">
+        insert into blog_hero(article_id, hero_type, create_user_id, update_user_id)
+        values (#{articleId}, #{heroType}, #{createUserId}, #{updateUserId})
+    </insert>
+    <update id="update">
+        update blog_hero
+        set hero_type      = #{heroType}
+          , article_id     = #{articleId}
+          , update_user_id = #{updateUserId}
+        where id = #{id}
+    </update>
+    <update id="deleteByIds">
+        update blog_hero
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+</mapper>

@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.weindependent.test.Main",
+            "projectName": "we-in-dependent"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AppApplication<we-in-dependent>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.weindependent.app.AppApplication",
+            "projectName": "we-in-dependent",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

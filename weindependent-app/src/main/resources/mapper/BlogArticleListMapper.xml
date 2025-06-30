@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogArticleListMapper">
+    
+    <resultMap type="com.weindependent.app.database.dataobject.BlogArticleListDO" id="BlogArticleListResult">
+        <result property="id" column="id" />
+        <result property="articleSourceType" column="article_source_type" />
+        <result property="sourceUrl" column="source_url" />
+        <result property="sourceUrlDisplayText" column="source_url_display_text" />
+        <result property="authorId" column="author_id" />
+
+        <result property="bannerImgId" column="banner_img_id" />
+        <result property="summary" column="summary" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="articleStatus" column="article_status" />
+        <result property="categoryId" column="category_id" />
+        <result property="isDeleted" column="is_deleted" />
+        <result property="createUserId" column="create_user_id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUserId" column="update_user_id" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectBlogArticleVo">
+        select id
+             , article_source_type
+             , source_url
+             , source_url_display_text
+             , author_id
+             , reading_time_in_minutes
+             , banner_img_id
+             , summary
+             , title
+             , content
+             , article_status
+             , category_id
+             , is_deleted
+             , create_user_id
+             , create_time
+             , update_user_id
+             , update_time
+        from blog_article
+    </sql>
+
+    <select id="selectBlogArticleList" 
+            parameterType="com.weindependent.app.dto.BlogArticleListQry" 
+            resultMap="BlogArticleListResult">
+        <include refid="selectBlogArticleVo"/>
+        <where>
+            and is_deleted = 0
+            <!-- 只保留按分类筛选的条件 -->
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+
+            <if test="includeIds != null and includeIds.size > 0">
+                AND id IN
+                <foreach collection="includeIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY ${orderClause}
+    </select>
+    
+    <select id="selectBlogArticleById" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogArticleListDO">
+        SELECT * FROM blog_article WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectCommentsByArticleId" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogCommentDO">
+        SELECT id, comment_author_user_id AS user_id, article_id, content, create_time, parent_comment_id
+        FROM blog_comment
+        WHERE article_id = #{articleId} AND is_deleted = 0
+        ORDER BY create_time ASC
+    </select>
+
+    <select id="selectTagsByArticleId" resultType="string" parameterType="int">
+        SELECT t.name
+        FROM tag_article_relation r
+        LEFT JOIN tag t ON r.tag_id = t.id
+        WHERE r.article_id = #{articleId}    
+    </select>
+
+    <select id="selectBannerImageUrlById" resultType="string" parameterType="int">
+        SELECT file_path FROM blog_image WHERE id = #{imgId}
+    </select>
+
+    <select id="getArticlesByCategoryOrTagsExcludeSelf"
+            resultType="com.weindependent.app.dto.BlogArticleCardQry"
+            parameterType="map">
+        SELECT 
+            a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            "WeIndependent" AS author,
+            i.file_path AS imageUrl,
+            NULL AS readingTime,
+            NULL AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM blog_article a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        WHERE a.is_deleted = 0
+        AND a.article_status = 'published'
+        AND a.category_id IN ("1","2","3","4","7")
+        AND a.id != #{excludeArticleId}
+        AND (
+                a.category_id = #{categoryId}
+                <if test="tagIdList != null and tagIdList.size > 0">
+                OR a.id IN (
+                    SELECT article_id FROM tag_article_relation
+                    WHERE is_deleted = 0
+                        AND tag_id IN
+                        <foreach collection="tagIdList" item="tagId" open="(" separator="," close=")">
+                            #{tagId}
+                        </foreach>
+                )
+                </if>
+        )
+        ORDER BY time DESC, savedCount DESC
+        LIMIT 10
+    </select>
+
+    <!-- Boolean Mode -->
+    <select id="searchByKeywords"
+            resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT a.id,
+            a.title,
+            a.update_time AS time,
+            a.category_id AS category,
+            "We Independent" AS author,
+            i.file_path AS imageUrl,
+            CASE 
+                WHEN a.content IS NULL THEN 0
+                ELSE CEIL((CHAR_LENGTH(a.content) - CHAR_LENGTH(REPLACE(a.content, ' ', '')) + 1) / 200) 
+            END AS readingTime,
+            CASE 
+                WHEN ep.id IS NOT NULL AND ep.status = 1 THEN TRUE
+                ELSE FALSE
+            END AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM blog_article a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        LEFT JOIN (
+            SELECT article_id, COUNT(*) AS savedCount
+            FROM save_list_article
+            GROUP BY article_id
+        ) s ON a.id = s.article_id
+        LEFT JOIN editor_picks ep ON a.id = ep.article_id
+        WHERE a.is_deleted = 0
+          AND a.article_status = 'published'
+            <if test="query.categoryId != null">
+                and a.category_id = #{query.categoryId}
+            </if>
+        <choose>
+            <!-- F1 (short codes) -->
+            <when test="keyword != null and keyword.length() &lt; 4">
+                AND (
+                title   LIKE CONCAT('%', #{keyword}, '%')
+                OR  content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </when>
+
+            <otherwise>
+                AND MATCH(title, content)
+                AGAINST(CONCAT('+', #{keyword}, '*') IN BOOLEAN MODE)
+            </otherwise>
+        </choose>
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <!-- complete the sql query -->
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.UserMapper">
+    <select id="findNearbySchools" resultType="com.weindependent.app.database.dataobject.SchoolDO">
+        SELECT name, address, latitude, longitude,
+        (6371 * ACOS(
+            COALESCE(
+                COS(RADIANS(#{latitude})) * COS(RADIANS(latitude)) 
+                * COS(RADIANS(longitude) - RADIANS(#{longitude})) 
+                + SIN(RADIANS(#{latitude})) * SIN(RADIANS(latitude)),
+                0
+            )
+        )) AS distance
+        FROM esl_schools
+        WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+        ORDER BY distance
+    </select>
+
+</mapper>
+

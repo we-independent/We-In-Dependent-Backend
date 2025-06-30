@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper">
+
+    <!-- BlogArticleDO 映射 -->
+    <resultMap type="BlogArticleDO" id="BlogPdfExpResult">
+        <result property="id" column="id" />
+        <result property="articleSourceType" column="article_source_type" />
+        <result property="sourceUrl" column="source_url" />
+        <result property="sourceUrlDisplayText" column="source_url_display_text" />
+        <result property="authorId" column="author_id" />
+        <result property="readingTimeInMinutes" column="reading_time_in_minutes" />
+        <result property="bannerImgId" column="banner_img_id" />
+        <result property="summary" column="summary" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="articleStatus" column="article_status" />
+        <result property="categoryId" column="category_id" />
+        <result property="isDeleted" column="is_deleted" />
+        <result property="createUserId" column="create_user_id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUserId" column="update_user_id" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectBlogPdfExpVo">
+        SELECT id, title, summary, content, create_time, author_id
+        FROM blog_article
+    </sql>
+
+    <select id="selectBlogPdfExpById" parameterType="Integer" resultMap="BlogPdfExpResult">
+        <include refid="selectBlogPdfExpVo"/>
+        WHERE id = #{id}
+    </select>
+
+    <!-- ✅ 修复后的 blog_pdf 查询 -->
+    <select id="selectByArticleIdIgnoreDeleted" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogPdfDO">
+        SELECT * FROM blog_pdf
+        WHERE article_id = #{id} LIMIT 1
+    </select>
+
+    <!-- ✅ 插入 blog_pdf -->
+    <insert id="insertPdf" parameterType="com.weindependent.app.database.dataobject.BlogPdfDO">
+        INSERT INTO blog_pdf (
+            file_name, file_path, file_key, download_url, pdf_file_generation_time,
+            article_id, is_deleted, create_user_id, create_time, update_user_id, update_time
+        ) VALUES (
+            #{fileName}, #{filePath}, #{fileKey}, #{downloadUrl}, #{pdfFileGenerationTime},
+            #{articleId}, #{isDeleted}, #{createUserId}, #{createTime}, #{updateUserId}, #{updateTime}
+        )
+    </insert>
+
+    <!-- ✅ 更新 blog_pdf -->
+    <update id="updateById" parameterType="com.weindependent.app.database.dataobject.BlogPdfDO">
+        UPDATE blog_pdf
+        SET 
+            file_name = #{fileName},
+            file_path = #{filePath},
+            download_url = #{downloadUrl},
+            pdf_file_generation_time = #{pdfFileGenerationTime},
+            update_user_id = #{updateUserId},
+            update_time = #{updateTime}
+        WHERE article_id = #{articleId}
+    </update>
+
+    <!-- ✅ blog_pdf_storage 查询 -->
+    <select id="selectStorageByBlogId" parameterType="int" resultType="com.weindependent.app.database.dataobject.BlogPdfStorageDO">
+        SELECT 
+            id, blog_id, pdf_content, file_name, pdf_generation_time,
+            is_deleted, create_user_id, create_time, update_user_id, update_time
+        FROM blog_pdf_storage
+        WHERE blog_id = #{blogId} AND is_deleted = 0
+    </select>
+
+    <!-- ✅ blog_pdf_storage 插入 -->
+    <insert id="insertStorage" parameterType="com.weindependent.app.database.dataobject.BlogPdfStorageDO">
+        INSERT INTO blog_pdf_storage (
+            blog_id, pdf_content, file_name, pdf_generation_time,
+            is_deleted, create_user_id, create_time, update_user_id, update_time
+        ) VALUES (
+            #{blogId}, #{pdfContent}, #{fileName}, #{pdfGenerationTime},
+            #{isDeleted}, #{createUserId}, #{createTime}, #{updateUserId}, #{updateTime}
+        )
+    </insert>
+
+    <!-- ✅ blog_pdf_storage 更新 -->
+    <update id="updateStorageByBlogId" parameterType="com.weindependent.app.database.dataobject.BlogPdfStorageDO">
+        UPDATE blog_pdf_storage
+        SET 
+            pdf_content = #{pdfContent},
+            file_name = #{fileName},
+            pdf_generation_time = #{pdfGenerationTime},
+            update_user_id = #{updateUserId},
+            update_time = #{updateTime}
+        WHERE blog_id = #{blogId}
+    </update>
+
+</mapper>

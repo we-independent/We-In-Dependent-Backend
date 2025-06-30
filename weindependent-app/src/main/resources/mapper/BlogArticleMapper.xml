@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogArticleMapper">
+    
+    <select id="findById" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
+        SELECT * FROM blog_article WHERE id = #{id} AND is_deleted = 0
+    </select>
+    
+    <select id="findByIds" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
+        SELECT * FROM blog_article
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+        </foreach>
+        AND is_deleted = 0
+    </select>
+    
+    <select id="findPublishedArticles" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
+        SELECT * FROM blog_article
+        WHERE article_status = 'published' AND is_deleted = 0
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="suggestTitles" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
+        SELECT DISTINCT title
+        FROM blog_article
+        WHERE
+        <foreach collection="keywords" item="word" separator="AND">
+            LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, '.', ''), ',', ''), '?', ''), '!', ''), '|', ''))
+            LIKE CONCAT('%', LOWER(#{word}), '%')
+        </foreach>
+        ORDER BY title
+        LIMIT 5
+    </select>
+
+
+</mapper>

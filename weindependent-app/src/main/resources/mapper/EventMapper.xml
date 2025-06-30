@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.EventMapper">
+    <select id="getPast" parameterType="map" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            e.duration,
+            e.banner_url
+            <if test="userId != null">
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            </if>
+        FROM event e
+             <if test="userId != null">
+                 LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
+             </if>
+        WHERE e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &lt;= NOW()
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="isRegistered" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM event_user_register
+            WHERE event_id = #{eventId} AND user_id = #{userId}
+        )
+    </select>
+
+    <select id="getUpcoming" parameterType="map" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.location,
+            e.event_time,
+            e.duration,
+            e.banner_url
+            <if test="userId != null">
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            </if>
+        FROM event e
+             <if test="userId != null">
+                 LEFT JOIN event_user_bookmark b
+                   ON e.id = b.event_id
+                  AND b.user_id = #{userId}
+             </if>
+        WHERE e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &gt; NOW()
+        ORDER BY e.event_time ASC
+    </select>
+
+    <select id="getUpcomingByMonth" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.location,
+            e.location,
+            e.event_time,
+            e.duration,
+            e.banner_url
+            <if test="userId != null">
+                , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+            </if>
+        FROM event e
+                <if test="userId != null">
+                    LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
+                </if>
+        WHERE e.is_deleted = 0
+          AND YEAR(e.event_time) = #{year}
+          AND MONTH(e.event_time) = #{month}
+        ORDER BY e.event_time ASC
+    </select>
+
+    <select id="getById" parameterType="map" resultType="com.weindependent.app.vo.event.EventVO">
+        SELECT e.id,
+        e.title,
+        e.content,
+        e.event_time,
+        e.duration,
+        e.location,
+        e.link,
+        e.tag_id,
+        e.video_link as videoLink,
+        t.name AS tagName,
+        e.banner_url
+        <!-- u.id AS speakerId,
+        u.real_name AS speakerName,
+        s.title AS speakerTitle,
+        s.background AS speakerBackground,
+        s.description AS speakerDescription,
+        s.banner_id AS speakerBannerId,
+        img.file_path AS speakerBannerUrl -->
+        <if test="userId != null">
+            , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
+        </if>
+        FROM event e
+        <!-- LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
+        LEFT JOIN event_speaker s ON s.user_id = u.id
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id -->
+        <if test="userId != null">
+            LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
+        </if>
+        LEFT JOIN event_tag t on e.tag_id = t.id
+        WHERE e.id = #{id}
+        AND e.is_deleted = 0
+    </select>
+
+    <select id="getSpeakersByEventId" resultType="com.weindependent.app.vo.event.EventSpeakerVO">
+        SELECT s.id AS speakerId,
+            s.first_name,
+            s.last_name,
+            s.title,
+            s.background,
+            s.description,
+            s.banner_id AS bannerId,
+            img.file_path AS bannerUrl
+        FROM event_speaker s
+        INNER JOIN event_speaker_relation esr ON esr.speaker_id = s.id
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE esr.event_id = #{eventId}
+    </select>
+
+    <insert id="register">
+        INSERT INTO event_user_register (event_id, user_id)
+        VALUES (#{id}, #{userId})
+    </insert>
+
+    <delete id="unregister">
+        DELETE FROM event_user_register
+        WHERE event_id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <insert id="bookmark">
+        INSERT INTO event_user_bookmark (event_id, user_id)
+        VALUES (#{id}, #{userId})
+    </insert>
+
+    <delete id="unbookmark">
+        DELETE FROM event_user_bookmark
+        WHERE event_id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <select id="getRegisteredUpcomingEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            e.duration,
+            e.location,
+            e.banner_url
+        FROM event_user_register r
+                 JOIN event e ON r.event_id = e.id
+        WHERE r.user_id = #{userId}
+          AND e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) > NOW()
+        ORDER BY e.event_time ASC
+    </select>
+
+    <select id="getRegisteredPastEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            e.duration,
+            e.location,
+            e.banner_url
+        FROM event_user_register r
+                 JOIN event e ON r.event_id = e.id
+        WHERE r.user_id = #{userId}
+          AND e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &lt;= NOW()
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="getViewedEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            e.duration,
+            e.location,
+            e.banner_url
+        FROM event_user_viewed v
+                 JOIN event e ON v.event_id = e.id
+        WHERE v.user_id = #{userId}
+          AND e.is_deleted = 0
+        ORDER BY v.create_time DESC
+    </select>
+
+    <select id="getBookmarkedPastEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            e.duration,
+            e.location,
+            e.banner_url,
+            true AS isBookmarked
+        FROM event_user_bookmark b
+                 JOIN event e ON b.event_id = e.id
+        WHERE b.user_id = #{userId}
+          AND e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &lt;= NOW()
+        ORDER BY b.create_time DESC
+    </select>
+
+    <select id="getBookmarkedUpcomingEvents" parameterType="int" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.summary,
+            e.event_time,
+            e.duration,
+            e.location,
+            e.banner_url,
+            true AS isBookmarked
+        FROM event_user_bookmark b
+                 JOIN event e ON b.event_id = e.id
+        WHERE b.user_id = #{userId}
+          AND e.is_deleted = 0
+          AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &gt; NOW()
+        ORDER BY b.create_time DESC
+    </select>
+
+
+
+
+    <insert id="recordUserViewEvent">
+        INSERT INTO event_user_viewed (user_id, event_id)
+        VALUES (#{userId}, #{eventId})
+    </insert>
+
+
+
+    <!-- Natural Language Mode -->
+    <select id="searchEventsNatural" parameterType="string" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_time,
+            e.location,
+            e.link,
+            e.tag_id,
+            t.name AS tagName,
+            e.banner_url
+        FROM event e
+                 LEFT JOIN event_tag t ON e.tag_id = t.id
+        WHERE
+                        e.is_deleted = 0
+                    AND MATCH(e.title, e.summary, e.content)
+            AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)
+        ORDER BY e.event_time DESC
+    </select>
+
+
+
+    <!-- Boolean Mode -->
+    <select id="searchEventsBoolean" parameterType="string" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_time,
+            e.location,
+            e.link,
+            e.tag_id,
+            t.name AS tagName,
+            e.banner_url
+        FROM event e
+                 LEFT JOIN event_tag t ON e.tag_id = t.id
+        WHERE
+                        e.is_deleted = 0
+                    AND MATCH(e.title, e.summary, e.content)
+            AGAINST (#{keyword} IN BOOLEAN MODE)
+        ORDER BY e.event_time DESC
+    </select>
+
+
+    <select id="getPastEventsFiltered" resultType="com.weindependent.app.vo.event.RecentEventVO">
+        SELECT
+            e.id,
+            e.title,
+            e.content,
+            e.event_time,
+            e.location,
+            e.link,
+            e.tag_id,
+            e.banner_url,
+            t.name AS tag_name
+        FROM
+            event e
+        JOIN
+            event_tag t ON e.tag_id = t.id
+        <where>
+            <if test="tagIds != null and tagIds.size() > 0">
+                e.tag_id IN
+                <foreach item="tagId" collection="tagIds" open="(" separator="," close=")">
+                    #{tagId}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+
+
+
+</mapper>

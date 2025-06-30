@@ -1,0 +1,92 @@
+<!-- 
+ 博客文章pdf下载的格式template文件 
+ @author Hurely
+ 2025-04-2 -->
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${title}">PDF Title</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+            @bottom-right {
+            content: "Page " counter(page) " / " counter(pages);
+            font-size: 12px;
+            color:#999;
+        }
+        }
+
+        body {
+            font-family: "Noto Sans SC", "Noto Sans", "SimSun", "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1.title {
+            color: #333;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .summary {
+            color: #794CB3;
+            font-size: 16px;
+            font-style: italic;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .banner {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+  </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1 th:text="${title}">Blog Title</h1>
+        <div class="summary" th:if="${summary}" th:text="${summary}">Blog Summary</div>
+        <div class="meta">
+            Author: We Independent | 
+            Created on: <span th:text="${createTime}">2025-04-02</span>
+        </div>
+        <div class="content" th:utext="${content}">
+            content
+        </div>
+    </div>
+</body>
+</html>
+

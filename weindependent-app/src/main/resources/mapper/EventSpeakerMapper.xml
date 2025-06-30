@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.EventSpeakerMapper">
+
+    <!-- Get speaker by speaker ID -->
+    <select id="getById" parameterType="long" resultType="com.weindependent.app.vo.event.EventSpeakerVO">
+        SELECT s.id AS speakerId,
+               s.first_name,
+               s.last_name,
+               s.title,
+               s.background,
+               s.description,
+               img.file_path AS bannerUrl
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE s.id = #{id}
+    </select>
+
+    <!-- Search by name (first or last name contains keyword) -->
+    <select id="searchByName" parameterType="string" resultType="com.weindependent.app.vo.event.EventSpeakerVO">
+        SELECT s.id AS speakerId,
+               s.first_name,
+               s.last_name,
+               s.title,
+               s.background,
+               s.description,
+               img.file_path AS bannerUrl
+        FROM event_speaker s
+        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
+        WHERE s.first_name LIKE CONCAT('%', #{name}, '%')
+           OR s.last_name LIKE CONCAT('%', #{name}, '%')
+        ORDER BY s.update_time DESC
+    </select>
+
+</mapper>
