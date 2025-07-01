@@ -280,7 +280,7 @@ public class UserServiceImpl implements UserService {
         adminMailParams.put("question-type", qry.getQuestionType() != null ? qry.getQuestionType() : "General Inquiry");
         adminMailParams.put("message", qry.getMessage());
         adminMailParams.put("replyTo", userEmail);
-        
+      
         emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
     }
 }
