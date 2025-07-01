@@ -16,12 +16,14 @@ import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.config.EmailConfig;
 import com.weindependent.app.convertor.UserConvertor;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
@@ -37,12 +39,16 @@ import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
+import javax.mail.internet.MimeMessage;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import com.weindependent.app.utils.ImageResizeUtil;
 
@@ -71,6 +77,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailServiceImpl emailServiceImpl;
+
+    @Autowired
+    private EmailConfig emailConfig;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -234,7 +243,7 @@ public class UserServiceImpl implements UserService {
         log.info("Change password successful for userId {}", userId);
     }
 
-        @Override
+    @Override
     public void saveHelpRequest(Long userId, HelpCenterRequestQry qry){
         UserDO user = userMapper.findById(userId);
         if(user == null){
@@ -255,9 +264,12 @@ public class UserServiceImpl implements UserService {
 
         // Confirmation email send to user
         Map<String, String> emailParams = new HashMap<>();
+        emailParams.put("subject", qry.getSubject());
         emailParams.put("name", userName);
         emailParams.put("message", qry.getMessage());
-
+        emailParams.put("question-type", qry.getQuestionType());
+        emailParams.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")));
+        
         emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
 
         // 4. 抄送客服邮箱
@@ -265,9 +277,10 @@ public class UserServiceImpl implements UserService {
         adminMailParams.put("name", userName);
         adminMailParams.put("email", userEmail);
         adminMailParams.put("subject", qry.getSubject());
+        adminMailParams.put("question-type", qry.getQuestionType() != null ? qry.getQuestionType() : "General Inquiry");
         adminMailParams.put("message", qry.getMessage());
         adminMailParams.put("replyTo", userEmail);
-
+        
         emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
     }
 }
