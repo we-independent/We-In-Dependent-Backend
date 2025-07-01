@@ -16,20 +16,17 @@ import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.UpdateUserQry;
-import com.weindependent.app.config.EmailConfig;
 import com.weindependent.app.convertor.UserConvertor;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
 
 import com.weindependent.app.database.dataobject.HelpCenterRequestDO;
-import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,8 +36,6 @@ import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
-import javax.mail.internet.MimeMessage;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,8 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
-
 import com.weindependent.app.utils.ImageResizeUtil;
 
 @Service
@@ -78,8 +71,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private EmailServiceImpl emailServiceImpl;
 
-    @Autowired
-    private EmailConfig emailConfig;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
