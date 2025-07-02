@@ -3,11 +3,13 @@ package com.weindependent.app.vo.user;
 import lombok.Data;
 
 @Data
-public class UserVO {
-    private String username; //this is same as account from registerQry, ie email
-    private String name; //this is same as realName from registerQry
+public class GoogleUserVO {
+    private Long id;
+    private String email;
+    private String username;
     private String language;
     private String visaType;
     private boolean subscription;
     private String avatar;
+    private boolean isNewUser;
 }

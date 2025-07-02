@@ -36,7 +36,6 @@ public class SaveServiceImpl implements SaveService{
         // }
         if (listId == null) {
             int result =  saveBlogToDefault(userId, blogId);
-            saveMapper.updateSaveListMetadata(userId, blogId); //update last_edited time and image for list
             return result;
         }
         else {
@@ -44,7 +43,7 @@ public class SaveServiceImpl implements SaveService{
                 return ErrorCode.UNAUTHORIZED_ACCESS.getCode();
             else {
                 int result = saveBlogToList(listId, blogId);
-                saveMapper.updateSaveListMetadata(userId, blogId);///update last_edited time and image for list
+                saveListMapper.updateSaveToListMetadata(listId, blogId);///update last_edited time and image for list
                 System.out.println("save blog to list result is"+result);
                 return result;
             }
@@ -57,12 +56,19 @@ public class SaveServiceImpl implements SaveService{
         // if (!saveMapper.existBlogId(blogId)) {
         //     return ErrorCode.BLOG_NOT_EXIST.getCode();
         // }
-        if (listId == null) return unsaveBlogFromDefault(userId, blogId);
+        int result;
+        if (listId == null){
+            result =  unsaveBlogFromDefault(userId, blogId);
+        } 
         else {
             if (!checkListOwnership(userId, listId))
                 return ErrorCode.UNAUTHORIZED_ACCESS.getCode();
-            else return unsaveBlogFromList(listId, blogId);
+            else{
+                result =  unsaveBlogFromList(listId, blogId);
+                saveListMapper.updateDeleteFromListMetadata(listId, blogId);
+            }
         }
+        return result;
     }
 
     public boolean blogIsSaved(int userId, int blogId){
@@ -85,7 +91,7 @@ public class SaveServiceImpl implements SaveService{
     public int saveEvent(int userId, int eventId){
         if(!saveMapper.existEventId(eventId)){
             return ErrorCode.EVENT_NOT_EXIST.getCode();
-        }else if(saveMapper.saveEvent(userId, eventId) <= 0){
+        }else if(saveMapper.saveEvent(userId, eventId) < 0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
         }
         else return ErrorCode.SUCCESS.getCode();
@@ -95,7 +101,7 @@ public class SaveServiceImpl implements SaveService{
     public int unsaveEvent(int userId, int eventId){
         if(!saveMapper.existEventId(eventId)){
             return ErrorCode.EVENT_NOT_EXIST.getCode();
-        }else if(saveMapper.unsaveEvent(userId, eventId) <= 0){
+        }else if(saveMapper.unsaveEvent(userId, eventId) < 0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
         }
         else return ErrorCode.SUCCESS.getCode();
@@ -107,15 +113,17 @@ public class SaveServiceImpl implements SaveService{
         int listId = (list == null)
             ? saveListService.createDefaultList(userId)
             : list;
-        if (saveMapper.saveBlog(listId, blogId) <=0){
+        if (saveMapper.saveBlog(listId, blogId) <0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
+        }else{
+            saveListMapper.updateSaveToListMetadata(listId, blogId);
         }
         return ErrorCode.SUCCESS.getCode();
     }
 
     /* helper 储存文章到指定收藏夹 */
     private int saveBlogToList(int listId, int blogId){
-        if (saveMapper.saveBlog(listId, blogId) <=0){
+        if (saveMapper.saveBlog(listId, blogId) <0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
         }
         return ErrorCode.SUCCESS.getCode();
@@ -125,15 +133,18 @@ public class SaveServiceImpl implements SaveService{
     private int unsaveBlogFromDefault(int userId, int blogId) {
         Integer list = saveListMapper.findDefaultListByUserId(userId);
         int listId = list;
-        if (saveMapper.unsaveBlog(listId, blogId)<=0){
+        if (saveMapper.unsaveBlog(listId, blogId)<0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
+        }
+        else{
+            saveListMapper.updateDeleteFromListMetadata(listId, blogId);
         }
         return ErrorCode.SUCCESS.getCode();
     }
 
     /* helper 从指定收藏夹删除 */
     protected int unsaveBlogFromList(int listId, int blogId){
-        if (saveMapper.unsaveBlog(listId, blogId)<=0){
+        if (saveMapper.unsaveBlog(listId, blogId)<0){
             return ErrorCode.UPDATE_DB_FAILED.getCode();
         }
         return ErrorCode.SUCCESS.getCode();

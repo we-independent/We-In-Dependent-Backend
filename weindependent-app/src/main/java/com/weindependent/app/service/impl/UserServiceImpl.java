@@ -27,7 +27,6 @@ import com.weindependent.app.dto.RegisterQry;
 import cn.dev33.satoken.stp.StpUtil;
 
 import com.weindependent.app.database.dataobject.HelpCenterRequestDO;
-import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,13 +36,13 @@ import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import com.weindependent.app.utils.ImageResizeUtil;
 
 @Service
@@ -71,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailServiceImpl emailServiceImpl;
+
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ImageDO createProfileImg(MultipartFile file) {
+    public String createProfileImg(MultipartFile file) {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file,
@@ -190,16 +190,8 @@ public class UserServiceImpl implements UserService {
         UploadedFileVO uploadedFileVO =
             fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
 
-        ImageDO imageDo = new ImageDO();
-        imageDo.setFileName(uploadedFileVO.getFileName());
-        imageDo.setFileKey(uploadedFileVO.getFileKey());
-        imageDo.setFileType(resizedFile.getContentType());
-        imageDo.setFilePath(uploadedFileVO.getFilePath());
-        int affectedRows = profileImageMapper.create(imageDo);
-        if (affectedRows != 1) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
-        }
-        return imageDo;
+
+        return uploadedFileVO.getFilePath();
     }
 
 
@@ -242,7 +234,7 @@ public class UserServiceImpl implements UserService {
         log.info("Change password successful for userId {}", userId);
     }
 
-        @Override
+    @Override
     public void saveHelpRequest(Long userId, HelpCenterRequestQry qry){
         UserDO user = userMapper.findById(userId);
         if(user == null){
@@ -250,12 +242,18 @@ public class UserServiceImpl implements UserService {
         }
         String userName = Optional.ofNullable(user.getRealName()).orElse("User");
         String userEmail = Optional.ofNullable(user.getAccount()).orElse("unknown@noemail.com");
+        String year = String.valueOf(LocalDate.now().getYear());
+        Integer maxSeq = userHelpCenterMapper.getMaxReferenceSequenceThisYear(year);
+        int nextSeq = (maxSeq == null ? 1 : maxSeq + 1);
+
+        String referenceId = generateReferenceId(nextSeq);
 
         HelpCenterRequestDO request = new HelpCenterRequestDO();
         request.setUserId(userId);
         request.setName(userName);
         request.setEmail(userEmail);
         request.setSubject(qry.getSubject());
+        request.setReferenceId(referenceId);
         request.setMessage(qry.getMessage());
         request.setCreateTime(LocalDateTime.now());
 
@@ -263,9 +261,12 @@ public class UserServiceImpl implements UserService {
 
         // Confirmation email send to user
         Map<String, String> emailParams = new HashMap<>();
+        emailParams.put("subject", qry.getSubject());
         emailParams.put("name", userName);
         emailParams.put("message", qry.getMessage());
-
+        emailParams.put("referenceId", request.getReferenceId());
+        emailParams.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")));
+        
         emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
 
         // 4. 抄送客服邮箱
@@ -273,10 +274,19 @@ public class UserServiceImpl implements UserService {
         adminMailParams.put("name", userName);
         adminMailParams.put("email", userEmail);
         adminMailParams.put("subject", qry.getSubject());
+        adminMailParams.put("question-type", qry.getQuestionType() != null ? qry.getQuestionType() : "General Inquiry");
+        adminMailParams.put("referenceId", request.getReferenceId()); 
         adminMailParams.put("message", qry.getMessage());
         adminMailParams.put("replyTo", userEmail);
+        String subject = "[Help Center] New Request - " + request.getSubject() + " (Ref: " + request.getReferenceId() + ")";
+        adminMailParams.put("subject", subject);
 
         emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
+    }
+
+    public static String generateReferenceId(int nextSeq) {
+        String year = String.valueOf(LocalDate.now().getYear());
+        return String.format("MSG-%s-%06d", year, nextSeq);
     }
 }
 

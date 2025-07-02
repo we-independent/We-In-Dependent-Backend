@@ -3,14 +3,10 @@ package com.weindependent.app.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
-import com.weindependent.app.enums.ErrorCode;
-import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
-import com.weindependent.app.dto.EventFilterQry;
-import com.weindependent.app.dto.PastEventSearchRequestQry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -44,30 +40,33 @@ public class EventController {
 
     @Operation(summary = "Search or filter past events with keyword, mode, or filters")
     @SignatureAuth
-    @PostMapping("/past")
-    public RecentEventVOs getPastEventsCombined(@RequestBody(required = false) PastEventSearchRequestQry request) {
-        if (request == null || (request.getKeyword() == null && request.getFilter() == null)) {
-            return IEventService.getPastEvents(1, 10);
-        }
+    @GetMapping("/past")
+    public RecentEventVOs getPastEventsCombined(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String mode,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) List<Integer> filter) {
 
-        int page = request.getPage();
-        int size = request.getSize();
-
-        if (request.getKeyword() != null) {
-            String mode = request.getMode() != null ? request.getMode() : "natural";
-            switch (mode.toLowerCase()) {
-                case "boolean":
-                    return IEventService.searchEventsBoolean(request.getKeyword());
-                case "natural":
-                default:
-                    return IEventService.searchEventsNatural(request.getKeyword());
-            }
-        } else if (request.getFilter() != null) {
-            return IEventService.filterPastEventsByTags(request.getFilter());
-        } else {
+        if (keyword == null && (filter == null || filter.isEmpty())) {
             return IEventService.getPastEvents(page, size);
         }
+
+        if (keyword != null) {
+            String searchMode = (mode != null) ? mode : "natural";
+            switch (searchMode.toLowerCase()) {
+                case "boolean":
+                    return IEventService.searchEventsBoolean(keyword, page, size);
+                case "natural":
+                default:
+                    return IEventService.searchEventsNatural(keyword, page, size);
+            }
+        }
+        else {
+            return IEventService.filterPastEventsByTags(filter, page, size);
+        }
     }
+
 
 //    @Operation(summary = "Get past events")
 //    @SignatureAuth

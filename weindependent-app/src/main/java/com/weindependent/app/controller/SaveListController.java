@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,8 +43,8 @@ public class SaveListController {
      * @return a page contains blog card info, default 9 card info per page.
      */
     @Operation(summary = "返回收藏夹下的所有文章")
-    @GetMapping("/get-all-articles/{listId}")
-    public PageInfo<BlogArticleCardQry> getSavedBlogs(BlogArticleListQry query, @PathVariable int listId) {
+    @PostMapping("/get-all-articles/{listId}")
+    public PageInfo<BlogArticleCardQry> getSavedBlogs(@RequestBody BlogArticleListQry query, @PathVariable int listId) {
         int userId = StpUtil.getLoginIdAsInt();
         return saveListService.getSavedBlogs(query, userId, listId);
     }

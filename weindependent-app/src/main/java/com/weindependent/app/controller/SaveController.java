@@ -1,7 +1,6 @@
 package com.weindependent.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,15 +85,15 @@ public class SaveController {
      * @return PageInfo with data match with frontend blog card
     */
     @Operation(summary = "显示用户收藏的所有文章(不论list)")
-    @GetMapping("blogs/all-saved-articles")
+    @PostMapping("/all-saved-articles")
     public PageInfo<BlogArticleCardQry> allSavedArticles(@RequestBody BlogArticleListQry query){
-        int userId = StpUtil.getLoginIdAsInt();
+        int userId =StpUtil.getLoginIdAsInt();
         PageInfo<BlogArticleCardQry> result = saveService.allSavedArticles(query, userId);
         return result;
     }
 
     @Operation(summary = "用户登录后检查blog是否被该用户收藏")
-    @GetMapping("blog-is-saved/{blogId}")
+    @GetMapping("/blog-is-saved/{blogId}")
     public boolean blogIsSaved(@PathVariable int blogId){
         int userId = StpUtil.getLoginIdAsInt();
         return saveService.blogIsSaved(userId, blogId);
