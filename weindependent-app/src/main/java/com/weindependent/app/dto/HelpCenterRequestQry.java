@@ -9,6 +9,5 @@ import lombok.Data;
 @Data
 public class HelpCenterRequestQry {
     private String subject;
-    private String questionType;
     private String message;
 }
