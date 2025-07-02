@@ -31,4 +31,6 @@ public class HelpCenterRequestDO {
 
     /* 发送请求的时间 */
     private LocalDateTime createTime;
+
+    private String referenceId;
 }

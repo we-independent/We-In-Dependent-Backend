@@ -6,8 +6,8 @@
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.UserHelpCenterMapper">
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.HelpCenterRequestDO">
-        INSERT INTO help_center_request (user_id, name, email, subject, message, create_time)
-        VALUES (#{userId}, #{name}, #{email}, #{subject}, #{message}, #{createTime})
+        INSERT INTO help_center_request (user_id, name, email, subject, message, create_time, reference_id)
+        VALUES (#{userId}, #{name}, #{email}, #{subject}, #{message}, #{createTime}, #{referenceId})
     </insert>
 
     <select id="selectByUserId" resultType="com.weindependent.app.vo.HelpCenterRequestVO">
@@ -15,6 +15,13 @@
         FROM help_center_request
         WHERE user_id = #{userId}
         ORDER BY create_time DESC
+    </select>
+
+    <select id="getMaxReferenceSequenceThisYear" resultType="int">
+        SELECT
+            MAX(CAST(SUBSTRING(reference_id, 10) AS UNSIGNED)) 
+        FROM help_center_request
+        WHERE reference_id LIKE CONCAT('MSG-', #{year}, '-%')
     </select>
 
 </mapper>
