@@ -55,7 +55,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             mc_gross AS mcGross,
             mc_fee AS mcFee,
             mc_currency AS mcCurrency,
-            raw_ipn AS rawIpn,
             created_at AS createdAt,
             txn_type AS txnType
         FROM
@@ -65,6 +64,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY
             payment_date DESC
     </select>
+
+    <select id="getDonateHistoryDetails" resultType="com.weindependent.app.database.dataobject.DonateDO">
+        SELECT
+            id,
+            user_id AS userId,
+            payer_email AS payerEmail,
+            payer_first_name AS payerFirstName,
+            payer_last_name AS payerLastName,
+            payer_phone AS payerPhone,
+            txn_id AS txnId,
+            payment_status AS paymentStatus,
+            payment_date AS paymentDate,
+            mc_gross AS mcGross,
+            mc_fee AS mcFee,
+            mc_currency AS mcCurrency,
+            created_at AS createdAt,
+            txn_type AS txnType
+        FROM
+            paypal_ipn_transaction
+        WHERE
+            user_id = #{userId} AND txn_id = #{txnId}
+    </select>
+
+    <select id="checkTxnByUserId" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM paypal_ipn_transaction
+            WHERE user_id = #{userId}
+            AND txn_id = #{txnId}
+        )
+    </select>
+
 
     
 </mapper>

@@ -5,6 +5,10 @@ import java.util.Date;
 
 import lombok.Data;
 
+/**
+ * @author Elly
+ * @date Jul-03-2025
+ */
 @Data
 public class DonateDO {
     private Integer userId;
