@@ -9,6 +9,7 @@ import com.weindependent.app.service.PaypalIPNService;
 import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "捐款管理")
+@Slf4j
 @RestController
 @RequestMapping("/api/donate")
 public class DonateController {
@@ -49,9 +51,10 @@ public class DonateController {
         return ResponseEntity.ok("OK");
     }
 
-    //@SignatureAuth
+    @SignatureAuth
     @Operation(summary = "根据user id提取donate history")
     @GetMapping("/donate-history")
+    @CrossOrigin(origins = "*")
     public List<DonateDO> donateHistory(){
         int userId = StpUtil.getLoginIdAsInt();
         return paypalIPNService.donateHistory(userId);
