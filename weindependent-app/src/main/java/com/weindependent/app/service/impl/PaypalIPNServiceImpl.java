@@ -41,7 +41,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
 
     public int processIpn(String ipnMessage){
         log.info(ipnMessage);
-        if (true) {
+        if (verifyIpn(ipnMessage)) {
             Map<String, String> ipnParams = parseIpnMessage(ipnMessage);
 
             Integer userId = userMapper.findByEmail(ipnParams.get("payer_email"));
@@ -74,6 +74,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
+            conn.setRequestProperty("User-Agent", "Java-IPN-Verification-Script");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             try (OutputStream os = conn.getOutputStream()) {

@@ -9,8 +9,8 @@ import com.weindependent.app.service.PaypalIPNService;
 import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "捐款管理")
-@Slf4j
 @RestController
 @RequestMapping("/api/donate")
 public class DonateController {
@@ -33,7 +32,13 @@ public class DonateController {
     @Operation(summary = "接收paypal IPN")
     @PostMapping("/receive-paypal-ipn")
     public ResponseEntity<String> handleIPN(HttpServletRequest request) throws IOException {
-        String ipnMessage = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        BufferedReader reader = request.getReader();
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+           sb.append(line);
+        }
+        String ipnMessage = sb.toString();
         // int resultCode = paypalIPNService.processIpn(ipnMessage);
         // if (resultCode == ErrorCode.SUCCESS.getCode()) return;
         // else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
@@ -51,10 +56,9 @@ public class DonateController {
         return ResponseEntity.ok("OK");
     }
 
-    @SignatureAuth
+    //@SignatureAuth
     @Operation(summary = "根据user id提取donate history")
     @GetMapping("/donate-history")
-    @CrossOrigin(origins = "*")
     public List<DonateDO> donateHistory(){
         int userId = StpUtil.getLoginIdAsInt();
         return paypalIPNService.donateHistory(userId);
