@@ -70,7 +70,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
         try {
             String payload = "cmd=_notify-validate&" + ipnMessage;
             log.info("payload "+payload);
-            URL url = new URL("https://ipnpb.sandbox.paypal.com/cgi-bin/webscr");
+            URL url = new URL("https://ipnpb.paypal.com/cgi-bin/webscr");
             //sandbox: https://ipnpb.sandbox.paypal.com/cgi-bin/webscr
             //read: https://ipnpb.paypal.com/cgi-bin/webscr
 

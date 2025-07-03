@@ -28,6 +28,7 @@ public class DonateController {
 
     /**
      * Lisen from paypal instant payment notification(IPN) and save to db
+     * Where to set up ipn in Paypal? bussiness account -> account setting -> notifications -> instant payment notifications
      * @param request message from paypal IPN
      * @throws IOException
      * @author Elly
@@ -53,13 +54,6 @@ public class DonateController {
         else if (resultCode == ErrorCode.IPN_INVALID.getCode()){
             throw new ResponseException(resultCode, ErrorCode.IPN_INVALID.getTitle());
         }
-        // boolean isValid = paypalIPNService.verifyIpn(ipnMessage);
-
-        // System.out.println("Received IPN: " + ipnMessage);
-        // System.out.println("Verification result: " + (isValid ? "VERIFIED" : "INVALID"));
-
-        // 在此先不做任何 insert，只返回 HTTP 200
-        //return ResponseEntity.ok("OK");
     }
 
     /**
