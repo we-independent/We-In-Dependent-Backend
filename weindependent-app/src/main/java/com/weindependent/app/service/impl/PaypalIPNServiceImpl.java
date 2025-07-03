@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,7 +44,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
 
     public int processIpn(String ipnMessage){
         log.info(ipnMessage);
-        if (true) {
+        if (verifyIpn(ipnMessage)) {
             Map<String, String> ipnParams = parseIpnMessage(ipnMessage);
 
             Integer userId = userMapper.findByEmail(ipnParams.get("payer_email"));
@@ -74,6 +77,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
+            conn.setRequestProperty("User-Agent", "Java-IPN-Verification-Script");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             try (OutputStream os = conn.getOutputStream()) {
@@ -96,14 +100,21 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
         }
 
     }
-    private Map<String, String> parseIpnMessage(String ipnMessage){
+    private Map<String, String> parseIpnMessage(String ipnMessage) {
         return Arrays.stream(ipnMessage.split("&"))
-                .map(s -> s.split("=", 2))
-                .collect(Collectors.toMap(
-                        kv -> URLDecoder.decode(kv[0], StandardCharsets.UTF_8),
-                        kv -> kv.length > 1 ? URLDecoder.decode(kv[1], StandardCharsets.UTF_8) : ""
-                ));
+                .map(s -> {
+                    String[] kv = s.split("=", 2);
+                    try {
+                        String key = URLDecoder.decode(kv[0], "UTF-8");
+                        String value = kv.length > 1 ? URLDecoder.decode(kv[1], "UTF-8") : "";
+                        return new AbstractMap.SimpleEntry<>(key, value);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
+    
 
     private java.util.Date parsePaymentDate(String paymentDateStr) {
         if (paymentDateStr == null) return null;

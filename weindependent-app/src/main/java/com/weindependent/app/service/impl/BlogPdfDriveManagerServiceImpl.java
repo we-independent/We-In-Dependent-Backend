@@ -19,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
 
     @Override
     public String handlePdfDownload(Integer blogId, byte[] pdfBytes, Integer userId, int downloadCount, LocalDateTime now, boolean forceUpload) {
+
         BlogPdfDO existing = blogPdfExportMapper.selectByArticleIdIgnoreDeleted(blogId);
 
         // 优先返回已有有效链接
@@ -91,20 +94,30 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                     return downloadUrl;
                 }
             } catch (Exception e) {
-                log.warn("Drive 查询失败，准备上传: {}", e.getMessage());
+                log.warn("Drive 查询失败，准备上传: {}", e);
             }
         }
-
+        
         // 满足上传条件或强制上传
         if ((downloadCount >= 5 || forceUpload) && pdfBytes != null && pdfBytes.length > 0) {
             try {
                 String fileName = "WeIndependent_blog_" + blogId + ".pdf";
+
                 MultipartFile file = new MockMultipartFile(fileName, fileName, "application/pdf", pdfBytes);
+
+                Arrays.stream(Thread.currentThread().getStackTrace()).forEach(s -> log.info(s.toString()));
+                
                 UploadedFileVO uploadedFileVo = fileService.uploadFile(file, fileName, GoogleDriveFileCategoryEnum.BLOG_PDF);
+
                 String viewUrl = uploadedFileVo.getFilePath();
+
                 if (viewUrl == null || viewUrl.isEmpty()) throw new RuntimeException("上传成功但返回空链接");
                 // String fileId = extractDriveFieldId(viewUrl);
                 String fileId = uploadedFileVo.getFileKey();
+                if (fileId == null) {
+                    fileId = extractDriveFieldId(viewUrl); // ⚠️ 补提取
+                    log.warn("⚠️ uploadFile 返回 fileKey 为空，尝试从 viewUrl 中提取: {}", fileId);
+                }
                 String downloadUrl = fileId != null ? buildDownloadUrlFromDriveView(fileId) : viewUrl;
                 log.info("📦 上传成功, downloadUrl: {}", downloadUrl);
 
@@ -136,9 +149,14 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 return downloadUrl;
 
             } catch (Exception e) {
-                log.error("❌ PDF 上传失败", e);
-                throw new RuntimeException("上传失败", e);
+                log.error("❌ handlePdfDownload 内部上传失败: {}", e.toString(), e); // 一定要打印 e
+                Throwable cause = e.getCause();
+                if (cause != null) {
+                    log.error("📌 原始异常: {}", cause.toString(), cause);
+                }
+                throw new RuntimeException("PDF 上传失败，请检查日志详情", e);
             }
+
         } else {
             log.warn("⚠️ 条件不满足，未上传 PDF");
         }
@@ -147,11 +165,13 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
         insertDownloadLog(blogId, userId, now, null);
         return null;
     }
+    
     @Override
     public int getDownloadCount(Long blogId) {
         return blogPdfDownloadLogMapper.getDownloadCount(blogId);
     }
-    private void insertDownloadLog(Integer blogId, Integer userId, LocalDateTime now, String downloadUrl) {
+
+    public void insertDownloadLog(Integer blogId, Integer userId, LocalDateTime now, String downloadUrl) {
         BlogPdfDownloadLogDO logDO = new BlogPdfDownloadLogDO();
         logDO.setBlogId(blogId);
         logDO.setUserId(userId.longValue());
@@ -174,5 +194,14 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
 
     private String buildDownloadUrlFromDriveView(String fileId) {
         return "https://drive.usercontent.google.com/uc?id=" + fileId + "&export=download";
+    }
+
+    @Override
+    public String getExistingDownloadUrl(Integer blogId) {
+        BlogPdfDO existing = blogPdfExportMapper.selectByArticleIdIgnoreDeleted(blogId);
+        if (existing != null && isValidDriveDownloadLink(existing.getDownloadUrl())) {
+            return existing.getDownloadUrl();
+        }
+        return null;
     }
 }

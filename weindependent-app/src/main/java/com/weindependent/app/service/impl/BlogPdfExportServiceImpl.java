@@ -44,7 +44,12 @@ public class BlogPdfExportServiceImpl implements IBlogPdfExportService  {
         context.setVariable("content", blog.getContent());
 
         String html = templateEngine.process("blog_pdf_template", context);
-        String safeHtml = HtmlSanitizerUtil.cleanHtmlForXml(html);
+        // 替换非法 HTML 实体字符，避免 PDF 生成失败
+        html = html
+                .replace("&nbsp;", " ")
+                .replace("&hellip;", "...")
+                .replace("&copy;", "(c)");
+                String safeHtml = HtmlSanitizerUtil.cleanHtmlForXml(html);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
