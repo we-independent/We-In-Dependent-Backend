@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.EventAgendaItemMapper">
+    
+    <resultMap id="EventAgendaItemResultMap" type="com.weindependent.app.database.dataobject.EventAgendaItemDO">
+        <id column="id" property="id"/>
+        <result column="agenda_id" property="agendaId"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="duration_minutes" property="durationMinutes"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="update_user_id" property="updateUserId"/>
+    </resultMap>
+
+    <select id="getByAgendaId" resultMap="EventAgendaItemResultMap">
+        SELECT * FROM event_agenda_item 
+        WHERE agenda_id = #{agendaId} AND is_deleted = 0
+        ORDER BY sort_order ASC, start_time ASC
+    </select>
+
+    <select id="getById" resultMap="EventAgendaItemResultMap">
+        SELECT * FROM event_agenda_item 
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.EventAgendaItemDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO event_agenda_item (
+            agenda_id, title, description, start_time, end_time, duration_minutes,
+            sort_order, is_deleted,
+            create_time, update_time, create_user_id, update_user_id
+        ) VALUES (
+            #{agendaId}, #{title}, #{description}, #{startTime}, #{endTime}, #{durationMinutes},
+            #{sortOrder}, #{isDeleted},
+            #{createTime}, #{updateTime}, #{createUserId}, #{updateUserId}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.weindependent.app.database.dataobject.EventAgendaItemDO">
+        UPDATE event_agenda_item SET
+            title = #{title},
+            description = #{description},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            duration_minutes = #{durationMinutes},
+            sort_order = #{sortOrder},
+            update_time = #{updateTime},
+            update_user_id = #{updateUserId}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE event_agenda_item SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <update id="deleteByAgendaId">
+        UPDATE event_agenda_item SET is_deleted = 1 WHERE agenda_id = #{agendaId}
+    </update>
+
+    <update id="updateSortOrder">
+        UPDATE event_agenda_item SET sort_order = #{sortOrder} WHERE id = #{id}
+    </update>
+
+</mapper> 
