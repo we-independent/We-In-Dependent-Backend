@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "捐款管理")
 @RestController
-@RequestMapping("/donate")
+@RequestMapping("/api/donate")
 public class DonateController {
     @Autowired
     private PaypalIPNService paypalIPNService;
