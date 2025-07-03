@@ -7,4 +7,5 @@ public interface IBlogPdfDriveManagerService {
     int getDownloadCount(Long blogId);
     void insertDownloadLog(Integer blogId, Integer userId, LocalDateTime now, String downloadUrl);
     String getExistingDownloadUrl(Integer blogId);
+    void handlePdfRegeneration(Integer blogId);
 }

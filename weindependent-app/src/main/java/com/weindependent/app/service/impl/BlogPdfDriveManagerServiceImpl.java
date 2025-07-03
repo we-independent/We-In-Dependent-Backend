@@ -10,6 +10,7 @@ import com.weindependent.app.database.mapper.weindependent.BlogPdfExportMapper;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.service.IFileService;
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
+import com.weindependent.app.service.IBlogPdfExportService;
 import com.weindependent.app.vo.UploadedFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
 
     @Autowired
     GoogleDriveFolderProperties googleDriveFolderProperties;
+
+    @Autowired
+    private IBlogPdfExportService blogPdfExportService;
 
     @Autowired
     private IFileService fileService;
@@ -97,7 +101,7 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
                 log.warn("Drive 查询失败，准备上传: {}", e);
             }
         }
-        
+
         // 满足上传条件或强制上传
         if ((downloadCount >= 5 || forceUpload) && pdfBytes != null && pdfBytes.length > 0) {
             try {
@@ -204,4 +208,15 @@ public class BlogPdfDriveManagerServiceImpl implements IBlogPdfDriveManagerServi
         }
         return null;
     }
+
+    public void handlePdfRegeneration(Integer blogId) {
+        byte[] pdfBytes = blogPdfExportService.generatePdf(blogId);
+
+        // 强制上传覆盖旧文件（包括 drive & 数据库记录）
+        String newUrl = this.handlePdfDownload(blogId, pdfBytes, /*userId=*/ null, 0,
+            LocalDateTime.now(), true);
+
+        log.info("📦 Blog {} PDF 已重新生成并上传: {}", blogId, newUrl);
+    }
+
 }
