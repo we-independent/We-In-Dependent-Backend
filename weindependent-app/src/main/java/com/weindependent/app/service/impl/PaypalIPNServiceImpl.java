@@ -9,11 +9,10 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
 
     public int processIpn(String ipnMessage){
         log.info(ipnMessage);
-        if (true) {
+        if (verifyIpn(ipnMessage)) {
             Map<String, String> ipnParams = parseIpnMessage(ipnMessage);
 
             Integer userId = userMapper.findByEmail(ipnParams.get("payer_email"));
@@ -74,6 +73,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
+            conn.setRequestProperty("User-Agent", "Java-IPN-Verification-Script");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             try (OutputStream os = conn.getOutputStream()) {
@@ -96,14 +96,17 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
         }
 
     }
-    private Map<String, String> parseIpnMessage(String ipnMessage){
-        return Arrays.stream(ipnMessage.split("&"))
-                .map(s -> s.split("=", 2))
-                .collect(Collectors.toMap(
-                        kv -> URLDecoder.decode(kv[0], StandardCharsets.UTF_8),
-                        kv -> kv.length > 1 ? URLDecoder.decode(kv[1], StandardCharsets.UTF_8) : ""
-                ));
+    private Map<String, String> parseIpnMessage(String ipnMessage) {
+        Map<String, String> map = new HashMap<>();
+        for (String pair : ipnMessage.split("&")) {
+            String[] kv = pair.split("=", 2);
+            String key = URLDecoder.decode(kv[0], StandardCharsets.UTF_8);
+            String value = kv.length > 1 ? URLDecoder.decode(kv[1], StandardCharsets.UTF_8) : "";
+            map.put(key, value);
+        }
+        return map;
     }
+    
 
     private java.util.Date parsePaymentDate(String paymentDateStr) {
         if (paymentDateStr == null) return null;
