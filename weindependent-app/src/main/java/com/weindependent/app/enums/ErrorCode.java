@@ -21,6 +21,8 @@ public enum ErrorCode {
     UNKONWN_CATEGORY(-6, "Unknown Category"),
     EVENT_NOT_EXIST(-7, "Event does not exist"),
     SPEAKER_NOT_EXIST(-8, "Speaker does not exist"),
+    BAD_REQUEST(400, "Bad request"),
+    NOT_FOUND(404, "Resource not found"),
     IPN_INVALID(-9, "Received Paypal IPN message was not valid");
     
     private int code;
