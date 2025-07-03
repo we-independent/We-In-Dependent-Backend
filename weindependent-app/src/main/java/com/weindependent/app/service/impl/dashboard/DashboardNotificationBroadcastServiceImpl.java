@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.weindependent.app.database.dataobject.NotificationBroadcastImageDO;
 import com.weindependent.app.database.dataobject.NotificationBroadcastMessageDO;
 import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.NotificationUserLogDO;
@@ -22,6 +23,7 @@ import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
+import com.weindependent.app.service.IDashboardNotificationBroadcastImageService;
 import com.weindependent.app.service.IDashboardNotificationBroadcastService;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IFileService;
@@ -43,6 +45,9 @@ public class DashboardNotificationBroadcastServiceImpl implements IDashboardNoti
 
     @Autowired 
     private IEmailService emailService;
+
+    @Autowired
+    private IDashboardNotificationBroadcastImageService imageService;
 
     @Resource
     private NotificationUserLogMapper notificationUserLogMapper;
@@ -104,6 +109,8 @@ public class DashboardNotificationBroadcastServiceImpl implements IDashboardNoti
 public void resend(Long id) {
     NotificationBroadcastMessageDO msg = messageMapper.findById(id);
     if (msg == null) return;
+    // 对应图片列表
+    List<NotificationBroadcastImageDO> imageList = imageService.listByMessageId(id);
 
     NotificationFieldEnum fieldEnum = NotificationFieldEnum.fromMessageType(msg.getType());
     List<NotificationSettingsDO> settingsList = userNotificationMapper.findAll();
@@ -144,8 +151,9 @@ public void resend(Long id) {
         // unsubscribeLink 可选
         params.put("unsubscribeLink", "https://weindependent.org/profile?highlight=" + fieldEnum.getFieldName());
 
+
         // 发送邮件
-        log.info("📧 发送给 userId={} email={}", user.getId(), user.getAccount());
+        log.info("发送给 userId={} email={}", user.getId(), user.getAccount());
         try {
             emailService.send(user.getAccount(), mailType, params);
             notificationUserLogMapper.insert(new NotificationUserLogDO(

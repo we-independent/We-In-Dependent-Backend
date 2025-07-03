@@ -84,13 +84,13 @@ public class DashboardNotificationController {
         return broadcastService.listAll();
     }
     
-    // 上传、更换emai中的图片
-    @SignatureAuth
-    @SaCheckRole("admin")
-    @Operation(summary = "上传邮件通知 banner 图片")
-    @PostMapping(value = "/file/notification/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UploadedFileVO uploadNotificationEmailImg(@RequestParam("file") MultipartFile file) {
-        return fileService.uploadFile(file, file.getOriginalFilename(), GoogleDriveFileCategoryEnum.GENERAL_NOTIFICATION);
-    }
+    // // 上传、更换emai中的图片
+    // @SignatureAuth
+    // @SaCheckRole("admin")
+    // @Operation(summary = "上传邮件通知 banner 图片")
+    // @PostMapping(value = "/file/notification/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public UploadedFileVO uploadNotificationEmailImg(@RequestParam("file") MultipartFile file) {
+    //     return fileService.uploadFile(file, file.getOriginalFilename(), GoogleDriveFileCategoryEnum.GENERAL_NOTIFICATION);
+    // }
 
 }
