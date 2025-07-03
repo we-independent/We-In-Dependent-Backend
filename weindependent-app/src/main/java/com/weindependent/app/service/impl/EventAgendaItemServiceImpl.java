@@ -114,7 +114,7 @@ public class EventAgendaItemServiceImpl implements IEventAgendaItemService {
         itemDO.setEndTime(qry.getEndTime());
         
         // 计算持续时间
-        if (qry.getDurationMinutes() == null) {
+        if (qry.getDurationMinutes() == null || qry.getDurationMinutes() <= 0) {
             long durationMinutes = ChronoUnit.MINUTES.between(qry.getStartTime(), qry.getEndTime());
             itemDO.setDurationMinutes((int) durationMinutes);
         } else {

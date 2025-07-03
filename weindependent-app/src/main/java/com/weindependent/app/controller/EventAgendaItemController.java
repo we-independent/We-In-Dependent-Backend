@@ -1,6 +1,8 @@
 package com.weindependent.app.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
+
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.dto.EventAgendaItemCreateQry;
 import com.weindependent.app.dto.EventAgendaItemUpdateQry;
@@ -28,6 +30,7 @@ public class EventAgendaItemController {
 
     @Operation(summary = "Get agenda items by agenda ID")
     //@SignatureAuth
+    @SaCheckRole("admin")
     @GetMapping("/agenda/{agendaId}")
     public List<EventAgendaItemVO> getItemsByAgendaId(@PathVariable Long agendaId) {
         return eventAgendaItemService.getItemsByAgendaId(agendaId);
@@ -35,6 +38,7 @@ public class EventAgendaItemController {
 
     @Operation(summary = "Get agenda item by ID")
     //@SignatureAuth
+    @SaCheckRole("admin")
     @GetMapping("/{id}")
     public EventAgendaItemVO getItemById(@PathVariable Long id) {
         return eventAgendaItemService.getItemById(id);
@@ -43,6 +47,7 @@ public class EventAgendaItemController {
     @Operation(summary = "Create agenda item")
     //@SignatureAuth
     @SaCheckLogin
+    @SaCheckRole("admin")
     @PostMapping
     public EventAgendaItemVO createItem(@Valid @RequestBody EventAgendaItemCreateQry qry) {
         return eventAgendaItemService.createItem(qry);
@@ -51,6 +56,7 @@ public class EventAgendaItemController {
     @Operation(summary = "Update agenda item")
     //@SignatureAuth
     @SaCheckLogin
+    @SaCheckRole("admin")
     @PutMapping
     public EventAgendaItemVO updateItem(@Valid @RequestBody EventAgendaItemUpdateQry qry) {
         return eventAgendaItemService.updateItem(qry);
@@ -59,6 +65,7 @@ public class EventAgendaItemController {
     @Operation(summary = "Delete agenda item by ID")
     //@SignatureAuth
     @SaCheckLogin
+    @SaCheckRole("admin")
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable Long id) {
         eventAgendaItemService.deleteItem(id);
@@ -67,6 +74,7 @@ public class EventAgendaItemController {
     @Operation(summary = "Update agenda item sort order")
     //@SignatureAuth
     @SaCheckLogin
+    @SaCheckRole("admin")
     @PutMapping("/{id}/sort-order")
     public void updateItemSortOrder(@PathVariable Long id, @RequestParam Integer sortOrder) {
         eventAgendaItemService.updateItemSortOrder(id, sortOrder);
