@@ -4,15 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,14 +101,18 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
 
     }
     private Map<String, String> parseIpnMessage(String ipnMessage) {
-        Map<String, String> map = new HashMap<>();
-        for (String pair : ipnMessage.split("&")) {
-            String[] kv = pair.split("=", 2);
-            String key = URLDecoder.decode(kv[0], StandardCharsets.UTF_8);
-            String value = kv.length > 1 ? URLDecoder.decode(kv[1], StandardCharsets.UTF_8) : "";
-            map.put(key, value);
-        }
-        return map;
+        return Arrays.stream(ipnMessage.split("&"))
+                .map(s -> {
+                    String[] kv = s.split("=", 2);
+                    try {
+                        String key = URLDecoder.decode(kv[0], "UTF-8");
+                        String value = kv.length > 1 ? URLDecoder.decode(kv[1], "UTF-8") : "";
+                        return new AbstractMap.SimpleEntry<>(key, value);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
 
