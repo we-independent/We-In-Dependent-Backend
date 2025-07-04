@@ -48,7 +48,10 @@ public class BlogPdfExportServiceImpl implements IBlogPdfExportService  {
         html = html
                 .replace("&nbsp;", " ")
                 .replace("&hellip;", "...")
-                .replace("&copy;", "(c)");
+                .replace("&copy;", "(c)")
+                .replaceAll("<br(?!\\s*/)>", "<br />")
+                .replaceAll("<hr(?!\\s*/)>", "<hr />")
+                .replaceAll("<img([^>]*)[^/]>", "<img$1 />");
                 String safeHtml = HtmlSanitizerUtil.cleanHtmlForXml(html);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
