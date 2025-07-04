@@ -11,17 +11,24 @@ import com.weindependent.app.dto.BlogArticleQry;
 import com.weindependent.app.vo.BlogArticleEditVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.validation.Valid;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 
 import com.weindependent.app.service.IBlogArticleService;
+import com.weindependent.app.service.IBlogPdfDriveManagerService;
+import com.weindependent.app.service.IBlogPdfExportService;
+
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -34,12 +41,17 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "博客文章管理")
 @RestController
 @RequestMapping("api/dashboard")
+@Slf4j
 public class DashboardBlogArticleController {
     private final IBlogArticleService blogArticleService;
 
     public DashboardBlogArticleController(IBlogArticleService blogArticleService) {
         this.blogArticleService = blogArticleService;
     }
+    @Autowired
+    private IBlogPdfExportService blogPdfExportService;
+    @Autowired
+    private IBlogPdfDriveManagerService blogPdfDriveManagerService;
 
     /**
      * 查询博客文章列表
@@ -96,6 +108,26 @@ public class DashboardBlogArticleController {
     public boolean edit(@PathVariable("id") Integer id, @RequestBody @Valid BlogArticleEditQry blogArticle) {
 
         blogArticle.setId(id);
+        boolean success = blogArticleService.updateBlogArticle(blogArticle) > 0;
+
+    if (success) {
+        // ✨ 强制重新生成 PDF 并上传
+        try {
+            byte[] pdfBytes = blogPdfExportService.generatePdf(id);  // ⬅️ 生成 PDF 内容
+            blogPdfDriveManagerService.handlePdfDownload(
+                id,
+                pdfBytes,
+                StpUtil.getLoginIdAsInt(),
+                0,  // 下载次数为 0 表示不依赖已有数据
+                LocalDateTime.now(),
+                true // 强制上传
+            );
+        } catch (Exception e) {
+            log.error("❌ 更新后 PDF 上传失败", e);
+            // 可以不抛出异常，只记录日志，也可以作为整体返回失败
+        }
+    }
+
         return blogArticleService.updateBlogArticle(blogArticle) > 0;
     }
 

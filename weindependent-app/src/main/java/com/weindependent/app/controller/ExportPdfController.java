@@ -3,6 +3,7 @@ package com.weindependent.app.controller;
 import com.weindependent.app.service.IBlogPdfDriveManagerService;
 import com.weindependent.app.service.IBlogPdfExportService;
 import com.weindependent.app.database.dataobject.UserDO;
+import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,17 +11,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import com.weindependent.app.service.UserService;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import cn.dev33.satoken.stp.StpUtil;
 
 @Slf4j
@@ -52,58 +58,43 @@ public class ExportPdfController {
     @Operation(summary = "Download_Blog_Pdf")
     @GetMapping("/export/{blogId}")
     public Object exportPdf(@PathVariable Integer blogId, HttpServletRequest request) {
-        System.out.println("💡 blogId 类型：" + (blogId != null ? blogId.getClass().getName() : "null"));
-        System.out.println("✅ 正在访问 export 接口，路径 blogId = " + request.getRequestURI());
-        System.out.println("🔥 请求路径：" + request.getRequestURI());
+        log.info("✅ 正在访问 export 接口，blogId = {}", blogId);
 
-        //Step 1 Check if user log in already, if yes, next move, otherwise login first
+        // Step 1: 校验登录
         if (!StpUtil.isLogin()) {
-            String targetUrl = request.getRequestURI();
             throw new ResponseException(401, "请先登录后再下载 PDF");
         }
-        // Step 2: 获取登录的 userId（loginId 是 string 类型）
-        Long userId = StpUtil.getLoginIdAsLong();
 
-        // Step 2.1: 查询数据库中是否存在该用户
+        Long userId = StpUtil.getLoginIdAsLong();
         UserDO user = userService.findUserById(userId);
         if (user == null) {
             throw new ResponseException(403, "用户未注册，请先注册");
         }
 
-        LocalDateTime now = LocalDateTime.now(); // 当前时间
+        LocalDateTime now = LocalDateTime.now();
         int downloadCount = blogPdfDriveManagerService.getDownloadCount(blogId.longValue());
 
-        // // 测试时可使用写死的userid
-        // Long userId = 1L;
-        // LocalDateTime now = LocalDateTime.now();
-
-
-        //Step 2 After user login, now handling pdf download request 
-        byte[] pdfBytes = blogPdfExportService.generatePdf(blogId);
-        //Step 2.2 Check if blog already in google drive
-        String existingDriveUrl = blogPdfDriveManagerService.handlePdfDownload(blogId, pdfBytes, userId.intValue(), downloadCount, now, false);
-        log.info("📂 existingDriveUrl = {}", existingDriveUrl);
-
-        if (existingDriveUrl == null || !isValidDriveUrl(existingDriveUrl)) {
-            if (downloadCount >= 5) {
-                byte[] regenerated = blogPdfExportService.generatePdf(blogId);
-                existingDriveUrl = blogPdfDriveManagerService.handlePdfDownload(
-                    blogId, regenerated, userId.intValue(), downloadCount, now, true
-                );
-            }
-        }
-
+        // Step 2: 检查是否已有有效的下载链接
+        String existingDriveUrl = blogPdfDriveManagerService.getExistingDownloadUrl(blogId);
         if (existingDriveUrl != null && isValidDriveUrl(existingDriveUrl)) {
-            Map<String, String> result = new HashMap<>();
+            log.info("✅ 发现有效 downloadUrl，直接返回 JSON: {}", existingDriveUrl);
+            Map<String, Object> result = new HashMap<>();
             result.put("downloadUrl", existingDriveUrl);
             return result;
         }
 
-        byte[] finalPdf = (pdfBytes != null) ? pdfBytes : blogPdfExportService.generatePdf(blogId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=WeIndependent_blog_" + blogId + ".pdf")
-                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
-                .body(finalPdf);
+        // Step 3: 没有链接 → 生成 PDF → 上传 → 返回新链接
+        byte[] pdfBytes = blogPdfExportService.generatePdf(blogId);
+        String newUrl = blogPdfDriveManagerService.handlePdfDownload(blogId, pdfBytes, userId.intValue(), downloadCount, now, true);
+
+        if (newUrl == null) {
+            throw new ResponseException(500, "PDF 生成或上传失败");
+        }
+
+        log.info("📦 PDF 上传完成，返回新链接: {}", newUrl);
+        Map<String, String> result = new HashMap<>();
+        result.put("downloadUrl", newUrl);
+        return result;
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -115,6 +106,44 @@ public class ExportPdfController {
         return ResponseEntity.badRequest().body("❌ blogId 必须是整数");
     }
 
+    @Operation(summary = "用于统计下载次数")
+    @GetMapping("/export/download-count/{id}")
+    public Integer getDownloadCount(@PathVariable Long id) {
+        return blogPdfDriveManagerService.getDownloadCount(id);
+    }
+
+    @Operation(summary = "下载次数不达标，走数据流生成pdf")
+    @GetMapping("/export/raw/{id}")
+    public void exportRawPdf(@PathVariable Integer id, HttpServletResponse response) {
+        if (!StpUtil.isLogin()) {
+            throw new ResponseException(401, "请先登录后再下载 PDF");
+        }
+
+        Long userId = StpUtil.getLoginIdAsLong();
+        
+        byte[] pdfBytes = blogPdfExportService.generatePdf(id);
+        String fileName = "WeIndependent_blog_" + id + ".pdf";
+
+        // log.info("📦 PDF 字节生成结果: {}", (pdfBytes == null) ? "null" : ("长度 = " + pdfBytes.length));
+
+        if (pdfBytes == null || pdfBytes.length == 0) {
+            throw new ResponseException(ErrorCode.BAD_REQUEST.getCode(), "生成 PDF 失败");
+        }
+
+        blogPdfDriveManagerService.insertDownloadLog(id, userId.intValue(), LocalDateTime.now(), null);
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        try (OutputStream out = response.getOutputStream()) {
+            out.write(pdfBytes);
+            out.flush();
+        } catch (IOException e) {
+            log.error("❌ PDF 输出失败", e);
+            throw new ResponseException(ErrorCode.BAD_REQUEST.getCode(), "PDF 下载失败");
+        }
+    }
+
+    
     private boolean isValidDriveUrl(String driveUrl) {
         // 非空、非非法链接的简单判断
         return driveUrl != null && driveUrl.contains("drive.usercontent.google.com") && driveUrl.contains("export=download");
