@@ -6,7 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.weindependent.app.database.dataobject.DonateDO;
-
+/**
+ * @auther Elly
+ * @date Jul-03-2025
+ */
 @Mapper
 public interface PaypalIPNMapper {
     int insertIpnTransaction(@Param("userId") Integer userId,
@@ -24,4 +27,8 @@ public interface PaypalIPNMapper {
         @Param("txnType") String txnType);
 
     List<DonateDO> getDonateHistory(@Param("userId") int userId);
+
+    DonateDO getDonateHistoryDetails(@Param("userId") int userId, @Param("txnId") String txnId);
+
+    boolean checkTxnByUserId(@Param("userId") int userId, @Param("txnId") String txnId);
 }

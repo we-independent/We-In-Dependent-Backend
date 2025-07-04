@@ -12,7 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +24,7 @@ import com.weindependent.app.database.dataobject.DonateDO;
 import com.weindependent.app.database.mapper.weindependent.PaypalIPNMapper;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
+import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.PaypalIPNService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Elly
- * Date: July 1
+ * @date: July-03-2025
  */
 @Service
 public class PaypalIPNServiceImpl implements PaypalIPNService{
@@ -70,7 +70,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
         try {
             String payload = "cmd=_notify-validate&" + ipnMessage;
             log.info("payload "+payload);
-            URL url = new URL("https://ipnpb.sandbox.paypal.com/cgi-bin/webscr");
+            URL url = new URL("https://ipnpb.paypal.com/cgi-bin/webscr");
             //sandbox: https://ipnpb.sandbox.paypal.com/cgi-bin/webscr
             //read: https://ipnpb.paypal.com/cgi-bin/webscr
 
@@ -129,6 +129,14 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
 
     public List<DonateDO> donateHistory(int userId){
         return ipnMapper.getDonateHistory(userId);
+    }
+
+    
+    public DonateDO donateHistoryDetails(int userId, String txnId){
+        if(!ipnMapper.checkTxnByUserId(userId, txnId)){
+            throw new ResponseException(ErrorCode.UNAUTHORIZED_ACCESS.getCode(), ErrorCode.UNAUTHORIZED_ACCESS.getTitle());
+        }
+        return ipnMapper.getDonateHistoryDetails(userId, txnId);
     }
 
 }
