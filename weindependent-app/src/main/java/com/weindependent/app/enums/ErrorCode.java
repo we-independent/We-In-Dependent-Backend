@@ -24,7 +24,10 @@ public enum ErrorCode {
     SPEAKER_NOT_EXIST(-8, "Speaker does not exist"),
     NOTIFICATION_DISABLED(-9, "Notification is not allowed for this field by user"),
     UNKNOWN_NOTIFICATION_TYPE(-10, "Unknown nofitification"),
-    MESSAGE_NOT_EXIST(-11, "Notification message does not exist");
+    MESSAGE_NOT_EXIST(-11, "Notification message does not exist"),
+    BAD_REQUEST(400, "Bad request"),
+    NOT_FOUND(404, "Resource not found"),
+    IPN_INVALID(-9, "Received Paypal IPN message was not valid");
     
     private int code;
     private final String title;

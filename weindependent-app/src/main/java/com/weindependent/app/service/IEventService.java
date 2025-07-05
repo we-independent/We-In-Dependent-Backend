@@ -3,7 +3,6 @@ package com.weindependent.app.service;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
-import com.weindependent.app.dto.EventFilterQry;
 
 import java.util.List;
 
@@ -22,8 +21,8 @@ public interface IEventService {
     RecentEventVOs getViewedEvents(int page, int size);
     RecentEventVOs getBookmarkedPastEvents(int page, int size);
     RecentEventVOs getBookmarkedUpcomingEvents(int page, int size);
-    List<EventVO> searchEventsNatural(String keyword);
-    List<EventVO> searchEventsBoolean(String keyword);
-    RecentEventVOs filterPastEventsByTags(EventFilterQry filter);
+    RecentEventVOs searchEventsNatural(String keyword, int pageNum, int pageSize);
+    RecentEventVOs searchEventsBoolean(String keyword, int pageNum, int pageSize);
+    RecentEventVOs filterPastEventsByTags(List<Integer> tagIds, int pageNum, int pageSize);
     boolean isRegistered(Long id);
 }

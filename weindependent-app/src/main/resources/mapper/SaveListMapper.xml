@@ -4,22 +4,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weindependent.app.database.mapper.weindependent.SaveListMapper">
 
-    <select id="getSavedBlogsFromList" resultType="com.weindependent.app.database.dataobject.BlogArticleDO">
-        SELECT ba.*
-        FROM blog_article ba
-        INNER JOIN save_list_article sa ON ba.id = sa.article_id
-        WHERE sa.list_id = #{listId}
+    <select id="getSavedBlogsFromList" resultType="com.weindependent.app.dto.BlogArticleCardQry">
+        SELECT a.id,
+                a.title,
+                a.update_time AS time,
+                a.category_id AS category,
+                "We Independent" AS author,
+                i.file_path AS imageUrl,
+            CASE 
+                WHEN a.content IS NULL THEN 0
+                ELSE CEIL((CHAR_LENGTH(a.content) - CHAR_LENGTH(REPLACE(a.content, ' ', '')) + 1) / 200) 
+            END AS readingTime,
+            CASE 
+                WHEN ep.id IS NOT NULL AND ep.status = 1 THEN TRUE
+                ELSE FALSE
+            END AS editorsPick,
+            COALESCE(s.savedCount, 0) AS savedCount
+        FROM save_list sl
+            JOIN save_list_article sla ON sl.list_id = sla.list_id
+            JOIN blog_article a ON a.id = sla.article_id
+            LEFT JOIN blog_image i ON a.banner_img_id = i.id
+            LEFT JOIN (
+                SELECT article_id, COUNT(*) AS savedCount
+                FROM save_list_article
+                GROUP BY article_id
+            ) s ON a.id = s.article_id
+            LEFT JOIN editor_picks ep ON a.id = ep.article_id
+        WHERE sl.user_id = #{userId}
+            AND sl.list_id = #{listId}
+            AND a.is_deleted = 0
+            AND a.article_status = 'published'
+        ORDER BY sla.saved_at DESC;
+
     </select>
 
-    <select id = "findDefaultListByUserId" resultType="com.weindependent.app.database.dataobject.SaveListDO">
+    <select id = "findDefaultListByUserId" resultType="Integer">
         SELECT list_id
         FROM save_list
-        WHERE user_id = #{userId} AND is_default = TRUE LIMIT 1 
+        WHERE user_id = #{userId} AND is_default = TRUE
     </select>
 
     <insert id = "createList" useGeneratedKeys="true" keyProperty="listId">
-        INSERT INTO save_list (user_id, name, is_default)
-        VALUES (#{userId}, #{name}, #{isDefault})
+        INSERT INTO save_list (user_id, name, is_default, created_at, last_edited_time)
+        VALUES (#{userId}, #{name}, #{isDefault}, NOW(), NOW())
     </insert>
 
     <delete id = "deleteList">
@@ -27,15 +54,65 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE list_id = #{listId} AND user_id = #{userId}
     </delete>
 
-    <select id = "getSavedList">
-        SELECT *
-        From save_list
-        WHERE user_id = #{userId}
+    <select id = "getSavedList" resultType="com.weindependent.app.database.dataobject.SaveListDO">
+        SELECT sl.*,
+           COUNT(a.id) AS article_count
+        FROM save_list sl
+        LEFT JOIN save_list_article sla ON sl.list_id = sla.list_id
+        LEFT JOIN blog_article a ON sla.article_id = a.id AND a.is_deleted = 0 AND a.article_status = 'published'
+        WHERE sl.user_id = #{userId}
+        GROUP BY sl.list_id
+        ORDER BY sl.last_edited_time DESC
     </select>
 
-    <select id="checkListOwnership" resultType="int">
-        SELECT COUNT(*)
-        FROM save_list
-        WHERE id = #{listId} AND user_id = #{userId}
-</select>
+    <select id="checkListOwnership" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM save_list
+            WHERE list_id = #{listId} AND user_id = #{userId}
+        )
+        </select>
+
+    <update id="updateListName">
+        UPDATE save_list
+        SET name = #{name}
+        WHERE list_id = #{listId} AND user_id = #{userId}
+    </update>
+
+    <select id="findArticleBelongsList" resultType="com.weindependent.app.database.dataobject.SaveListDO">
+        SELECT sl.list_id, sl.user_id, sl.name, sl.is_default
+        FROM save_list sl
+        JOIN save_list_article sla ON sl.list_id = sla.list_id
+        WHERE sl.user_id = #{userId} AND sla.article_id = #{blogId};
+    </select>
+
+    <update id="updateSaveToListMetadata">
+        UPDATE save_list sl
+        JOIN save_list_article sla ON sl.list_id = sla.list_id
+        JOIN blog_article a ON sla.article_id = a.id
+        LEFT JOIN blog_image i ON a.banner_img_id = i.id
+        SET sl.last_edited_time = sla.saved_at,
+            sl.last_edited_image = i.file_path
+        WHERE sl.list_id = #{listId}
+        AND sla.article_id = #{blogId}
+    </update>
+
+    <update id="updateDeleteFromListMetadata">
+        UPDATE save_list sl
+        JOIN (
+            SELECT sla.list_id, sla.saved_at, i.file_path
+            FROM save_list_article sla
+            JOIN blog_article a ON a.id = sla.article_id
+            LEFT JOIN blog_image i ON a.banner_img_id = i.id
+            WHERE sla.list_id = #{listId}
+            ORDER BY sla.saved_at DESC
+            LIMIT 1
+        ) latest ON sl.list_id = latest.list_id
+        SET 
+        sl.last_edited_time = NOW(),
+        sl.last_edited_image = latest.file_path
+        WHERE sl.list_id = #{listId}
+    </update>
+
+    
 </mapper>

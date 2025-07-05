@@ -95,6 +95,12 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
         // If bannerId changed, mark new image active and old one deleted
         if (!newBannerId.equals(oldBannerId)) {
             dashboardEventSpeakerImageMapper.setNotDeletedById(newBannerId);
+
+            // if the original banner ID is 15, which is the default image, skip it
+            if (oldBannerId == 15) {
+                return;
+            }
+            // Mark old banner as deleted
             dashboardEventSpeakerImageMapper.setDeletedById(oldBannerId);
         }
     }
@@ -111,6 +117,10 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
 
         // Loop through and mark each banner as deleted
         for (Long bannerId : bannerIds) {
+            // if the original banner ID is 15, which is the default image, skip it
+            if (bannerId == 15) {
+                continue;
+            }
             dashboardEventSpeakerImageMapper.setDeletedById(bannerId);
         }
     }
