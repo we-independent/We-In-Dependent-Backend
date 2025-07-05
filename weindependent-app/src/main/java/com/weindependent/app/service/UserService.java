@@ -24,7 +24,7 @@ public interface UserService {
     int resetPassword(String email, String newPassword);
     UserDO findUserById(Long userId); //Hurely added for pdf download
     void updateUser(UpdateUserQry updateUserQry);
-    ImageDO createProfileImg(MultipartFile file);
+    String createProfileImg(MultipartFile file);
     void verifyPassword(@Valid VerifyPasswordQry verifyPasswordQry);
     void changePassword(ChangePasswordQry changePasswordQry);
     void deleteAccount(Long userId);

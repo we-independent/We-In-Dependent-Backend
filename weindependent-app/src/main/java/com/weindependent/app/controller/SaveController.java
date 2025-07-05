@@ -2,19 +2,23 @@ package com.weindependent.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.PageInfo;
+import com.weindependent.app.dto.BlogArticleCardQry;
+import com.weindependent.app.dto.BlogArticleListQry;
 import com.weindependent.app.dto.SaveListQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.SaveService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import cn.dev33.satoken.stp.StpUtil;
+import io.swagger.v3.oas.annotations.Operation;
 /**
  * @author Elly
  * @apiNote all under api/saves must have token in request header
@@ -74,6 +78,25 @@ public class SaveController {
         else if (resultCode == ErrorCode.UPDATE_DB_FAILED.getCode()){
             throw new ResponseException(resultCode, ErrorCode.UPDATE_DB_FAILED.getTitle());
         }
+    }
+
+    /** 显示所有收藏的文章 ordered by saved time descendent
+     * @param query pageNum = ?, pageSize = ?. default page num = 1, size = 9.
+     * @return PageInfo with data match with frontend blog card
+    */
+    @Operation(summary = "显示用户收藏的所有文章(不论list)")
+    @PostMapping("/all-saved-articles")
+    public PageInfo<BlogArticleCardQry> allSavedArticles(@RequestBody BlogArticleListQry query){
+        int userId =StpUtil.getLoginIdAsInt();
+        PageInfo<BlogArticleCardQry> result = saveService.allSavedArticles(query, userId);
+        return result;
+    }
+
+    @Operation(summary = "用户登录后检查blog是否被该用户收藏")
+    @GetMapping("/blog-is-saved/{blogId}")
+    public boolean blogIsSaved(@PathVariable int blogId){
+        int userId = StpUtil.getLoginIdAsInt();
+        return saveService.blogIsSaved(userId, blogId);
     }
 
 

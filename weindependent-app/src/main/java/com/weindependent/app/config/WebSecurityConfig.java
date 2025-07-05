@@ -25,17 +25,16 @@ public class WebSecurityConfig {
 //    }
 
     public RequestMatcher csrfRequestMatcher = new RequestMatcher() {
-
         @Override
         public boolean matches(HttpServletRequest request) {
-            // Enable the CSRF
-            if (request.getRequestURL().indexOf("/donate/") != -1) {
-                return true;
-            }
-            return false;
+            // String url = request.getRequestURL().toString();
+            // if (url.contains("/donate/") && !url.contains("/donate/receive-paypal-ipn")) {
+            //     return true;  // 其他 /donate/ 路径启用CSRF
+            // }
+            return false; // IPN 路径不启用CSRF
         }
-
     };
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

@@ -98,10 +98,7 @@ public class UserController {
         loginVO.setLanguage(user.getLanguage());
         loginVO.setVisaType(user.getVisaType());
         loginVO.setSubscription(user.isSubscription());
-        ImageDO profileImage = userImageMapper.findById(user.getProfileImageId());
-        if (profileImage != null) {
-            loginVO.setAvatar(profileImage.getFilePath());
-        }
+        loginVO.setAvatar(user.getAvatar());
         log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
     }
@@ -237,9 +234,7 @@ public class UserController {
     @Operation(summary = "新增个人头像图片")
     @PostMapping(value = "/profile/img/upload", consumes =
             MediaType.MULTIPART_FORM_DATA_VALUE)
-    public  ImageDO createProfileImg(@RequestParam("file")  MultipartFile file) {
-        org.springframework.http.MediaType mediaType = MediaType.parseMediaType(file.getContentType());
-        org.springframework.http.MediaType a;
+    public  String createProfileImg(@RequestParam("file")  MultipartFile file) {
         return userService.createProfileImg(file);
     }
 

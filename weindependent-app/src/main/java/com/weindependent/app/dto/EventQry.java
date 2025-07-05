@@ -4,8 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.Instant;
 
 @Data
 public class EventQry {
@@ -18,8 +17,11 @@ public class EventQry {
     @NotBlank(message = "content is mandatory")
     private String content;
 
-    @NotNull(message = "eventTime is mandatory")
-    private LocalDateTime eventTime;
+    @NotNull(message = "eventTime is mandatory(UTC)")
+    private Instant eventTime;
+
+    @NotNull(message = "duration is mandatory(minutes)")
+    private Integer duration;
 
     @NotBlank(message = "location is mandatory")
     private String location;
@@ -28,7 +30,7 @@ public class EventQry {
 
     private String link;
 
-    private Integer categoryId;
+    private Integer tagId;
 
-    private Long bannerId;
+    private String bannerUrl;
 }

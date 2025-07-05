@@ -14,9 +14,14 @@ public enum NotificationFieldEnum {
     // Updates from We Independent
     UPDATES_ENABLED("updatesEnabled", NotificationSettingsDO::getUpdatesEnabled),
     UPDATES_GENERAL_ANNOUNCEMENTS("updatesGeneralAnnouncements", NotificationSettingsDO::getUpdatesGeneralAnnouncements),
-    UPDATES_NEW_PROGRAMS("updatesNewPrograms", NotificationSettingsDO::getUpdatesNewPrograms),
+    UPDATES_NEW_PROGRAMS_OR_FEATURES("updatesNewProgramsOrFeatures", NotificationSettingsDO::getUpdatesNewProgramsOrFeatures),
+    UPDATES_MONTHLY_HIGHLIGHT("updatesMonthlyHighlight", NotificationSettingsDO::getUpdatesMonthlyHighlight),
     UPDATES_HOLIDAY_MESSAGES("updatesHolidayMessages", NotificationSettingsDO::getUpdatesHolidayMessages),
-
+    
+    // Updates for Donation
+    DONATION_ENABLED("donationsEnabled", NotificationSettingsDO::getDonationsEnabled),
+    
+    
     // Events
     EVENTS_ENABLED("eventsEnabled", NotificationSettingsDO::getEventsEnabled),
     EVENTS_RSVP_CONFIRMATIONS("eventsRsvpConfirmations", NotificationSettingsDO::getEventsRsvpConfirmations),

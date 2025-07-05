@@ -1,5 +1,6 @@
 package com.weindependent.app.database.dataobject;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,13 +16,14 @@ public class EventDO {
     private String title;
     private String summary;
     private String content;
-    private LocalDateTime eventTime;
+    private Instant eventTime;
+    private Integer duration;
     private String location;
     // private Long speakerUserId;
-    private Integer categoryId;
+    private Integer tagId;
     private String link;
     private String videoLink;
-    private Long bannerId;
+    private String bannerUrl;
     private boolean isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

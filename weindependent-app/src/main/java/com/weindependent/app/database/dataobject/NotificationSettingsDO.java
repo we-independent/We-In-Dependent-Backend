@@ -11,12 +11,13 @@ public class NotificationSettingsDO {
     // Updates from We Independent
     private Boolean updatesEnabled;
     private Boolean updatesGeneralAnnouncements;
-    private Boolean updatesNewPrograms;
+    private Boolean updatesNewProgramsOrFeatures;
+    private Boolean updatesMonthlyHighlight;
     private Boolean updatesHolidayMessages;
 
     // //default 1-open
     // // Donation and payments
-    // private Boolean donationsEnabled;
+    private Boolean donationsEnabled;
     // private Boolean donationsDonationConfirmations;
     // private Boolean donationsDonationUpdates;
     // private Boolean donationsBillingIssues;

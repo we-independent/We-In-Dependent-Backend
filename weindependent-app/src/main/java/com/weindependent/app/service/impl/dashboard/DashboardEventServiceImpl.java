@@ -4,10 +4,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.weindependent.app.convertor.EventConverter;
-import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
-import com.weindependent.app.database.mapper.dashboard.DashboardEventImageMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardEventSpeakerRelationMapper;
 import com.weindependent.app.database.mapper.dashboard.DashboardSpeakerMapper;
@@ -40,10 +38,9 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     @Autowired
     private IFileService fileService;
 
-    private final Integer RESIZE_WIDTH = 1729;
-    private final Integer RESIZE_HEIGHT = 438;
-    @Autowired
-    private DashboardEventImageMapper dashboardEventImageMapper;
+    private final Integer RESIZE_WIDTH = 768;
+    private final Integer RESIZE_HEIGHT = 422;
+
     @Autowired
     private DashboardEventMapper dashboardEventMapper;
     @Autowired
@@ -71,11 +68,6 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to create event");
         }
 
-        if (eventDO.getBannerId() != null) {
-            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
-                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
-            };
-        }
         return eventDO;
     }
 
@@ -93,19 +85,14 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
         EventDO eventDO = EventConverter.toEventDO(event,id,null,userId);
 
         if(dashboardEventMapper.update(eventDO)==0){
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString()+". Check if the image is not used by other event.");
+            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to update event id:"+id.toString());
         };
 
-        if (eventDO.getBannerId() != null) {
-            if(dashboardEventImageMapper.markUsed(eventDO.getBannerId())==0){
-                throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Cannot use this image");
-            };
-        }
 
     }
 
     @Override
-    public ImageDO insertEventBanner(MultipartFile file) {
+    public String insertEventBanner(MultipartFile file) {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file, RESIZE_WIDTH, RESIZE_HEIGHT);
@@ -114,20 +101,8 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
             throw new RuntimeException("Failed to resize image");
         }
 
-        // Then upload
         UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.EVENT_BANNER);
-
-        ImageDO imageDo = new ImageDO();
-        imageDo.setCategory("event-banner");
-        imageDo.setFileName(uploadedFileVO.getFileName());
-        imageDo.setFileKey(uploadedFileVO.getFileKey());
-        imageDo.setFileType(resizedFile.getContentType());
-        imageDo.setFilePath(uploadedFileVO.getFilePath());
-        int affectedRows = dashboardEventImageMapper.insert(imageDo);
-        if (affectedRows != 1) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
-        }
-        return imageDo;
+        return uploadedFileVO.getFilePath();
     }
 
     @Override
@@ -151,7 +126,7 @@ public class DashboardEventServiceImpl implements IDashboardEventService {
     }
 
     @Override
-    public EventDO getById(Long id) {
+    public DashboardEventVO getById(Long id) {
         return dashboardEventMapper.getById(id);
     }
 

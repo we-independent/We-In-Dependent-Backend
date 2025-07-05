@@ -186,12 +186,16 @@ public class BlogArticleListServiceImpl implements IBlogArticleListService {
         qry.setContent(article.getContent());
         qry.setAuthorId(article.getAuthorId());
         qry.setAuthorName("We Independent");
-        String content = article.getContent();
-        int wordCount = (content != null && !content.trim().isEmpty())
-            ? content.trim().split("\\s+").length
-            : 0;
-        int readingMinutes = Math.min(30, Math.max(1, (int)Math.ceil(wordCount / 200.0)));
-        qry.setReadingtime(readingMinutes + " min read");
+        if (article.getReadingTimeInMinutes() != null && article.getReadingTimeInMinutes() > 0) {
+            qry.setReadingtime(article.getReadingTimeInMinutes() + " min read");
+        } else {
+            String content = article.getContent();
+            int wordCount = (content != null && !content.trim().isEmpty())
+                    ? content.trim().split("\\s+").length
+                    : 0;
+            int readingMinutes = Math.min(30, Math.max(1, (int) Math.ceil(wordCount / 200.0)));
+            qry.setReadingtime(readingMinutes + " min read");
+        }
         qry.setBannerImgId(article.getBannerImgId());
         qry.setBannerImageUrl(blogArticleListMapper.selectBannerImageUrlById(article.getBannerImgId()));
         qry.setCategoryId(article.getCategoryId());

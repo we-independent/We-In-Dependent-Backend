@@ -46,14 +46,14 @@ import com.weindependent.app.service.IFileService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import com.weindependent.app.utils.ImageResizeUtil;
 
 @Service
@@ -191,17 +191,17 @@ public class UserServiceImpl implements UserService {
     public void updateUser(UpdateUserQry updateUserQry) {
         Long userId = StpUtil.getLoginIdAsLong();
 
-        Integer profileImageId = updateUserQry.getProfileImageId();
-        if (profileImageId == null || profileImageId <= 0) {
-            updateUserQry.setProfileImageId(null); // 不更新头像字段，保持现状或交由前端渲染默认图
-        }
+        // Integer profileImageId = updateUserQry.getProfileImageId();
+        // if (profileImageId == null || profileImageId <= 0) {
+        //     updateUserQry.setProfileImageId(null); // 不更新头像字段，保持现状或交由前端渲染默认图
+        // }
 
         UserDO userDO = UserConvertor.toUserDO(userId, updateUserQry);
         userMapper.updateUser(userDO);
     }
 
     @Override
-    public ImageDO createProfileImg(MultipartFile file) {
+    public String createProfileImg(MultipartFile file) {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file,
@@ -215,16 +215,8 @@ public class UserServiceImpl implements UserService {
         UploadedFileVO uploadedFileVO =
             fileService.uploadFile(resizedFile, null, GoogleDriveFileCategoryEnum.USER_PROFILE_IMAGE);
 
-        ImageDO imageDo = new ImageDO();
-        imageDo.setFileName(uploadedFileVO.getFileName());
-        imageDo.setFileKey(uploadedFileVO.getFileKey());
-        imageDo.setFileType(resizedFile.getContentType());
-        imageDo.setFilePath(uploadedFileVO.getFilePath());
-        int affectedRows = profileImageMapper.create(imageDo);
-        if (affectedRows != 1) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
-        }
-        return imageDo;
+
+        return uploadedFileVO.getFilePath();
     }
 
 
@@ -275,24 +267,45 @@ public class UserServiceImpl implements UserService {
         }
         String userName = Optional.ofNullable(user.getRealName()).orElse("User");
         String userEmail = Optional.ofNullable(user.getAccount()).orElse("unknown@noemail.com");
+        String year = String.valueOf(LocalDate.now().getYear());
+        Integer maxSeq = userHelpCenterMapper.getMaxReferenceSequenceThisYear(year);
+        int nextSeq = (maxSeq == null ? 1 : maxSeq + 1);
+
+        String referenceId = generateReferenceId(nextSeq);
 
         HelpCenterRequestDO request = new HelpCenterRequestDO();
         request.setUserId(userId);
         request.setName(userName);
         request.setEmail(userEmail);
         request.setSubject(qry.getSubject());
+        request.setReferenceId(referenceId);
         request.setMessage(qry.getMessage());
         request.setCreateTime(LocalDateTime.now());
 
         userHelpCenterMapper.insert(request);
 
         // admin 需要的info
+        // Confirmation email send to user
+        Map<String, String> emailParams = new HashMap<>();
+        emailParams.put("subject", qry.getSubject());
+        emailParams.put("name", userName);
+        emailParams.put("message", qry.getMessage());
+        emailParams.put("referenceId", request.getReferenceId());
+        emailParams.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")));
+        
+        emailServiceImpl.send(userEmail, MailTypeEnum.HELP_CENTER, emailParams);
+
+        // 4. 抄送客服邮箱
         Map<String, String> adminMailParams = new HashMap<>();
         adminMailParams.put("name", userName);
         adminMailParams.put("email", userEmail);
         adminMailParams.put("subject", qry.getSubject());
+        adminMailParams.put("question-type", qry.getQuestionType() != null ? qry.getQuestionType() : "General Inquiry");
+        adminMailParams.put("referenceId", request.getReferenceId()); 
         adminMailParams.put("message", qry.getMessage());
         adminMailParams.put("replyTo", userEmail);
+        String subject = "[Help Center] New Request - " + request.getSubject() + " (Ref: " + request.getReferenceId() + ")";
+        adminMailParams.put("subject", subject);
 
         // user info 
         Map<String, String> userParams = new HashMap<>();
@@ -359,11 +372,17 @@ public class UserServiceImpl implements UserService {
         if (!Boolean.TRUE.equals(subscribe)) {
             settingsDO.setUpdatesEnabled(false);
             settingsDO.setUpdatesGeneralAnnouncements(false);
-            settingsDO.setUpdatesNewPrograms(false);
+            settingsDO.setUpdatesNewProgramsOrFeatures(false);
+            settingsDO.setUpdatesMonthlyHighlight(false);
             settingsDO.setUpdatesHolidayMessages(false);
         }
         userNotificationMapper.insert(settingsDO);
 
+    }
+
+    public static String generateReferenceId(int nextSeq) {
+        String year = String.valueOf(LocalDate.now().getYear());
+        return String.format("MSG-%s-%06d", year, nextSeq);
     }
 }
 
