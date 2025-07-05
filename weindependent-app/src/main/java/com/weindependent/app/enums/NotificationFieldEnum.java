@@ -24,8 +24,8 @@ public enum NotificationFieldEnum {
     
     // Events
     EVENTS_ENABLED("eventsEnabled", NotificationSettingsDO::getEventsEnabled),
-    EVENTS_RSVP_CONFIRMATIONS("eventsRsvpConfirmations", NotificationSettingsDO::getEventsRsvpConfirmations),
-    EVENTS_EVENT_UPDATES("eventsEventUpdates", NotificationSettingsDO::getEventsEventUpdates);
+    EVENTS_EVENT_REMINDER("eventsEventReminder", NotificationSettingsDO::getEventseventReminder),
+    EVENTS_EVENT_FOLLOW_UP("eventsEventFollowUp", NotificationSettingsDO::getEventseventFollowUp);
 
     private final String fieldName;
     private final Function<NotificationSettingsDO, Boolean> getter;

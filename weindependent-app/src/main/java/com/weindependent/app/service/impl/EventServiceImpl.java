@@ -175,7 +175,7 @@ public class EventServiceImpl implements IEventService {
         // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
         // emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
 
-        NotificationFieldEnum fieldEnum = NotificationFieldEnum.EVENTS_RSVP_CONFIRMATIONS;
+        NotificationFieldEnum fieldEnum = NotificationFieldEnum.EVENTS_EVENT_REMINDER;
         NotificationSettingsDO settingsDO = userNotificationMapper.findByUserId(userId);
         Boolean isEnabled = fieldEnum.isEnabled(settingsDO);
 

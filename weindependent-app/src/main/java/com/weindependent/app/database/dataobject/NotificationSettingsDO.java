@@ -25,8 +25,8 @@ public class NotificationSettingsDO {
     //default 1-open
     // Event confirmation and reminders
     private Boolean eventsEnabled;
-    private Boolean eventsRsvpConfirmations;
-    private Boolean eventsEventUpdates;
+    private Boolean eventseventReminder;
+    private Boolean eventseventFollowUp;
 
     //default 1-open
     // Help center

@@ -12,12 +12,12 @@
         INSERT INTO user_notification_settings
             (user_id, updates_enabled, updates_general_announcements, updates_new_programs_or_features, updates_monthly_highlight, updates_holiday_messages,
             donations_enabled, donations_donation_confirmations, donations_donation_updates, donations_billing_issues,
-            events_enabled, events_rsvp_confirmations, events_event_updates,
+            events_enabled, events_event_reminder, events_event_follow_up,
             help_center_enabled)
         VALUES
             (#{userId}, #{updatesEnabled}, #{updatesGeneralAnnouncements}, #{updatesNewProgramsOrFeatures}, #{updatesMonthlyHighlight}, #{updatesHolidayMessages},
             #{donationsEnabled}, #{donationsDonationConfirmations}, #{donationsDonationUpdates}, #{donationsBillingIssues},
-            #{eventsEnabled}, #{eventsRsvpConfirmations}, #{eventsEventUpdates},
+            #{eventsEnabled}, #{eventsEventReminder}, #{eventsEventFollowUp},
             #{helpCenterEnabled})
     </insert>
 
@@ -34,8 +34,8 @@
             donations_donation_updates = #{donationsDonationUpdates},
             donations_billing_issues = #{donationsBillingIssues},
             events_enabled = #{eventsEnabled},
-            events_rsvp_confirmations = #{eventsRsvpConfirmations},
-            events_event_updates = #{eventsEventUpdates},
+            events_event_reminder = #{eventsEventReminder},
+            events_event_follow_up = #{eventsEventFollowUp},
             help_center_enabled = #{helpCenterEnabled}
         WHERE
             user_id = #{userId}
@@ -57,8 +57,8 @@
             <if test="fieldName == 'donations_billing_issues'"> donations_billing_issues = #{fieldValue}, </if> -->
 
             <if test="fieldName == 'eventsEnabled'"> events_enabled = #{fieldValue}, </if>
-            <if test="fieldName == 'eventsRsvpConfirmations'"> events_rsvp_confirmations = #{fieldValue}, </if>
-            <if test="fieldName == 'eventsEventUpdates'"> events_event_updates = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsEventReminder'"> events_event_reminder = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsEventFollowUp'"> events_event_follow_up = #{fieldValue}, </if>
 
             <!-- <if test="fieldName == 'help_center_enabled'"> help_center_enabled = #{fieldValue}, </if> -->
             <!-- <if test="fieldName == 'help_center_response_and_update'"> help_center_response_and_update = #{fieldValue}, </if> -->
