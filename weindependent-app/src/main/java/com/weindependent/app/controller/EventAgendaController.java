@@ -6,6 +6,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.dto.EventAgendaCreateQry;
 import com.weindependent.app.dto.EventAgendaUpdateQry;
+import com.weindependent.app.dto.EventAgendasWithItemsQry;
 import com.weindependent.app.service.IEventAgendaService;
 import com.weindependent.app.vo.event.EventAgendaVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Tag(name = "活動議程")
 @Slf4j
@@ -81,4 +83,15 @@ public class EventAgendaController {
     public void deleteAgendaByEventId(@PathVariable Long eventId) {
         eventAgendaService.deleteAgendaByEventId(eventId);
     }
+
+    @Operation(summary = "Get all agenda-items by event ID")
+    @SignatureAuth
+    @SaCheckLogin
+    @SaCheckRole("admin")
+    @GetMapping("/event/{eventId}/agenda-items")
+    public EventAgendasWithItemsQry getAgendaItemsByEventId(@PathVariable Long eventId) {
+        EventAgendasWithItemsQry result = eventAgendaService.getAgendasWithItemsByEventId(eventId);
+        return result;
+    }
+    
 } 
