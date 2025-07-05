@@ -175,14 +175,14 @@ public class EventServiceImpl implements IEventService {
         // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
         // emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
 
-        NotificationFieldEnum fieldEnum = NotificationFieldEnum.EVENTS_EVENT_REMINDER;
-        NotificationSettingsDO settingsDO = userNotificationMapper.findByUserId(userId);
-        Boolean isEnabled = fieldEnum.isEnabled(settingsDO);
+        // NotificationFieldEnum fieldEnum = NotificationFieldEnum.EVENTS_EVENT_REMINDER;
+        // NotificationSettingsDO settingsDO = userNotificationMapper.findByUserId(userId);
+        // Boolean isEnabled = fieldEnum.isEnabled(settingsDO);
 
-        if(isEnabled){
-            emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
-        }
-        // emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+        // if(isEnabled){
+        //     emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+        // }
+        emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
     }
 
     @Override
