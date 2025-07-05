@@ -2,33 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.weindependent</groupId>
-    <artifactId>web</artifactId>
+    <artifactId>we-in-dependent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>web</name>
-    <description>weindependent website</description>
-    <packaging>pom</packaging>
+    <name>app</name>
+    <packaging>jar</packaging>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.6</version>
+        <groupId>com.weindependent</groupId>
+        <artifactId>web</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+<!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.7.6</spring-boot.version>
         <satoken.version>1.36.0</satoken.version>
     </properties>
 
-    <modules>
-        <module>weindependent-app</module>
-    </modules>
-
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -49,11 +44,11 @@
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>2.3.0</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-security</artifactId>-->
-        <!--            <version>${spring-boot.version}</version>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -63,6 +58,11 @@
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.2.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -81,40 +81,21 @@
             <artifactId>sa-token-jwt</artifactId>
             <version>${satoken.version}</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.github.xiaoymin</groupId>-->
-        <!--            <artifactId>knife4j-spring-boot-starter</artifactId>-->
-        <!--            <version>3.0.2</version>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.14</version>
-        </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.72</version>
         </dependency>
-        <!-- Validation-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.commons</groupId>-->
-        <!--            <artifactId>commons-lang3</artifactId>-->
-        <!--            <version>3.1</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>commons-net</groupId>-->
-        <!--            <artifactId>commons-net</artifactId>-->
-        <!--            <version>3.8.0</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.commons</groupId>-->
+<!--            <artifactId>commons-lang3</artifactId>-->
+<!--            <version>3.1</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>commons-net</groupId>-->
+<!--            <artifactId>commons-net</artifactId>-->
+<!--            <version>3.8.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -126,26 +107,186 @@
             <version>2.4</version>
         </dependency>
         <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.xiaoymin</groupId>-->
+<!--            <artifactId>knife4j-spring-boot-starter</artifactId>-->
+<!--            <version>3.0.2</version>-->
+<!--        </dependency>-->
+        <!-- 添加swagger2相关功能-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <!-- 添加swagger-ui相关功能-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <!-- 引入swagger-bootstrap-ui依赖包-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.8.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
+        <!-- 为将 blog 内容渲染成 HTML 引入 Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+            <version>3.1.12</version>
+        </dependency>
+        
+        <!-- 为将 HTML 转换为 PDF 引入 openhtmltopdf -->
+        <dependency>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-pdfbox</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+
+        <!--    GoogleDrive相关依赖包   -->
+        <!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-drive -->
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev188-1.25.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.3.30</version> 
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.30.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev197-1.25.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.34.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+            <version>1.23.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.35.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-gson</artifactId>
+            <version>1.21.0</version>
+        </dependency>
+        <!--圖片縮小處理包-->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.20</version>
+        </dependency>
+        <!-- Elasticsearch High Level REST Client -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.17.13</version>
+        </dependency>
+        <!-- JSON 解析依赖 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
     </dependencies>
 
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-dependencies</artifactId>-->
+<!--                <version>${spring-boot.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
+
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                        <skip>false</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <version>3.8.1</version>-->
+<!--                <configuration>-->
+<!--                    <source>1.8</source>-->
+<!--                    <target>1.8</target>-->
+<!--                    <encoding>UTF-8</encoding>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
+                    <mainClass>com.weindependent.app.AppApplication</mainClass>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
-</project>
 
+</project>
