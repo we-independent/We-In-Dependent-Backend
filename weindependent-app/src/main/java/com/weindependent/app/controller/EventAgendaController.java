@@ -42,10 +42,15 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Get agenda by event ID")
-    // @SignatureAuth
+    @SignatureAuth
+    @SaCheckLogin
+    @SaCheckRole("admin") 
     @GetMapping("/event/{eventId}")
-    public EventAgendaVO getAgendaByEventId(@PathVariable Long eventId) {
-        return eventAgendaService.getAgendaByEventId(eventId);
+    // public EventAgendaVO getAgendaByEventId(@PathVariable Long eventId) {
+    //     return eventAgendaService.getAgendaByEventId(eventId);
+    // }
+    public EventAgendasWithItemsQry getAgendasByEventId(@PathVariable Long eventId) {
+        return eventAgendaService.getAgendasWithItemsByEventId(eventId);
     }
 
     @Operation(summary = "Create agenda")
@@ -84,14 +89,14 @@ public class EventAgendaController {
         eventAgendaService.deleteAgendaByEventId(eventId);
     }
 
-    @Operation(summary = "Get all agenda-items by event ID")
-    @SignatureAuth
-    @SaCheckLogin
-    @SaCheckRole("admin")
-    @GetMapping("/event/{eventId}/agenda-items")
-    public EventAgendasWithItemsQry getAgendaItemsByEventId(@PathVariable Long eventId) {
-        EventAgendasWithItemsQry result = eventAgendaService.getAgendasWithItemsByEventId(eventId);
-        return result;
-    }
+    // @Operation(summary = "Get all agenda-items by event ID")
+    // @SignatureAuth
+    // @SaCheckLogin
+    // @SaCheckRole("admin")
+    // @GetMapping("/event/{eventId}/agenda-items")
+    // public EventAgendasWithItemsQry getAgendaItemsByEventId(@PathVariable Long eventId) {
+    //     EventAgendasWithItemsQry result = eventAgendaService.getAgendasWithItemsByEventId(eventId);
+    //     return result;
+    // }
     
 } 
