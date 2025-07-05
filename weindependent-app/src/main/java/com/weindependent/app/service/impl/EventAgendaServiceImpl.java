@@ -5,6 +5,7 @@ import com.weindependent.app.database.dataobject.EventAgendaDO;
 import com.weindependent.app.database.mapper.weindependent.EventAgendaMapper;
 import com.weindependent.app.dto.EventAgendaCreateQry;
 import com.weindependent.app.dto.EventAgendaUpdateQry;
+import com.weindependent.app.dto.EventAgendasWithItemsQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEventAgendaItemService;
@@ -13,6 +14,8 @@ import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventAgendaItemVO;
 import com.weindependent.app.vo.event.EventAgendaVO;
 import com.weindependent.app.vo.event.EventVO;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ public class EventAgendaServiceImpl implements IEventAgendaService {
 
     @Resource
     private IEventService eventService;
+
 
     @Override
     public EventAgendaVO getAgendaByEventId(Long eventId) {
@@ -146,4 +150,10 @@ public class EventAgendaServiceImpl implements IEventAgendaService {
         agendaVO.setUpdateTime(agendaDO.getUpdateTime());
         return agendaVO;
     }
+
+    @Override
+    public EventAgendasWithItemsQry getAgendasWithItemsByEventId(Long eventId){
+        return eventAgendaMapper.getAgendasWithItemsByEventId(eventId);
+    }
+
 } 
