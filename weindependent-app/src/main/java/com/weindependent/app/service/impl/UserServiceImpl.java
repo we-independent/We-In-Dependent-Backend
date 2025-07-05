@@ -334,17 +334,7 @@ public class UserServiceImpl implements UserService {
         }
         return notificationDO;
     }
-
-    // @Override //TODO: delete
-    // public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
-    //     if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
-
-    //         userNotificationMapper.update(settingsDO);
-    //     } else {
-    //         userNotificationMapper.insert(settingsDO);
-    //     }
-    // }
-
+    
     @Override
     public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
  

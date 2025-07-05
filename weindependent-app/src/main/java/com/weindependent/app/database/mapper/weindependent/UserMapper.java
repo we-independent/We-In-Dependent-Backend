@@ -13,8 +13,6 @@ public interface UserMapper {
     List<UserDO> getAllUsers();
     List<String> getAllAvatars();
     UserDO findByAccount(String account);
-
-    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(UserDO user);
     
     UserDO findById(String id);
