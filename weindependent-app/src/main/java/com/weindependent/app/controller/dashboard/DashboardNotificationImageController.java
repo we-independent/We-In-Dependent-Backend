@@ -65,7 +65,7 @@ public class DashboardNotificationImageController {
                        @RequestParam(value = "buttonText", required = false) String buttonText,
                        @RequestParam(value = "buttonUrl", required = false) String buttonUrl,
                        @RequestParam(value = "sortOrder", required = false) Integer sortOrder) {
-        System.out.println("✅ 收到图片上传 messageId = " + messageId);
+        System.out.println("收到图片上传 messageId = " + messageId);
 
         UploadedFileVO uploaded = fileService.uploadFile(file, file.getOriginalFilename(), GoogleDriveFileCategoryEnum.GENERAL_NOTIFICATION);
         NotificationBroadcastMessageDO msg = messageMapper.findById(messageId);

@@ -166,6 +166,8 @@ public void resend(Long id) {
 
         // 构造模板参数
         Map<String, String> params = new HashMap<>();
+        log.info("📨 最终标准化 type = [{}]", msg.getTitle()); // 👈 打印出来确认
+
         params.put("title", msg.getTitle());
         params.put("content", msg.getContent());
         // unsubscribeLink 可选

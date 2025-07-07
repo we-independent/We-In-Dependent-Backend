@@ -18,7 +18,7 @@ public enum NotificationFieldEnum {
     UPDATES_GENERAL_ANNOUNCEMENTS("updatesGeneralAnnouncements", NotificationSettingsDO::getUpdatesGeneralAnnouncements),
     UPDATES_NEW_PROGRAMS("updatesNewPrograms", NotificationSettingsDO::getUpdatesNewPrograms),
     UPDATES_HOLIDAY_MESSAGES("updatesHolidayMessages", NotificationSettingsDO::getUpdatesHolidayMessages),
-    
+    UPDATES_MONTHLY_HIGHLIGHT("updatesMonthlyHighlight", NotificationSettingsDO::getUpdatesMonthlyHighlight),
     // Donations
     DONATIONS_ENABLED("donationsEnabled", NotificationSettingsDO::getDonationsEnabled),
     DONATIONS_DONATION_CONFIRMATIONS("donationsDonationConfirmations", NotificationSettingsDO::getDonationsDonationConfirmations),
@@ -67,6 +67,8 @@ public enum NotificationFieldEnum {
                 return UPDATES_NEW_PROGRAMS;
             case "holiday":
                 return UPDATES_HOLIDAY_MESSAGES;
+            case "monthly_highlight":
+                return UPDATES_MONTHLY_HIGHLIGHT;
             default:
                 throw new ResponseException(ErrorCode.UNKONWN_CATEGORY.getCode(), "Unknown notification type: " + type);
         }

@@ -13,6 +13,7 @@ public class NotificationSettingsDO {
     private Boolean updatesGeneralAnnouncements;
     private Boolean updatesNewPrograms;
     private Boolean updatesHolidayMessages;
+    private Boolean updatesMonthlyHighlight;
 
     // //default 1-open
     // Donation and payments
