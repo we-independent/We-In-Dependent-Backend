@@ -1,85 +1,123 @@
 <!-- ======================= -->
-<!-- General Notification Template -->
-<!-- File: updates-general.html -->
+<!-- Holiday Notification Template -->
+<!-- File: updates-holiday.html -->
 <!-- ======================= -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{{title}}</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #F8F9FA;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #FFFFFF;
-      padding: 40px;
-      border-radius: 12px;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .header img {
-      width: 60px;
-    }
-    .title {
-      font-size: 24px;
-      color: #F35B44;
-      font-weight: bold;
-      margin-bottom: 16px;
-    }
-    .content {
-      font-size: 16px;
-      color: #333333;
-      line-height: 1.6;
-    }
-    .button {
-      display: inline-block;
-      margin-top: 24px;
-      padding: 12px 24px;
-      background-color: #F35B44;
-      color: white;
-      border-radius: 24px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      color: #888888;
-      margin-top: 40px;
-    }
-    .footer a {
-      color: #888888;
-      text-decoration: underline;
-    }
-  </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-        <!-- tmp img for test purpose -->
-      <img src="https://drive.google.com/uc?export=view&id=14mU0BvzcP5gaw16hU5yN64tfbb7tES2r" alt="We Independent Logo" />
-    </div>
-    <div class="title">{{title}}</div>
-    <div class="content">
-      {{content}}
-    </div>
-    {{#if buttonUrl}}
-    <div style="text-align: center;">
-      <a href="{{buttonUrl}}" class="button">{{buttonText}}</a>
-    </div>
-    {{/if}}
-    <div class="footer">
-      <p>We Independent Team<br/>Address, #PC City, State</p>
-      <!-- <p><a href="{{unsubscribeLink}}">Unsubscribe</a></p> -->
-    </div>
-  </div>
+<body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 8px; overflow: hidden;">
+          
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding: 32px 32px 0;">
+              <img alt="Logo" src="{{logo}}" style="width: 50px; height: 50px;" />
+            </td>
+          </tr>
+
+          <!-- Holiday Banner Image -->
+          <tr>
+            <td align="center" style="padding: 24px 40px 0 40px;">
+              <img src="{{mainImage}}" alt="Holiday Banner" style="width: 100%; max-width: 520px; border-radius: 8px;" />
+            </td>
+          </tr>
+
+          <!-- Title -->
+          <tr>
+            <td align="center" style="padding: 24px 40px 0 40px;">
+              <h2 style="color: #fc502d; font-size: 22px; margin: 0 0 12px;">{{title}}</h2>
+            </td>
+          </tr>
+
+          <!-- Main Content -->
+          <tr>
+            <td style="padding: 0 40px; color: #333; font-size: 14px; text-align: left; line-height: 24px;">
+              <p>Dear {{firstName}},</p>
+
+              <p>
+                As we celebrate <strong>{{holidayName}}</strong>, we at <em>We Independent</em> want to take this opportunity to send our heartfelt greetings to you and your loved ones.
+              </p>
+
+              <p>
+                This season is a time for reflection, connection, and renewal. For many of us, holidays in a new country can bring both warmth and challenges. Whether you are gathering with new friends, connecting with family from afar, or simply finding a quiet moment for yourself, please know—you are not alone.
+              </p>
+
+              <p>
+                At We Independent, we are proud to walk alongside a vibrant community of individuals who bring courage, resilience, and strength to every step of their journey. Your presence and participation are what make our work meaningful.
+              </p>
+
+              <p>
+                May this holiday bring you peace, warmth, and a renewed sense of belonging. We look forward to continuing to build, share, and grow with you in the coming year.
+              </p>
+                <!-- 节日装饰图（居中） -->
+              <div style="text-align: center; margin: 24px 0;">
+                <img src="{{decorImage}}" alt="Holiday Decoration" width="160" style="display: inline-block;" />
+              </div>
+
+              <p style="margin-top: 24px;">
+                With gratitude and warm wishes,<br/>
+                The We Independent Team
+              </p>
+            </td>
+          </tr>
+
+          <!-- Decorative Bottom Image -->
+          <tr>
+            <td align="center" style="padding: 24px 40px 0;">
+              <img src="{{decorImage}}" alt="Holiday Decoration" width="160" height="160" style="margin: 0 auto;" />
+            </td>
+          </tr>
+
+          <!-- Optional Button -->
+          <tr>
+            <td align="center" style="padding: 24px 40px;">
+              {{button}}
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding: 32px 24px 40px; font-size: 12px; color: #333; border-top: 1px solid #e0e0e0;">
+              <p style="margin: 0 auto; max-width: 440px; line-height: 20px;">
+                We Independent is a nonprofit empowering women on dependent visas<br/>
+                with resources and confidence to thrive in the U.S.
+              </p>
+
+              <table align="center" cellpadding="0" cellspacing="0" style="margin: 20px auto;">
+                <tr>
+                  <td align="center" style="padding: 0 13px;">
+                    <a href="https://www.instagram.com/weindependent_?igsh=MW9oc2NoODZuODhrYw==">
+                      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png" width="24" alt="Instagram" />
+                    </a>
+                  </td>
+                  <td align="center" style="padding: 0 13px;">
+                    <a href="https://www.linkedin.com/company/we-independent-of-virginia">
+                      <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="24" alt="LinkedIn" />
+                    </a>
+                  </td>
+                  <td align="center" style="padding: 0 13px;">
+                    <a href="https://www.facebook.com/share/1C2yfK8kie/?mibextid=wwXIfr">
+                      <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" width="24" alt="Facebook" />
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0;">241 colonnade drive, Charlottesville, VA, 22903</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
+
