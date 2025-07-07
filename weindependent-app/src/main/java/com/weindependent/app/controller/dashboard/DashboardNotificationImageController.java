@@ -41,7 +41,7 @@ import com.weindependent.app.annotation.SignatureAuth;
 
 @RestController
 @SaCheckRole("admin")
-@RequestMapping("/api/dashboard/broadcast/image")
+@RequestMapping("/api/dashboard/broadcast")
 @Tag(name = "后台通知图管理")
 public class DashboardNotificationImageController {
 
@@ -51,14 +51,13 @@ public class DashboardNotificationImageController {
     private IFileService fileService;
     @Autowired
     private DashboardNotificationBroadcastMsgMapper messageMapper;
-    @Autowired
-    private IDashboardNotificationBroadcastImageService templateStructureService;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Operation(summary = "上传图")
     @SignatureAuth
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/image/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Long upload(@RequestParam("file") MultipartFile file,
                        @RequestParam("messageId") Long messageId,
                        @RequestParam("imageType") String imageType,
@@ -66,6 +65,8 @@ public class DashboardNotificationImageController {
                        @RequestParam(value = "buttonText", required = false) String buttonText,
                        @RequestParam(value = "buttonUrl", required = false) String buttonUrl,
                        @RequestParam(value = "sortOrder", required = false) Integer sortOrder) {
+        System.out.println("✅ 收到图片上传 messageId = " + messageId);
+
         UploadedFileVO uploaded = fileService.uploadFile(file, file.getOriginalFilename(), GoogleDriveFileCategoryEnum.GENERAL_NOTIFICATION);
         NotificationBroadcastMessageDO msg = messageMapper.findById(messageId);
         if (msg == null) {
@@ -87,14 +88,14 @@ public class DashboardNotificationImageController {
 }
 
     @Operation(summary = "删除图")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/image/{id}")
     @SignatureAuth
     public void delete(@PathVariable Long id) {
         imageService.delete(id);
     }
 
     @Operation(summary = "查询指定通知的图")
-    @GetMapping("/list/{messageId}")
+    @GetMapping("/image/list/{messageId}")
     @SignatureAuth
     public List<NotificationBroadcastImageDO> list(@PathVariable Long messageId) {
         return imageService.listByMessageId(messageId);
@@ -102,31 +103,33 @@ public class DashboardNotificationImageController {
 
     @SignatureAuth
     @Operation(summary = "获取指定模板类型的图片上传配置")
-    @GetMapping("/template/{type}")
+    @GetMapping("/image/template/{type}")
     public List<BroadcastNotificationImgVO> getTemplateImageStructure(@PathVariable String type) {
-        return templateStructureService.getTemplateStructure(type);
+        return imageService.getTemplateStructure(type);
 
     }
+
     @SignatureAuth
     @Operation(summary = "获取预览的email template")
     @GetMapping("/email/template/{type}")
     public String getEmailTemplate(@PathVariable String type) {
-            MailTypeEnum mailType = MailTypeEnum.valueOf(type);
-    try (InputStream inputStream = resourceLoader.getResource(mailType.getPath()).getInputStream()) {
-        String html = readInputStream(inputStream);
-        return html; // 不经过 ResponseResult 包装
-    } catch (IOException e) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "加载模板失败：" + e.getMessage());
-        }
-    }
+        MailTypeEnum mailType = MailTypeEnum.valueOf(type);
 
-    public static String readInputStream(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
+        try (InputStream inputStream = resourceLoader.getResource(mailType.getPath()).getInputStream()) {
+            String html = readInputStream(inputStream);
+            return html; // 不经过 ResponseResult 包装
+        } catch (IOException e) {
+                throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "加载模板失败：" + e.getMessage());
+            }
         }
-        return result.toString(StandardCharsets.UTF_8.name());
-    }
+
+        public static String readInputStream(InputStream inputStream) throws IOException {
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            return result.toString(StandardCharsets.UTF_8.name());
+        }
 }

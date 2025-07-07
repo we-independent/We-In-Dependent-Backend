@@ -15,14 +15,19 @@ public enum NotificationTemplateImageConfigEnum {
             new ImageSlot("icon", "图标图", 1)
     )),
 
-    PROGRAMS("programs", Arrays.asList(
+    PROGRAMS_OR_FEATURES("programs_or_features", Arrays.asList(
             new ImageSlot("banner", "顶部横幅图", 1),
             new ImageSlot("content", "详情配图", 2)
     )),
 
     HOLIDAY("holiday", Arrays.asList(
             new ImageSlot("banner", "节日横幅", 1)
+    )),
+    
+    MONTHLY_HIGHLIGHT("monthly_highlight", Arrays.asList(
+            new ImageSlot("content", "正文插图", 1)
     ));
+
 
     private final String templateType;
     private final List<ImageSlot> imageSlots;
