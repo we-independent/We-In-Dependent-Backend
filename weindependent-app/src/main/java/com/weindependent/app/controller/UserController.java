@@ -282,33 +282,33 @@ public class UserController {
         userService.saveHelpRequest(userId, qry);
     }
 
-    //User Profile Notifications
-    @SignatureAuth
-    @GetMapping("/notifications/settings")
-    public NotificationSettingsDO getNotificationSettings() {
-        Long userId = StpUtil.getLoginIdAsLong();
-        log.info("📥 正在获取通知设置 userId = {}", userId);
-        return userService.getSettingsByUserId(userId);
-    }
-    
+    // //User Profile Notifications
     // @SignatureAuth
-    // @PostMapping(value = "/notifications/settings", consumes = "application/json;charset=UTF-8")
-    // public void postNotificationSettings(@RequestBody NotificationSettingsDO settingsDO) {
+    // @GetMapping("/notifications/settings")
+    // public NotificationSettingsDO getNotificationSettings() {
     //     Long userId = StpUtil.getLoginIdAsLong();
-    //     settingsDO.setUserId(userId);
-    //     userService.saveSettingsByUserId(settingsDO);
+    //     log.info("📥 正在获取通知设置 userId = {}", userId);
+    //     return userService.getSettingsByUserId(userId);
     // }
+    
+    // // @SignatureAuth
+    // // @PostMapping(value = "/notifications/settings", consumes = "application/json;charset=UTF-8")
+    // // public void postNotificationSettings(@RequestBody NotificationSettingsDO settingsDO) {
+    // //     Long userId = StpUtil.getLoginIdAsLong();
+    // //     settingsDO.setUserId(userId);
+    // //     userService.saveSettingsByUserId(settingsDO);
+    // // }
 
-    @SignatureAuth
-    @SaCheckLogin
-    @PostMapping(value = "/notifications/settings/update", consumes = "application/json;charset=UTF-8")
-    public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
-        Long userId = StpUtil.getLoginIdAsLong();
-        if (!NotificationFieldEnum.isValidField(notificationQry.getFieldName())) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "非法字段名：" + notificationQry.getFieldName());
-        }
+    // @SignatureAuth
+    // @SaCheckLogin
+    // @PostMapping(value = "/notifications/settings/update", consumes = "application/json;charset=UTF-8")
+    // public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
+    //     Long userId = StpUtil.getLoginIdAsLong();
+    //     if (!NotificationFieldEnum.isValidField(notificationQry.getFieldName())) {
+    //         throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "非法字段名：" + notificationQry.getFieldName());
+    //     }
 
-        userService.updateNotificationField(userId, notificationQry.getFieldName(), notificationQry.getFieldValue());
-    }
+    //     userService.updateNotificationField(userId, notificationQry.getFieldName(), notificationQry.getFieldValue());
+    // }
     
 }

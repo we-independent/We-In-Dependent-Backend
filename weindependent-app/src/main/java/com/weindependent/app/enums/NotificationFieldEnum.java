@@ -16,7 +16,7 @@ public enum NotificationFieldEnum {
     // Updates from We Independent managed in dashboard
     UPDATES_ENABLED("updatesEnabled", NotificationSettingsDO::getUpdatesEnabled),
     UPDATES_GENERAL_ANNOUNCEMENTS("updatesGeneralAnnouncements", NotificationSettingsDO::getUpdatesGeneralAnnouncements),
-    UPDATES_NEW_PROGRAMS("updatesNewPrograms", NotificationSettingsDO::getUpdatesNewPrograms),
+    UPDATES_NEW_PROGRAMS("updatesNewProgramsOrFeatures", NotificationSettingsDO::getUpdatesNewProgramsOrFeatures),
     UPDATES_HOLIDAY_MESSAGES("updatesHolidayMessages", NotificationSettingsDO::getUpdatesHolidayMessages),
     UPDATES_MONTHLY_HIGHLIGHT("updatesMonthlyHighlight", NotificationSettingsDO::getUpdatesMonthlyHighlight),
     // Donations
@@ -27,8 +27,8 @@ public enum NotificationFieldEnum {
 
     // Events
     EVENTS_ENABLED("eventsEnabled", NotificationSettingsDO::getEventsEnabled),
-    EVENTS_RSVP_CONFIRMATIONS("eventsRsvpConfirmations", NotificationSettingsDO::getEventsRsvpConfirmations),
-    EVENTS_EVENT_UPDATES("eventsEventUpdates", NotificationSettingsDO::getEventsEventUpdates);
+    EVENTS_EVENT_REMINDER("eventsEventReminder", NotificationSettingsDO::getEventsEventReminder),
+    EVENTS_EVENT_FOLLOWUP("eventsEventFollowUp", NotificationSettingsDO::getEventsEventFollowUp);
 
     private final String fieldName;
     private final Function<NotificationSettingsDO, Boolean> getter;

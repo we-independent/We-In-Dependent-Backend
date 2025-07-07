@@ -11,7 +11,7 @@ public class NotificationSettingsDO {
     // Updates from We Independent
     private Boolean updatesEnabled;
     private Boolean updatesGeneralAnnouncements;
-    private Boolean updatesNewPrograms;
+    private Boolean updatesNewProgramsOrFeatures;
     private Boolean updatesHolidayMessages;
     private Boolean updatesMonthlyHighlight;
 
@@ -25,8 +25,8 @@ public class NotificationSettingsDO {
     //default 1-open
     // Event confirmation and reminders
     private Boolean eventsEnabled;
-    private Boolean eventsRsvpConfirmations;
-    private Boolean eventsEventUpdates;
+    private Boolean eventsEventReminder;
+    private Boolean eventsEventFollowUp;
 
     //default 1-open
     // Help center
