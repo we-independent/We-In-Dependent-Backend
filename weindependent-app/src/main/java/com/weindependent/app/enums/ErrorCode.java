@@ -23,7 +23,8 @@ public enum ErrorCode {
     SPEAKER_NOT_EXIST(-8, "Speaker does not exist"),
     BAD_REQUEST(400, "Bad request"),
     NOT_FOUND(404, "Resource not found"),
-    IPN_INVALID(-9, "Received Paypal IPN message was not valid");
+    IPN_INVALID(-9, "Received Paypal IPN message was not valid"),
+    SEND_MAIL_FAILED(-10, "Failed to send email");
     
     private int code;
     private final String title;
