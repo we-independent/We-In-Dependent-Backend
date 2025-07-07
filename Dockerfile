@@ -4,9 +4,6 @@ WORKDIR /app
 # Copy the entire project including parent POM
 COPY . .
 
-RUN mkdir -p weindependent-app/src/main/resources && \
-    mv application.yaml weindependent-app/src/main/resources/
-
 RUN apt-get update && apt-get install -y maven && \
     mvn clean package -pl weindependent-app -am -DskipTests
 
