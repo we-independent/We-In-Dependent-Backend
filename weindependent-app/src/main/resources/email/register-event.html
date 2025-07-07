@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -45,5 +45,125 @@
 
     </div>
 </div>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Registration Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #FDFDFD;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FDFDFD; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 8px; overflow: hidden;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding: 32px 0 16px;">
+              <img src="{{logo}}" alt="We Independent Logo" style="width: 50px; height: 50px;">
+            </td>
+          </tr>
+
+          <!-- Top Alert Box -->
+          <tr>
+            <td align="center" style="padding: 0 40px;">
+              <div style="background-color: #FFE9DC; border-radius: 8px; padding: 24px;">
+                <p style="margin: 0; font-weight: bold; font-size: 16px; color: #FC502D;">You have registered an event</p>
+                <p style="margin: 8px 0 0 0; font-size: 14px; color: #333;">Please double check the details below</p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Greeting -->
+          <tr>
+            <td style="padding: 32px 40px 0; font-size: 14px; color: #000;">
+              <p>Dear {{username}},</p>
+              <p>Thank you for registering for the upcoming event, we're excited to have you join us!</p>
+            </td>
+          </tr>
+
+          <!-- Event Image -->
+          <tr>
+            <td align="center" style="padding: 24px 40px 0;">
+              <img src="{{eventImage}}" alt="Event Banner" style="width: 100%; max-width: 520px; border-radius: 12px;" />
+            </td>
+          </tr>
+
+          <!-- Event Detail Card -->
+          <tr>
+            <td style="padding: 24px 40px 0;">
+                <div style="background-color: #F6F6F6; padding: 24px; border-radius: 12px; font-family: Arial, sans-serif;">
+                <p style="margin: 0; font-weight: 600; font-size: 16px; color: #000000;">
+                    {{title}}
+                </p>
+
+                <p style="margin: 16px 0 4px; font-size: 14px; color: #4A4A4A;">
+                    <strong>Date:</strong> {{date}}
+                </p>
+                <p style="margin: 4px 0; font-size: 14px; color: #4A4A4A;">
+                    <strong>Time:</strong> {{time}}
+                </p>
+                <p style="margin: 4px 0; font-size: 14px; color: #4A4A4A;">
+                    <strong>Location:</strong>
+                    <a href="{{link}}" style="color: #FC502D; text-decoration: underline;">Click the zoom link</a>
+                </p>
+                <p style="margin: 4px 0; font-size: 14px; color: #4A4A4A;">
+                    <strong>Host/Speaker:</strong> {{speaker}}
+                </p>
+                </div>
+            </td>
+            </tr>
+
+          <!-- Closing -->
+          <tr>
+            <td style="padding: 24px 40px 0; font-size: 14px; color: #000;">
+              <p>You’ll receive a reminder closer to the event. We look forward to seeing you there.</p>
+              <p>Warm wishes,<br>The We Independent Team</p>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td align="center" style="padding: 24px 40px;">
+              <div style="width: 100%; height: 1px; background-color: #ECEBE9;"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding: 0 24px 40px; font-size: 12px; color: #333;">
+              <p style="margin: 0 auto; max-width: 440px; line-height: 20px;">
+                We Independent is a nonprofit empowering women on dependent visas<br/>
+                with resources and confidence to thrive in the U.S.
+              </p>
+
+              <table align="center" cellpadding="0" cellspacing="0" style="margin: 20px auto;">
+                <tr>
+                  <td align="center" style="padding: 0 13px;">
+                    <a href="https://www.instagram.com/weindependent_">
+                      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png" width="24" alt="Instagram" />
+                    </a>
+                  </td>
+                  <td align="center" style="padding: 0 13px;">
+                    <a href="https://www.linkedin.com/company/we-independent-of-virginia">
+                      <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="24" alt="LinkedIn" />
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0;">241 Colonnade Drive, Charlottesville, VA 22903</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>
