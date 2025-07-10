@@ -1,9 +1,12 @@
 package com.weindependent.app.service;
 
+import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
+import org.springframework.scheduling.annotation.Async;
 
+import java.time.ZoneId;
 import java.util.List;
 
 public interface IEventService {
@@ -11,8 +14,9 @@ public interface IEventService {
     RecentEventVOs getPastEvents(int page, int size);
     List<RecentEventVO> getUpcomingByMonth(int year, int month);
     EventVO getEventById(Long id);
-    void register(Long id,String userTimeZone);
-    void sendRegisterConfirmationEmail(Long eventId, Long userId, String userTimeZone);
+    EventRegisterDetailVO register(Long id, ZoneId zoneId);
+
+    void sendRegisterConfirmationEmail(Long eventId, Long userId, ZoneId zoneId, EventVO event, String googleCalendarLink);
     void unregister(Long id);
     void bookmark(Long id);
     void unbookmark(Long id);
@@ -25,4 +29,7 @@ public interface IEventService {
     RecentEventVOs searchEventsBoolean(String keyword, int pageNum, int pageSize);
     RecentEventVOs filterPastEventsByTags(List<Integer> tagIds, int pageNum, int pageSize);
     boolean isRegistered(Long id);
+
+    String generateGoogleCalendarLink(EventVO eventVO, ZoneId zoneId);
+    ZoneId getZoneIdByUserTimeZone(String userTimeZone);
 }
