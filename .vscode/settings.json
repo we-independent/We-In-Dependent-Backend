@@ -7,5 +7,7 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.server.launchMode": "Standard",
-    "java.jdt.ls.vmargs": "-javaagent:${env:HOME}/.m2/repository/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar"
+    "java.jdt.ls.vmargs": "-javaagent:${env:HOME}/.m2/repository/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar",
+    "java.import.gradle.java.home": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+    "java.jdt.ls.java.home": ""
 }

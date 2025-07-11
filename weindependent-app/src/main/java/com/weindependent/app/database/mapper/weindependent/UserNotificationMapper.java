@@ -1,4 +1,6 @@
 package com.weindependent.app.database.mapper.weindependent;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.dto.NotificationFieldUpdateQry;
@@ -9,4 +11,6 @@ public interface UserNotificationMapper {
     // int insertDefault(@Param("userId") Long userId, @Param("notificationEnabled") boolean notificationEnabled);
     int update(NotificationSettingsDO settings);
     int updateField(NotificationFieldUpdateQry qry);
+    List<NotificationSettingsDO> findAll(); //find notification settings for all users
+
 } 

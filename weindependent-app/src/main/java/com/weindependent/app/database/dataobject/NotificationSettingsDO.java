@@ -12,8 +12,8 @@ public class NotificationSettingsDO {
     private Boolean updatesEnabled;
     private Boolean updatesGeneralAnnouncements;
     private Boolean updatesNewProgramsOrFeatures;
-    private Boolean updatesMonthlyHighlight;
     private Boolean updatesHolidayMessages;
+    private Boolean updatesMonthlyHighlight;
 
     // //default 1-open
     // // Donation and payments
@@ -25,8 +25,8 @@ public class NotificationSettingsDO {
     //default 1-open
     // Event confirmation and reminders
     private Boolean eventsEnabled;
-    private Boolean eventseventReminder;
-    private Boolean eventseventFollowUp;
+    private Boolean eventsEventReminder;
+    private Boolean eventsEventFollowUp;
 
     //default 1-open
     // Help center

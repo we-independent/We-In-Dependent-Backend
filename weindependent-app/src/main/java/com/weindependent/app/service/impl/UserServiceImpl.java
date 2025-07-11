@@ -43,6 +43,7 @@ import com.weindependent.app.database.mapper.weindependent.UserHelpCenterMapper;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IFileService;
+import com.weindependent.app.service.IUserNotificationService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
@@ -86,6 +87,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private EmailConfig emailConfig;
+
+    @Autowired
+    private IUserNotificationService notificationService;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -140,7 +144,7 @@ public class UserServiceImpl implements UserService {
         boolean inserted = userMapper.insert(user) > 0;
         // initialize notification after register
         if(inserted){
-            initializeNotificationSettings(user.getId(), dto.isSubscription());
+            notificationService.initializeNotificationSettings(user.getId(), dto.isSubscription());
         }
         return inserted;
     }
@@ -190,12 +194,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(UpdateUserQry updateUserQry) {
         Long userId = StpUtil.getLoginIdAsLong();
-
-        // Integer profileImageId = updateUserQry.getProfileImageId();
-        // if (profileImageId == null || profileImageId <= 0) {
-        //     updateUserQry.setProfileImageId(null); // 不更新头像字段，保持现状或交由前端渲染默认图
-        // }
-
         UserDO userDO = UserConvertor.toUserDO(userId, updateUserQry);
         userMapper.updateUser(userDO);
     }
@@ -325,50 +323,59 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    // Profile - Notification Settings
-    @Override
-    public NotificationSettingsDO getSettingsByUserId(Long userId) {
-        NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
-        if (notificationDO == null){ //TODO: throw exception
-            throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "Invalid user: " + userId);
-        }
-        return notificationDO;
-    }
-    
-    @Override
-    public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
+    // // Profile - Notification Settings
+    // @Override
+    // public NotificationSettingsDO getSettingsByUserId(Long userId) {
+    //     NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
+    //     if (notificationDO == null){ //TODO: throw exception
+    //         throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "Invalid user: " + userId);
+    //     }
+    //     return notificationDO;
+    // }
+
+    // // @Override //TODO: delete
+    // // public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
+    // //     if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
+
+    // //         userNotificationMapper.update(settingsDO);
+    // //     } else {
+    // //         userNotificationMapper.insert(settingsDO);
+    // //     }
+    // // }
+
+    // @Override
+    // public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
  
-        if (!NotificationFieldEnum.isValidField(fieldName)) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid field name: " + fieldName);
-        }
-        NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
-        if (notificationDO == null) {
-            Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
-            initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
-        }
-        else {
-            NotificationFieldUpdateQry qry = new NotificationFieldUpdateQry();
-            qry.setUserId(userId);
-            qry.setFieldName(fieldName);
-            qry.setFieldValue(fieldValue);
-            userNotificationMapper.updateField(qry);
-        }
-    }
+    //     if (!NotificationFieldEnum.isValidField(fieldName)) {
+    //         throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid field name: " + fieldName);
+    //     }
+    //     NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
+    //     if (notificationDO == null) {
+    //         Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
+    //         initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
+    //     }
+    //     else {
+    //         NotificationFieldUpdateQry qry = new NotificationFieldUpdateQry();
+    //         qry.setUserId(userId);
+    //         qry.setFieldName(fieldName);
+    //         qry.setFieldValue(fieldValue);
+    //         userNotificationMapper.updateField(qry);
+    //     }
+    // }
 
-    @Override
-    public void initializeNotificationSettings(Long userId, Boolean subscribe){
-        NotificationSettingsDO settingsDO = new NotificationSettingsDO();
-        settingsDO.setUserId(userId);
-        if (!Boolean.TRUE.equals(subscribe)) {
-            settingsDO.setUpdatesEnabled(false);
-            settingsDO.setUpdatesGeneralAnnouncements(false);
-            settingsDO.setUpdatesNewProgramsOrFeatures(false);
-            settingsDO.setUpdatesMonthlyHighlight(false);
-            settingsDO.setUpdatesHolidayMessages(false);
-        }
-        userNotificationMapper.insert(settingsDO);
+    // @Override
+    // public void initializeNotificationSettings(Long userId, Boolean subscribe){
+    //     NotificationSettingsDO settingsDO = new NotificationSettingsDO();
+    //     settingsDO.setUserId(userId);
+    //     if (!Boolean.TRUE.equals(subscribe)) {
+    //         settingsDO.setUpdatesEnabled(false);
+    //         settingsDO.setUpdatesGeneralAnnouncements(false);
+    //         settingsDO.setUpdatesNewPrograms(false);
+    //         settingsDO.setUpdatesHolidayMessages(false);
+    //     }
+    //     userNotificationMapper.insert(settingsDO);
 
-    }
+    // }
 
     public static String generateReferenceId(int nextSeq) {
         String year = String.valueOf(LocalDate.now().getYear());

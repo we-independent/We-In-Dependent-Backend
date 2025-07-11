@@ -30,10 +30,10 @@ public interface UserService {
     void deleteAccount(Long userId);
     void saveHelpRequest(Long userId, HelpCenterRequestQry qry);
 
-    // Profile - Notification Settings
-    NotificationSettingsDO getSettingsByUserId(Long userId);
-    // void saveSettingsByUserId(NotificationSettingsDO settingsDO);
-    void updateNotificationField(Long userId, String fieldName, Boolean fieldValue);
-    void initializeNotificationSettings(Long userId, Boolean subscribe);
+    // // Profile - Notification Settings
+    // NotificationSettingsDO getSettingsByUserId(Long userId);
+    // // void saveSettingsByUserId(NotificationSettingsDO settingsDO);
+    // void updateNotificationField(Long userId, String fieldName, Boolean fieldValue);
+    // void initializeNotificationSettings(Long userId, Boolean subscribe);
 
 }

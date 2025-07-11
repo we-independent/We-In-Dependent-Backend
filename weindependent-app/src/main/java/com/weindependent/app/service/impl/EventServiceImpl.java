@@ -28,10 +28,15 @@ import javax.management.NotificationBroadcaster;
 
 import java.time.DateTimeException;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -170,18 +175,26 @@ public class EventServiceImpl implements IEventService {
         sendMailParams.put("title", eventVO.getTitle());
         sendMailParams.put("username",user.getRealName());
         sendMailParams.put("link", eventVO.getLink());
-        sendMailParams.put("time", formattedTime);
+        ZonedDateTime eventTimeZoned = eventVO.getEventTime().atZone(zoneId);
+        String date = eventTimeZoned.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.ENGLISH));
+        String time = eventTimeZoned.format(DateTimeFormatter.ofPattern("h:mm a (z)", Locale.ENGLISH));
+        sendMailParams.put("date", date);
+        sendMailParams.put("time", time);
+        sendMailParams.put("banner", eventVO.getBannerUrl());
+        // sendMailParams.put("time", formattedTime);
+        String speakerNames = Optional.ofNullable(eventVO.getSpeakers())
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(s -> (s.getFirstName() + " " + s.getLastName()).trim())
+            .filter(name -> !name.isBlank())
+            .collect(Collectors.joining(", "));
+
+        if (speakerNames.isBlank()) {
+            speakerNames = "TBD";
+        }
+
+        sendMailParams.put("speakers", speakerNames);
         sendMailParams.put("location", eventVO.getLocation());
-        // sendMailParams.put("speaker", eventVO.getSpeakerName()); # TODO
-        // emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
-
-        // NotificationFieldEnum fieldEnum = NotificationFieldEnum.EVENTS_EVENT_REMINDER;
-        // NotificationSettingsDO settingsDO = userNotificationMapper.findByUserId(userId);
-        // Boolean isEnabled = fieldEnum.isEnabled(settingsDO);
-
-        // if(isEnabled){
-        //     emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
-        // }
         emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
     }
 
