@@ -3,6 +3,7 @@ package com.weindependent.app.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
+import com.weindependent.app.enums.MailTypeEnum;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
@@ -10,6 +11,7 @@ import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -172,6 +174,16 @@ public class EventController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return IEventService.getViewedEvents(page,size);
+    }
+
+    @PostMapping("/test")
+    public void test(@RequestBody MailRequest request) {
+        log.info("Mail type: {}", request.getMailTypeEnum());
+    }
+
+    @Data
+    public static class MailRequest {
+        private MailTypeEnum mailTypeEnum;
     }
 
 
