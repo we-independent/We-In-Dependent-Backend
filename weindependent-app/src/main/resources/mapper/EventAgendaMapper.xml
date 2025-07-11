@@ -59,4 +59,23 @@
         UPDATE event_agenda SET is_deleted = 1 WHERE event_id = #{eventId}
     </update>
 
+    <resultMap id="EventAgendasWithItemsMap" type="com.weindependent.app.dto.EventAgendasWithItemsQry">
+        <id column="event_id" property="eventId"/>
+        <collection property="agendas" ofType="com.weindependent.app.dto.AgendaWithItemsQry">
+            <id column="agenda_id" property="agendaId"/>
+            <result column="agenda_title" property="title"/>
+            <collection property="items" ofType="com.weindependent.app.dto.AgendaItemQry">
+                <id column="item_id" property="itemId"/>
+                <result column="item_title" property="title"/>
+                <result column="item_description" property="description"/>
+                <result column="item_start_time" property="startTime"/>
+                <result column="item_end_time" property="endTime"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="getAgendasWithItemsByEventId" resultMap="EventAgendasWithItemsMap">
+        SELECT * FROM event_agenda_item_view
+        WHERE event_id = #{eventId}
+    </select>
 </mapper> 

@@ -14,10 +14,7 @@ import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.service.UserService;
-import com.weindependent.app.vo.event.EventSpeakerVO;
-import com.weindependent.app.vo.event.EventVO;
-import com.weindependent.app.vo.event.RecentEventVO;
-import com.weindependent.app.vo.event.RecentEventVOs;
+import com.weindependent.app.vo.event.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
@@ -31,6 +28,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -126,8 +126,12 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public void register(Long id, String userTimeZone) {
+    public EventRegisterDetailVO register(Long id, ZoneId zoneId) {
         Long userId = StpUtil.getLoginIdAsLong();
+        EventVO eventVO = eventMapper.getById(id, null);
+        if (eventVO == null) {
+            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Event not found");
+        }
 
         int affectedRow = 0;
         try {
@@ -145,17 +149,23 @@ public class EventServiceImpl implements IEventService {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Cannot find event");
         }
 
-        sendRegisterConfirmationEmail(id,userId, userTimeZone);
+        String googleCalendarLink = generateGoogleCalendarLink(eventVO, zoneId);
+        String icsText = generateIcsCalendarText(eventVO, zoneId);
+
+
+        EventRegisterDetailVO eventRegisterDetailVO = new EventRegisterDetailVO();
+        eventRegisterDetailVO.setLink(eventVO.getLink());
+        eventRegisterDetailVO.setIcsText(icsText);
+        eventRegisterDetailVO.setGoogleCalendarLink(googleCalendarLink);
+
+        sendRegisterConfirmationEmail(id,userId, zoneId,eventVO, googleCalendarLink);
+        return eventRegisterDetailVO;
+
     }
 
-    @Override
-    @Async
-    public void sendRegisterConfirmationEmail(Long eventId, Long userId, String userTimeZone) {
-        EventVO eventVO =eventMapper.getById(eventId, null);
 
-        if (eventVO == null) {
-            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find event");
-        }
+    @Override
+    public void sendRegisterConfirmationEmail(Long eventId, Long userId, ZoneId zoneId, EventVO event, String googleCalendarLink) {
 
         UserDO user= userService.findUserById(userId);
         if(user == null){
@@ -163,26 +173,20 @@ public class EventServiceImpl implements IEventService {
         }
 
         Map<String, String> sendMailParams = new HashMap<>();
-        ZoneId zoneId;
-        try {
-            zoneId = ZoneId.of(userTimeZone != null ? userTimeZone : "America/New_York");
-        } catch (DateTimeException e) {
-            zoneId = ZoneId.of("America/New_York"); // fallback if user passed an invalid string
-        }
-        String formattedTime = eventVO.getEventTime().atZone(zoneId)
+        String formattedTime = event.getEventTime().atZone(zoneId)
                 .format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm a (z)"));
 
-        sendMailParams.put("title", eventVO.getTitle());
+        sendMailParams.put("title", "[We Independent] "+ event.getTitle());
         sendMailParams.put("username",user.getRealName());
-        sendMailParams.put("link", eventVO.getLink());
-        ZonedDateTime eventTimeZoned = eventVO.getEventTime().atZone(zoneId);
+        sendMailParams.put("link", event.getLink());
+        ZonedDateTime eventTimeZoned = event.getEventTime().atZone(zoneId);
         String date = eventTimeZoned.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.ENGLISH));
         String time = eventTimeZoned.format(DateTimeFormatter.ofPattern("h:mm a (z)", Locale.ENGLISH));
         sendMailParams.put("date", date);
         sendMailParams.put("time", time);
-        sendMailParams.put("banner", eventVO.getBannerUrl());
+        sendMailParams.put("banner", event.getBannerUrl());
         // sendMailParams.put("time", formattedTime);
-        String speakerNames = Optional.ofNullable(eventVO.getSpeakers())
+        String speakerNames = Optional.ofNullable(event.getSpeakers())
             .orElse(Collections.emptyList())
             .stream()
             .map(s -> (s.getFirstName() + " " + s.getLastName()).trim())
@@ -194,8 +198,11 @@ public class EventServiceImpl implements IEventService {
         }
 
         sendMailParams.put("speakers", speakerNames);
-        sendMailParams.put("location", eventVO.getLocation());
-        emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams);
+        sendMailParams.put("location", event.getLocation());
+        sendMailParams.put("googleCalendarLink", googleCalendarLink);
+        if(!emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams)){
+            throw new ResponseException(ErrorCode.SEND_MAIL_FAILED.getCode(), "Failed to send registration confirmation email");
+        };
     }
 
     @Override
@@ -337,5 +344,61 @@ public class EventServiceImpl implements IEventService {
     public boolean isRegistered(Long eventId) {
         int userId = StpUtil.getLoginIdAsInt();
         return eventMapper.isRegistered (eventId,userId);
+    }
+
+    @Override
+    public String generateGoogleCalendarLink(EventVO eventVO, ZoneId zoneId) {
+        String startUtc = eventVO.getEventTime().atZone(zoneId).withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String endUtc = eventVO.getEventTime()
+                .plus(Duration.ofMinutes(eventVO.getDuration()))
+                .atZone(zoneId)
+                .withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String description = "Link: " + eventVO.getLink();
+
+        return String.format(
+                "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%s&dates=%s/%s&details=%s&location=%s",
+                "[We Independent] "+eventVO.getTitle(), startUtc, endUtc, description, eventVO.getLocation()
+        );
+    }
+
+
+    @Override
+    public ZoneId getZoneIdByUserTimeZone(String userTimeZone) {
+        try {
+            return ZoneId.of(userTimeZone != null ? userTimeZone : "America/New_York");
+        } catch (DateTimeException e) {
+            return ZoneId.of("America/New_York"); // fallback if user passed an invalid string
+        }
+    }
+
+    private String generateIcsCalendarText(EventVO eventVO, ZoneId zoneId) {
+        String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String endUtc = eventVO.getEventTime()
+                .plus(Duration.ofMinutes(eventVO.getDuration()))
+                .atZone(zoneId)
+                .withZoneSameInstant(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+        String description = "Link: "+eventVO.getLink();
+
+        return String.format(
+                "BEGIN:VCALENDAR\n" +
+                        "VERSION:2.0\n" +
+                        "BEGIN:VEVENT\n" +
+                        "SUMMARY:%s\n" +
+                        "DESCRIPTION:%s\n" +
+                        "DTSTART:%s\n" +
+                        "DTEND:%s\n" +
+                        "LOCATION:%s\n" +
+                        "END:VEVENT\n" +
+                        "END:VCALENDAR",
+                eventVO.getTitle(),
+                description,
+                startUtc,
+                endUtc,
+                eventVO.getLocation()
+        );
     }
 }

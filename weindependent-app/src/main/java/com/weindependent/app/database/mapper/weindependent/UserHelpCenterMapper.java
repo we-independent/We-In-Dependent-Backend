@@ -12,6 +12,4 @@ import java.util.List;
 public interface UserHelpCenterMapper {
     void insert(HelpCenterRequestDO request);
     List<HelpCenterRequestVO> selectByUserId(@Param("userId") Long userId);
-    Integer getMaxReferenceSequenceThisYear(@Param("year") String year);
-
 }

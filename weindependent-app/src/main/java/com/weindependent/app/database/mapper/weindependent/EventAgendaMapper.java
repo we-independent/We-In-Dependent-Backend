@@ -1,6 +1,7 @@
 package com.weindependent.app.database.mapper.weindependent;
 
 import com.weindependent.app.database.dataobject.EventAgendaDO;
+import com.weindependent.app.dto.EventAgendasWithItemsQry;
 import com.weindependent.app.vo.event.EventAgendaVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,4 +17,6 @@ public interface EventAgendaMapper {
     int update(EventAgendaDO agenda);
     int deleteById(@Param("id") Long id);
     int deleteByEventId(@Param("eventId") Long eventId);
+    EventAgendasWithItemsQry getAgendasWithItemsByEventId(@Param("eventId") Long eventId);
+
 } 
