@@ -73,7 +73,7 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
                 progress.setMessage("Donation received");
                 progress.setStepDate(parsePaymentDate(ipnParams.get("payment_date")));
 
-                donationProgressMapper.upsertProgress(progress);
+                donationProgressMapper.insertDonationProgressDO(progress);
                 return ErrorCode.SUCCESS.getCode();
             }
             else return ErrorCode.UPDATE_DB_FAILED.getCode();

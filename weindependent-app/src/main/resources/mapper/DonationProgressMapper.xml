@@ -33,15 +33,7 @@
         ORDER BY step ASC
     </select>
 
-    <insert id="upsertProgress" parameterType="com.weindependent.app.vo.UpdateProgressRequestVO">
-        INSERT INTO donation_progress (txn_id, step, message, step_date)
-        VALUES (#{txnId}, #{step}, #{message}, #{stepDate})
-        ON DUPLICATE KEY UPDATE
-            message = VALUES(message),
-            step_date = VALUES(step_date)
-    </insert>
-
-    <insert id="upsertProgress" parameterType="com.weindependent.app.database.dataobject.DonationProgress">
+    <insert id="insertDonationProgressDO" parameterType="com.weindependent.app.database.dataobject.DonationProgressDO">
         INSERT INTO donation_progress (txn_id, step, message, step_date)
         VALUES (#{txnId}, #{step}, #{message}, #{stepDate})
         ON DUPLICATE KEY UPDATE

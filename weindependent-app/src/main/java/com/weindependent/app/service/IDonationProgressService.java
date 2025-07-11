@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface IDonationProgressService {
     List<DonationProgressVO> getAllWithTransactionInfo();
-    void updateProgress(UpdateProgressRequestVO request);
+    void updateProgress(String txnId, Integer step);
     List<DonationProgressUserVO> getProgressByTxnId(String txnId);
 }
