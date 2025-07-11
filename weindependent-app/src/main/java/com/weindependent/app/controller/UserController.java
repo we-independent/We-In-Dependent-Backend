@@ -58,7 +58,6 @@ public class UserController {
     @SignatureAuth
     @Operation(summary = "用户注册")
     @PostMapping(value = "/register", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public void register(@Validated @RequestBody RegisterQry registerQry) {
         userService.registerUser(registerQry);
         log.info("User registered successfully: {}", registerQry.getAccount());
@@ -68,7 +67,6 @@ public class UserController {
     @Operation(summary = "用户登录")
     // @PostMapping("/login")    
     @PostMapping(value = "/login", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
         UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
 
@@ -98,7 +96,6 @@ public class UserController {
     @Operation(summary = "重置密码")
     // @PostMapping("/reset/password")
     @PostMapping(value = "/reset/password", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public void resetPassword(@Validated @RequestBody ResetPasswordQry resetPasswordQry)throws Exception{
         String token = resetPasswordQry.getToken();
         int success = userService.resetPassword(token, resetPasswordQry.getPassword());
@@ -116,7 +113,7 @@ public class UserController {
 //    @Operation(summary = "登录")
 //    @SignatureAuth
 //    @PostMapping("/login")
-//    @CrossOrigin(origins = "*")
+//
 //    public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
 //        UserDO user = userService.queryByEmailAndPassword(loginQry.getEmail(), loginQry.getPassword());
 //        if (ObjectUtils.isEmpty(user)) {
@@ -142,7 +139,7 @@ public class UserController {
     @SignatureAuth
     @Operation(summary = "登出")
     @GetMapping("/logout")
-    @CrossOrigin(origins = "*")
+
     public Map<String, Object> logout() {
         StpUtil.logout();
 
@@ -153,7 +150,7 @@ public class UserController {
     @SignatureAuth
     @Operation(summary = "查询登录状态")
     @GetMapping("/isLogin")
-    @CrossOrigin(origins = "*")
+
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
         result.put("isLogin", StpUtil.isLogin());
@@ -165,7 +162,7 @@ public class UserController {
 //    @SignatureAuth
 //    @Operation(summary = "用户注册")
 //    @GetMapping("/register")
-//    @CrossOrigin(origins = "*")
+//
 //    public Map<String, Object> register(@Validated @RequestBody ) {
 //        Map<String, Object> result = new HashMap<>();
 //        result.put("code", ErrorCode.SUCCESS.getCode());
@@ -182,7 +179,6 @@ public class UserController {
     @Operation(summary = "发送邮件")
     // @PostMapping("/send/email")
     @PostMapping(value = "/send/email", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public boolean sendEmail(@Validated @RequestBody SendMailQry sendMailQry) {
         Map<String, String> sendMailParams = new HashMap<>();
         String email= sendMailQry.getEmail();;
@@ -202,7 +198,6 @@ public class UserController {
     @Operation(summary = "用户列表")
     // @PostMapping("/list")
     @PostMapping(value = "/list", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public PageInfo<UserVO> userList(@RequestBody Map<String, Object> requestMap) {
         int pageNum = (int) requestMap.get("pageNum");
         int pageSize = (int) requestMap.get("pageSize");
@@ -213,7 +208,7 @@ public class UserController {
     @Operation(summary = "更新使用者资料")
     // @PutMapping("/")
     @PutMapping(value = "/", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
+
     public void updateUser(@Valid @RequestBody UpdateUserQry updateUserQry) {
         userService.updateUser(updateUserQry);
     }
@@ -228,11 +223,10 @@ public class UserController {
     public  String createProfileImg(@RequestParam("file")  MultipartFile file) {
         return userService.createProfileImg(file);
     }
-
     @SignatureAuth
     @Operation(summary = "删除账号（用户主动注销）")
     @DeleteMapping("/")
-    @CrossOrigin(origins = "*")
+
     public void deleteAccount() {
         Long userId = StpUtil.getLoginIdAsLong();
         userService.deleteAccount(userId);
@@ -240,12 +234,10 @@ public class UserController {
         StpUtil.logout();
         log.info("Account deleted and user logged out: userId={}", userId);
     }
-
     @SignatureAuth
     @Operation(summary = "验证旧密码")
     // @PostMapping("/verify-password")
     @PostMapping(value = "/verify-password", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public void verifyPassword(@Valid @RequestBody VerifyPasswordQry verifyPasswordQry) {
         userService.verifyPassword(verifyPasswordQry);
     }
@@ -254,7 +246,6 @@ public class UserController {
     @Operation(summary = "修改密码（登录状态）")
     // @PutMapping("/change-password")
     @PutMapping(value = "/change-password", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public void changePassword(@Valid @RequestBody ChangePasswordQry changePasswordQry) {
         userService.changePassword(changePasswordQry);
     }
@@ -262,7 +253,6 @@ public class UserController {
     @SignatureAuth
     @Operation(summary = "提交 Help Center 请求")
     @PostMapping(value = "/profile/help/send", consumes = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*")
     public void sendHelp(@RequestBody HelpCenterRequestQry qry) {
         Long userId = StpUtil.getLoginIdAsLong();
         UserDO user = userService.findUserById(userId);
