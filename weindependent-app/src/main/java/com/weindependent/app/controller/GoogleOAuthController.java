@@ -40,7 +40,6 @@ public class GoogleOAuthController {
 
   @Operation(summary = "Google Login")
   @GetMapping("/google-login")
-  @CrossOrigin(origins = "*")
   public GoogleUserVO googleLogin(@RequestParam("code") String code) {
     Map<String, String> userInfo = googleOAuthService.exchangeCodeForUserInfo(code);
     if (!userInfo.containsKey("email")) {
@@ -72,7 +71,6 @@ public class GoogleOAuthController {
    */
   @Operation(summary = "Google Login Get Code")
   @GetMapping("temp/google-login-callback")
-  @CrossOrigin(origins = "*")
   private String googleCallBackTemp(@RequestParam String code) {
     System.out.println("Code from google oAuth: "+ code);
     return code;
@@ -85,7 +83,6 @@ public class GoogleOAuthController {
    */
   @Operation(summary = "Google Login Simulation")
   @GetMapping("temp/google-login")
-  @CrossOrigin(origins = "*")
   private void onGoogleBtnClicked(HttpServletResponse response) throws IOException {
     String googleOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
             + "?client_id=" + clientId
