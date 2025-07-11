@@ -43,8 +43,6 @@ public class EventAgendaController {
 
     @Operation(summary = "Get agenda by event ID")
     @SignatureAuth
-    @SaCheckLogin
-    @SaCheckRole("admin") 
     @GetMapping("/event/{eventId}")
     // public EventAgendaVO getAgendaByEventId(@PathVariable Long eventId) {
     //     return eventAgendaService.getAgendaByEventId(eventId);
