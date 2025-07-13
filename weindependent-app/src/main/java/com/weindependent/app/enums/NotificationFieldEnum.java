@@ -36,17 +36,6 @@ public enum NotificationFieldEnum {
         return Boolean.TRUE.equals(getter.apply(settings));
     }
 
-    // public static boolean isEnabledByFieldName(String fieldName, NotificationSettingsDO settingsDO) {
-    //     if (fieldName == null || settingsDO == null) return false;
-    //     try {
-    //         NotificationFieldEnum fieldEnum = NotificationFieldEnum.valueOf(fieldName);
-    //         return fieldEnum.isEnabled(settingsDO);
-    //     } catch (IllegalArgumentException e) {
-    //         // 枚举中没有这个字段名
-    //         return false;
-    //     }
-    // }
-
     public static boolean isValidField(String input) {
         for (NotificationFieldEnum field : values()) {
             if (field.getFieldName().equals(input)) {
