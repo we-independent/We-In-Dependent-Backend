@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class UpdateNotificationFieldQry {
+    private Long userId;  
     private NotificationFieldEnum field;
     private Boolean fieldValue;
 }

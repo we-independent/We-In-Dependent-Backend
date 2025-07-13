@@ -42,7 +42,7 @@
     </update>
 
 
-    <update id="updateField" parameterType="com.weindependent.app.dto.NotificationFieldUpdateQry">
+    <update id="updateField" parameterType="map">
         UPDATE user_notification_settings
         <set>
             <if test="fieldName == 'updatesEnabled'"> updates_enabled = #{fieldValue}, </if>

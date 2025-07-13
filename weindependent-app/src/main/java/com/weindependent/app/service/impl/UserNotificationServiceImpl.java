@@ -3,12 +3,15 @@ package com.weindependent.app.service.impl;
 import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
-import com.weindependent.app.dto.NotificationFieldUpdateQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IUserNotificationService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +41,12 @@ public class UserNotificationServiceImpl implements IUserNotificationService{
             Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
             initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
         } else {
-            NotificationFieldUpdateQry qry = new NotificationFieldUpdateQry();
-            qry.setUserId(userId);
-            qry.setFieldName(field.getFieldName());
-            qry.setFieldValue(fieldValue);
-            userNotificationMapper.updateField(qry);
+            Map<String, Object> param = new HashMap<>();
+            param.put("userId", userId);
+            param.put("fieldName", field.getFieldName()); // enum -> string
+            param.put("fieldValue", fieldValue);
+
+            userNotificationMapper.updateField(param);
         }
     }
 
