@@ -55,23 +55,6 @@ public enum NotificationFieldEnum {
         }
         return false;
     }
-    
-    @Deprecated
-    //for general announcement
-    public static NotificationFieldEnum fromMessageType(String type) {
-        if (type == null) return null;
-        switch (type.toLowerCase()) {
-            case "general":
-                return UPDATES_GENERAL_ANNOUNCEMENTS;
-            case "programs":
-                return UPDATES_NEW_PROGRAMS_OR_FEATURES;
-            case "holiday":
-                return UPDATES_HOLIDAY_MESSAGES;
-            case "monthly_highlight":
-                return UPDATES_MONTHLY_HIGHLIGHT;
-            default:
-                throw new ResponseException(ErrorCode.UNKONWN_CATEGORY.getCode(), "Unknown notification type: " + type);
-        }
-    }
+
 
 }

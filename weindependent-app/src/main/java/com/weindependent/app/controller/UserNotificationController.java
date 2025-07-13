@@ -36,11 +36,6 @@ public class UserNotificationController {
     public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
         Long userId = StpUtil.getLoginIdAsLong();
         NotificationFieldEnum field = notificationQry.getField();
-
-        if (field == null) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "参数错误:未指定通知字段(field)");
-        }
-
         notificationService.updateNotificationField(userId, field, notificationQry.getFieldValue());
     }
 }

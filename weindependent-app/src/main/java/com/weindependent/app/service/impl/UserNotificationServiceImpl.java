@@ -32,9 +32,6 @@ public class UserNotificationServiceImpl implements IUserNotificationService{
 
     @Override
     public void updateNotificationField(Long userId, NotificationFieldEnum field, Boolean fieldValue) {
-        if (field == null) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid Notifiaction field" );
-        }
 
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
         if (notificationDO == null) {
