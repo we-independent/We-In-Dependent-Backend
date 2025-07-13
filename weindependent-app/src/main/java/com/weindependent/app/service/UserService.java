@@ -6,11 +6,7 @@ import com.weindependent.app.dto.HelpCenterRequestQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.RegisterQry;
-import com.weindependent.app.dto.UpdateNotificationFieldQry;
 import com.weindependent.app.dto.UpdateUserQry;
-import com.weindependent.app.database.dataobject.ImageDO;
-import com.weindependent.app.database.dataobject.NotificationSettingsDO;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -29,11 +25,5 @@ public interface UserService {
     void changePassword(ChangePasswordQry changePasswordQry);
     void deleteAccount(Long userId);
     void saveHelpRequest(Long userId, HelpCenterRequestQry qry);
-
-    // // Profile - Notification Settings
-    // NotificationSettingsDO getSettingsByUserId(Long userId);
-    // // void saveSettingsByUserId(NotificationSettingsDO settingsDO);
-    // void updateNotificationField(Long userId, String fieldName, Boolean fieldValue);
-    // void initializeNotificationSettings(Long userId, Boolean subscribe);
 
 }

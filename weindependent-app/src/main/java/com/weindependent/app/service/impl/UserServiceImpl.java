@@ -2,18 +2,15 @@ package com.weindependent.app.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.api.client.googleapis.notifications.NotificationUtils;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.dto.ChangePasswordQry;
 import com.weindependent.app.dto.HelpCenterRequestQry;
-import com.weindependent.app.dto.NotificationFieldUpdateQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.GoogleDriveFileCategoryEnum;
 import com.weindependent.app.enums.MailTypeEnum;
-import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.UserService;
 import com.weindependent.app.utils.PageInfoUtil;
@@ -28,14 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
-import com.weindependent.app.dto.UpdateNotificationFieldQry;
 
 import cn.dev33.satoken.stp.StpUtil;
 
 import com.weindependent.app.database.dataobject.HelpCenterRequestDO;
-import com.weindependent.app.database.dataobject.ImageDO;
-import com.weindependent.app.database.dataobject.NotificationSettingsDO;
-
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,8 +43,6 @@ import javax.annotation.Resource;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -310,61 +301,6 @@ public class UserServiceImpl implements UserService {
         // log.info("📨 给客服 info@weindependent.org 抄送通知邮件");
         iEmailService.send(adminEmail, MailTypeEnum.HELP_CENTER_NOTIFY, userParams);
     }
-
-
-    // // Profile - Notification Settings
-    // @Override
-    // public NotificationSettingsDO getSettingsByUserId(Long userId) {
-    //     NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
-    //     if (notificationDO == null){ //TODO: throw exception
-    //         throw new ResponseException(ErrorCode.USER_NOT_EXIST.getCode(), "Invalid user: " + userId);
-    //     }
-    //     return notificationDO;
-    // }
-
-    // // @Override //TODO: delete
-    // // public void saveSettingsByUserId(NotificationSettingsDO settingsDO) {
-    // //     if (userNotificationMapper.findByUserId(settingsDO.getUserId()) != null) {
-
-    // //         userNotificationMapper.update(settingsDO);
-    // //     } else {
-    // //         userNotificationMapper.insert(settingsDO);
-    // //     }
-    // // }
-
-    // @Override
-    // public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
- 
-    //     if (!NotificationFieldEnum.isValidField(fieldName)) {
-    //         throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid field name: " + fieldName);
-    //     }
-    //     NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
-    //     if (notificationDO == null) {
-    //         Boolean notificationEnable = userMapper.findNotificationEnabledByUserId(userId);
-    //         initializeNotificationSettings(userId, Boolean.TRUE.equals(notificationEnable));
-    //     }
-    //     else {
-    //         NotificationFieldUpdateQry qry = new NotificationFieldUpdateQry();
-    //         qry.setUserId(userId);
-    //         qry.setFieldName(fieldName);
-    //         qry.setFieldValue(fieldValue);
-    //         userNotificationMapper.updateField(qry);
-    //     }
-    // }
-
-    // @Override
-    // public void initializeNotificationSettings(Long userId, Boolean subscribe){
-    //     NotificationSettingsDO settingsDO = new NotificationSettingsDO();
-    //     settingsDO.setUserId(userId);
-    //     if (!Boolean.TRUE.equals(subscribe)) {
-    //         settingsDO.setUpdatesEnabled(false);
-    //         settingsDO.setUpdatesGeneralAnnouncements(false);
-    //         settingsDO.setUpdatesNewPrograms(false);
-    //         settingsDO.setUpdatesHolidayMessages(false);
-    //     }
-    //     userNotificationMapper.insert(settingsDO);
-
-    // }
 
     public static String generateReferenceId(int nextSeq) {
         String year = String.valueOf(LocalDate.now().getYear());
