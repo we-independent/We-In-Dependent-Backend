@@ -55,7 +55,8 @@ public enum NotificationFieldEnum {
         }
         return false;
     }
-
+    
+    @Deprecated
     //for general announcement
     public static NotificationFieldEnum fromMessageType(String type) {
         if (type == null) return null;

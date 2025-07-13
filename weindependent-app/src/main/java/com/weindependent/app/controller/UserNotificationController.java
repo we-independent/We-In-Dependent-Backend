@@ -10,7 +10,6 @@ import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.impl.UserNotificationServiceImpl;
 
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +35,12 @@ public class UserNotificationController {
     @PostMapping(value = "/settings/update", consumes = "application/json;charset=UTF-8")
     public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {
         Long userId = StpUtil.getLoginIdAsLong();
-        if (!NotificationFieldEnum.isValidField(notificationQry.getFieldName())) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "非法字段名：" + notificationQry.getFieldName());
+        NotificationFieldEnum field = notificationQry.getField();
+
+        if (field == null) {
+            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "参数错误:未指定通知字段(field)");
         }
 
-        notificationService.updateNotificationField(userId, notificationQry.getFieldName(), notificationQry.getFieldValue());
+        notificationService.updateNotificationField(userId, field, notificationQry.getFieldValue());
     }
 }

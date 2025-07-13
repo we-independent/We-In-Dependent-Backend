@@ -31,9 +31,9 @@ public class UserNotificationServiceImpl implements IUserNotificationService{
     }
 
     @Override
-    public void updateNotificationField(Long userId, String fieldName, Boolean fieldValue) {
-        if (!NotificationFieldEnum.isValidField(fieldName)) {
-            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid field name: " + fieldName);
+    public void updateNotificationField(Long userId, NotificationFieldEnum field, Boolean fieldValue) {
+        if (field == null) {
+            throw new ResponseException(ErrorCode.INVALID_PARAM.getCode(), "Invalid Notifiaction field" );
         }
 
         NotificationSettingsDO notificationDO = userNotificationMapper.findByUserId(userId);
@@ -43,7 +43,7 @@ public class UserNotificationServiceImpl implements IUserNotificationService{
         } else {
             NotificationFieldUpdateQry qry = new NotificationFieldUpdateQry();
             qry.setUserId(userId);
-            qry.setFieldName(fieldName);
+            qry.setFieldName(field.getFieldName());
             qry.setFieldValue(fieldValue);
             userNotificationMapper.updateField(qry);
         }
