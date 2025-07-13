@@ -39,18 +39,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         // 禁用 csrf，前后端分离模式不需要，因为是无状态的
-//         httpSecurity.csrf().csrfTokenRepository(new HttpSessionCsrfTokenRepository())
-//                 .requireCsrfProtectionMatcher(csrfRequestMatcher)
-// //        httpSecurity.csrf().disable()
-//                 .and()
-                // 配置允许请求
-//                .authorizeRequests(expressionInterceptUrlRegistry ->
-//                        expressionInterceptUrlRegistry.antMatchers("/login", "/captchaImage", "/user/list").permitAll()
-//                                // 下面是追加对资源的释放，并设置get请求
-//                                .antMatchers(HttpMethod.GET, "/", "222.html").permitAll()
-//                                // 其他请求需要认证
-////                                .anyRequest().authenticated())
-            httpSecurity.csrf().disable()                
+        httpSecurity.csrf().disable()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
                 // 禁用 Session存储 -- SessionCreationPolicy.STATELESS 表示永远不会创建会话
