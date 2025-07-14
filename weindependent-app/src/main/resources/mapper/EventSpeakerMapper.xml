@@ -35,4 +35,20 @@
         ORDER BY s.update_time DESC
     </select>
 
+    <!-- Get speakers by event ID -->
+
+    <select id="getSpeakerByEventId" parameterType="long" resultType="com.weindependent.app.vo.event.EventSpeakerVO">
+        SELECT
+            title,
+            first_name AS firstName,
+            last_name AS lastName,
+            background,
+            description,
+            banner_id AS bannerId
+        FROM event_speaker s
+        JOIN event_speaker_relation r
+        WHERE r.event_id = #{eventId}
+        ORDER BY s.id ASC
+    </select>
+
 </mapper>

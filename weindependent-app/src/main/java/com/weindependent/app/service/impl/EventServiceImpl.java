@@ -3,10 +3,14 @@ package com.weindependent.app.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.EventMapper;
+import com.weindependent.app.database.mapper.weindependent.EventSpeakerMapper;
+import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IEventService;
@@ -18,14 +22,24 @@ import org.springframework.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import javax.management.NotificationBroadcaster;
+
 import java.time.DateTimeException;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 @Slf4j
 @Service
@@ -37,6 +51,10 @@ public class EventServiceImpl implements IEventService {
     private UserService userService;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private UserNotificationMapper userNotificationMapper;
+    @Autowired
+    private EventSpeakerMapper eventSpeakerMapper;
 
     @Override
     public RecentEventVOs getUpcomingEvents(int page,int size) {
@@ -166,7 +184,28 @@ public class EventServiceImpl implements IEventService {
         sendMailParams.put("title", "[We Independent] "+ event.getTitle());
         sendMailParams.put("username",user.getRealName());
         sendMailParams.put("link", event.getLink());
-        sendMailParams.put("time", formattedTime);
+        ZonedDateTime eventTimeZoned = event.getEventTime().atZone(zoneId);
+        String date = eventTimeZoned.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.ENGLISH));
+        String time = eventTimeZoned.format(DateTimeFormatter.ofPattern("h:mm a (z)", Locale.ENGLISH));
+        sendMailParams.put("date", date);
+        sendMailParams.put("time", time);
+        sendMailParams.put("banner", event.getBannerUrl());
+        // sendMailParams.put("time", formattedTime);
+
+        List<EventSpeakerVO> speakers = getEventSpeakers(eventId);
+        String speakerNames = speakers.stream()
+            .map(s -> {
+                String firstName = s.getFirstName() != null ? s.getFirstName().trim() : "";
+                String lastName = s.getLastName() != null ? s.getLastName().trim() : "";
+
+                return Stream.of(firstName, lastName)
+                            .filter(str -> !str.isBlank())
+                            .collect(Collectors.joining(" "));
+            })
+            .filter(name -> !name.isBlank())
+            .collect(Collectors.joining(", "));
+        sendMailParams.put("speakers", speakerNames);
+
         sendMailParams.put("location", event.getLocation());
         sendMailParams.put("googleCalendarLink", googleCalendarLink);
         if(!emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams)){
@@ -342,6 +381,11 @@ public class EventServiceImpl implements IEventService {
         }
     }
 
+    @Override
+    public List<EventSpeakerVO> getEventSpeakers(Long eventId){
+        return eventSpeakerMapper.getSpeakerByEventId(eventId);
+    }
+
     private String generateIcsCalendarText(EventVO eventVO, ZoneId zoneId) {
         String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
@@ -370,4 +414,5 @@ public class EventServiceImpl implements IEventService {
                 eventVO.getLocation()
         );
     }
+
 }

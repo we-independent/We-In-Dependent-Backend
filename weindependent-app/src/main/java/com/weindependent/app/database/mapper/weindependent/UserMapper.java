@@ -14,6 +14,7 @@ public interface UserMapper {
     List<String> getAllAvatars();
     UserDO findByAccount(String account);
     int insert(UserDO user);
+    
     UserDO findById(String id);
     // int updatePassword(@Param("id") int id, @Param("password") String password);
     int updatePassword(@Param("id") Long id, @Param("password") String password);
@@ -22,5 +23,6 @@ public interface UserMapper {
     void updateUser(UserDO userDO);
     int deleteUserById(@Param("userId") Long userId);
     int changePassword(@Param("id") Long id, @Param("newPassword")String newPassword);
+    Boolean findNotificationEnabledByUserId(@Param("userId") Long userId);
     Integer findByEmail(@Param("account") String account); //Elly added for paypal ipn
 }

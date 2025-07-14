@@ -8,12 +8,13 @@ import cn.dev33.satoken.temp.SaTempUtil;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
-
+import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
 import com.weindependent.app.dto.*;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.enums.MailTypeEnum;
+import com.weindependent.app.enums.NotificationFieldEnum;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.UserService;
@@ -24,16 +25,23 @@ import com.weindependent.app.vo.user.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+
+
 
 @Tag(name = "用户管理")
 @Slf4j
@@ -154,7 +162,6 @@ public class UserController {
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
         result.put("isLogin", StpUtil.isLogin());
-
         log.info("Login status checked: isLogin={}", StpUtil.isLogin());
         return result;
     }
@@ -261,4 +268,5 @@ public class UserController {
         }
         userService.saveHelpRequest(userId, qry);
     }
+    
 }

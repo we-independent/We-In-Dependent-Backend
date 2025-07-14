@@ -1,6 +1,8 @@
 package com.weindependent.app.service;
 
+import com.weindependent.app.controller.EventSpeakerController;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
+import com.weindependent.app.vo.event.EventSpeakerVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
@@ -32,4 +34,7 @@ public interface IEventService {
 
     String generateGoogleCalendarLink(EventVO eventVO, ZoneId zoneId);
     ZoneId getZoneIdByUserTimeZone(String userTimeZone);
+
+    List<EventSpeakerVO> getEventSpeakers(Long eventId);
+   
 }
