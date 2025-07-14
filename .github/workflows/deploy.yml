@@ -3,8 +3,8 @@ name: Deploy to Oracle VM
 on:
   push:
     branches:
-      - main  # Trigger when pushing to main branch
-  workflow_dispatch: # Allow manual trigger
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -17,32 +17,31 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST }}      # Your Oracle VM IP
-          username: ${{ secrets.SSH_USER }}  # Usually ubuntu
-          key: ${{ secrets.SSH_KEY }}        # Private key from Oracle VM
-          command_timeout: 30m               # Increase timeout to 30 minutes
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 30m
           script: |
             set -e
-
-            APP_DIR="home/ubuntu/We-In-Dependent-Backend"
+            APP_DIR="~/We-In-Dependent-Backend"
             REPO="git@github.com:we-independent/We-In-Dependent-Backend.git"
 
-            # Clone or update repo
-            if [ ! -d "$APP_DIR/.git" ]; then
-              echo "[+] Cloning repository..."
-              rm -rf "$APP_DIR"
+            echo "[+] Adding GitHub to known hosts"
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+            if [ ! -d "$APP_DIR" ]; then
+              echo "[+] Directory does not exist. Cloning fresh repository..."
               git clone $REPO $APP_DIR
             else
-              echo "[+] Pulling latest code..."
-              git -C $APP_DIR reset --hard
-              git -C $APP_DIR pull origin main || {
-                echo "[!] Pull failed, recloning..."
-                rm -rf "$APP_DIR"
+              echo "[+] Pulling latest changes..."
+              if ! git -C $APP_DIR pull origin main; then
+                echo "[!] Pull failed. Removing and recloning..."
+                rm -rf $APP_DIR
                 git clone $REPO $APP_DIR
-              }
+              fi
             fi
 
             echo "[+] Running deployment script"
-            cd $APP_DIR/.github/workflows
-            chmod +x deploy.sh
-            ./deploy.sh
+            chmod +x $APP_DIR/deploy.sh
+            $APP_DIR/deploy.sh
