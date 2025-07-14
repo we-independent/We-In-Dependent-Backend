@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.BlogCommentMapper">
+
+    <resultMap type="BlogCommentDO" id="BlogCommentResult">
+        <result property="id"    column="id"    />
+        <result property="articleId"    column="article_id"    />
+        <result property="parentCommentId"    column="parent_comment_id"    />
+        <result property="content"    column="content"    />
+        <result property="commentAuthorUserId"    column="comment_author_user_id"    />
+        <result property="isDeleted"    column="is_deleted"    />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateUserId"    column="update_user_id"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap type="com.weindependent.app.vo.blog.BlogCommentVO" id="BlogCommentVOResult">
+        <result property="id"    column="id"    />
+        <result property="articleId"    column="article_id"    />
+        <result property="parentCommentId"    column="parent_comment_id"    />
+        <result property="content"    column="content"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time" />
+        <result property="visaType" column="visa_type" />
+        <result property="isAuthor"  column="is_author"/>
+        <result property="username" column="username" />
+        <result property="avatar" column="avatar" />
+    </resultMap>
+
+    <sql id="selectBlogCommentVo">
+        select id, article_id, parent_comment_id, content, comment_author_user_id, is_deleted, create_user_id, create_time, update_user_id, update_time from blog_comment
+    </sql>
+
+    <select id="selectBlogCommentList" parameterType="BlogCommentDO" resultMap="BlogCommentResult">
+        <include refid="selectBlogCommentVo"/>
+        <where>
+            <if test="articleId != null "> and article_id = #{articleId}</if>
+            <if test="parentCommentId != null "> and parent_comment_id = #{parentCommentId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="commentAuthorUserId != null "> and comment_author_user_id = #{commentAuthorUserId}</if>
+            <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+            <if test="createUserId != null "> and create_user_id = #{createUserId}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateUserId != null "> and update_user_id = #{updateUserId}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+
+    <select id="selectBlogCommentById" parameterType="Integer" resultMap="BlogCommentResult">
+        <include refid="selectBlogCommentVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectBlogCommentVOListByArticleId" parameterType="Integer" resultMap="BlogCommentVOResult">
+        select c.id
+             , article_id
+             , parent_comment_id
+             , content
+             , c.create_time
+             , c.update_time
+             , IF(tsu.is_visa_public, tsu.visa_type, null) as visa_type
+             , IF(ISNULL(#{authorId}), false , comment_author_user_id = #{authorId}) as is_author
+             , tsu.real_name as username
+             , tsu.avatar
+        from blog_comment c
+            left join t_system_user tsu on comment_author_user_id = tsu.id
+            left join weindependent.user_profile_image upi on tsu.profile_image_id = upi.id
+        where article_id = #{articleId} and c.is_deleted = false
+    </select>
+
+    <select id="selectBlogCommentVOByCommentId" parameterType="Integer" resultMap="BlogCommentVOResult">
+        select id
+             , article_id
+             , parent_comment_id
+             , content
+             , create_time
+             , update_time
+             , null as visa_type
+             , false as is_author
+             , null as username
+             , null as avatar
+        from blog_comment
+        where id = #{id} and is_deleted = false
+    </select>
+
+    <insert id="insertBlogComment" parameterType="BlogCommentDO" useGeneratedKeys="true" keyProperty="id">
+        insert into blog_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="articleId != null">article_id,</if>
+            <if test="parentCommentId != null">parent_comment_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="commentAuthorUserId != null">comment_author_user_id,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="createUserId != null">create_user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateUserId != null">update_user_id,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="articleId != null">#{articleId},</if>
+            <if test="parentCommentId != null">#{parentCommentId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="commentAuthorUserId != null">#{commentAuthorUserId},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBlogComment" parameterType="BlogCommentDO">
+        update blog_comment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="articleId != null">article_id = #{articleId},</if>
+            <if test="parentCommentId != null">parent_comment_id = #{parentCommentId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="commentAuthorUserId != null">comment_author_user_id = #{commentAuthorUserId},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="createUserId != null">create_user_id = #{createUserId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteBlogCommentById" parameterType="Integer">
+        update blog_comment set is_deleted = 1 where id = #{id}
+    </update>
+
+    <update id="deleteBlogCommentByIds" parameterType="String">
+        update blog_comment
+        set is_deleted = 1,
+        update_user_id = #{updateUserId}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

@@ -1,31 +1,27 @@
 package com.weindependent.app.service;
 
-import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
-import com.weindependent.app.dto.BlogCommentQry;
+import com.weindependent.app.vo.blog.BlogCommentVO;
+
+import java.util.List;
 
 /**
  * 博客评论Service接口
- * 
+ *
  * @author christina
- *    2025-03-23
+ * 2025-03-23
  */
 public interface IBlogCommentService {
-    /**
-     * 查询博客评论
-     *
-     * @param id 博客评论主键
-     * @return 博客评论
-     */
-    BlogCommentDO selectBlogCommentById(Integer id);
+
+
 
     /**
      * 查询博客评论列表
      *
-     * @param blogCommentQry 博客评论查找模板
+     * @param articleId 博客文章Id
      * @return 博客评论集合
      */
-    PageInfo<BlogCommentDO> selectBlogCommentList(BlogCommentQry blogCommentQry);
+    List<BlogCommentVO> selectBlogCommentVOListByArticleId(Integer articleId);
 
     /**
      * 新增博客评论
@@ -49,13 +45,5 @@ public interface IBlogCommentService {
      * @param ids 需要删除的博客评论主键集合
      * @return 结果
      */
-    int deleteBlogCommentByIds(Integer[] ids, int updateUserId);
-
-    /**
-     * 删除博客评论信息
-     *
-     * @param id 博客评论主键
-     * @return 结果
-     */
-    int deleteBlogCommentById(Integer id);
+    int deleteBlogCommentByIds(Integer[] ids);
 }

@@ -1,7 +1,7 @@
 package com.weindependent.app.service.impl.dashboard;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import cn.dev33.satoken.stp.StpUtil;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,7 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.weindependent.app.service.IBlogCommentService;
+import com.weindependent.app.service.IDashboardBlogCommentService;
 
 /**
  * 博客评论Service业务层处理
@@ -23,20 +23,10 @@ import com.weindependent.app.service.IBlogCommentService;
  *    2025-03-23
  */
 @Service
-public class DashboardBlogCommentServiceImpl implements IBlogCommentService {
+public class DashboardBlogCommentServiceImpl implements IDashboardBlogCommentService {
     @Autowired
     private DashboardBlogCommentMapper dashboardBlogCommentMapper;
 
-    /**
-     * 查询博客评论
-     *
-     * @param id 博客评论主键
-     * @return 博客评论
-     */
-    @Override
-    public BlogCommentDO selectBlogCommentById(Integer id) {
-        return dashboardBlogCommentMapper.selectBlogCommentById(id);
-    }
 
     /**
      * 查询博客评论列表
@@ -58,48 +48,16 @@ public class DashboardBlogCommentServiceImpl implements IBlogCommentService {
     }
 
     /**
-     * 新增博客评论
-     *
-     * @param blogComment 博客评论
-     * @return 结果
-     */
-    @Override
-    public int insertBlogComment(BlogCommentDO blogComment) {
-        blogComment.setCreateTime(LocalDateTime.now());
-        return dashboardBlogCommentMapper.insertBlogComment(blogComment);
-    }
-
-    /**
-     * 修改博客评论
-     *
-     * @param blogComment 博客评论
-     * @return 结果
-     */
-    @Override
-    public int updateBlogComment(BlogCommentDO blogComment) {
-        blogComment.setUpdateTime(LocalDateTime.now());
-        return dashboardBlogCommentMapper.updateBlogComment(blogComment);
-    }
-
-    /**
      * 批量删除博客评论
      *
      * @param ids 需要删除的博客评论主键
      * @return 结果
      */
     @Override
-    public int deleteBlogCommentByIds(Integer[] ids, int updateUserId) {
+    public int deleteBlogCommentByIds(Integer[] ids) {
+        int updateUserId = StpUtil.getLoginIdAsInt();
         return dashboardBlogCommentMapper.deleteBlogCommentByIds(ids, updateUserId);
     }
 
-    /**
-     * 删除博客评论信息
-     *
-     * @param id 博客评论主键
-     * @return 结果
-     */
-    @Override
-    public int deleteBlogCommentById(Integer id) {
-        return dashboardBlogCommentMapper.deleteBlogCommentById(id);
-    }
+
 }

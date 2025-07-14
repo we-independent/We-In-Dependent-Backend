@@ -1,6 +1,7 @@
 package com.weindependent.app.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.database.dataobject.TagDO;
@@ -13,12 +14,12 @@ import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.service.*;
 import com.weindependent.app.utils.PageInfoUtil;
+import com.weindependent.app.vo.blog.BlogCommentVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -52,6 +53,10 @@ public class GetBlogListController {
 
     @Autowired
     private TagService tagService;
+
+
+    @Autowired
+    private IBlogCommentService blogCommentService;
 
 
     /**
@@ -170,6 +175,13 @@ public class GetBlogListController {
     @GetMapping("/articles/coldstart")
     public List<BlogArticleCardQry> getColdstartRecommendations() {
         return mostSavedService.getTopSavedBlogsForColdstart(3);
+    }
+
+    @SignatureAuth
+    @Operation(summary = "根据文章id查询所有评论列表")
+    @GetMapping("/articles/{articleId}/comments")
+    public List<BlogCommentVO> list(@PathVariable Integer articleId) {
+        return blogCommentService.selectBlogCommentVOListByArticleId(articleId);
     }
 
 }
