@@ -43,5 +43,6 @@ jobs:
             fi
 
             echo "[+] Running deployment script"
-            chmod +x $APP_DIR/deploy.sh
-            $APP_DIR/deploy.sh
+            cd .github/workflows
+            chmod +x deploy.sh
+            /.deploy.sh
