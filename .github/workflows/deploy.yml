@@ -24,7 +24,7 @@ jobs:
           script: |
             set -e
 
-            APP_DIR="/We-In-Dependent-Backend"
+            APP_DIR="~/We-In-Dependent-Backend"
             REPO="git@github.com:we-independent/We-In-Dependent-Backend.git"
 
             # Clone or update repo
