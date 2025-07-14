@@ -36,57 +36,6 @@
         </where>
     </select>
 
-    <select id="selectBlogCommentById" parameterType="Integer" resultMap="BlogCommentResult">
-        <include refid="selectBlogCommentVo"/>
-        where id = #{id}
-    </select>
-
-    <insert id="insertBlogComment" parameterType="BlogCommentDO" useGeneratedKeys="true" keyProperty="id">
-        insert into blog_comment
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="articleId != null">article_id,</if>
-            <if test="parentCommentId != null">parent_comment_id,</if>
-            <if test="content != null and content != ''">content,</if>
-            <if test="commentAuthorUserId != null">comment_author_user_id,</if>
-            <if test="isDeleted != null">is_deleted,</if>
-            <if test="createUserId != null">create_user_id,</if>
-            <if test="createTime != null">create_time,</if>
-            <if test="updateUserId != null">update_user_id,</if>
-            <if test="updateTime != null">update_time,</if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="articleId != null">#{articleId},</if>
-            <if test="parentCommentId != null">#{parentCommentId},</if>
-            <if test="content != null and content != ''">#{content},</if>
-            <if test="commentAuthorUserId != null">#{commentAuthorUserId},</if>
-            <if test="isDeleted != null">#{isDeleted},</if>
-            <if test="createUserId != null">#{createUserId},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateUserId != null">#{updateUserId},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-        </trim>
-    </insert>
-
-    <update id="updateBlogComment" parameterType="BlogCommentDO">
-        update blog_comment
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="articleId != null">article_id = #{articleId},</if>
-            <if test="parentCommentId != null">parent_comment_id = #{parentCommentId},</if>
-            <if test="content != null and content != ''">content = #{content},</if>
-            <if test="commentAuthorUserId != null">comment_author_user_id = #{commentAuthorUserId},</if>
-            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
-            <if test="createUserId != null">create_user_id = #{createUserId},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <update id="deleteBlogCommentById" parameterType="Integer">
-        update blog_comment set is_deleted = 1 where id = #{id}
-    </update>
-
     <update id="deleteBlogCommentByIds" parameterType="String">
         update blog_comment
         set is_deleted = 1,
@@ -96,4 +45,5 @@
             #{id}
         </foreach>
     </update>
+
 </mapper>
