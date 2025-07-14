@@ -1,6 +1,7 @@
 package com.weindependent.app.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.websocket.server.PathParam;
@@ -36,8 +37,12 @@ public class TagController {
 
     @Operation(summary = "获取某blog的所有tag")
     @GetMapping("/{blogId}")
-    public List<TagDO> getTagsByBlogId(@PathVariable int blogId){
-        return tagService.getTagsByArticleId(blogId);
+    public List<String> getTagsByBlogId(@PathVariable int blogId){
+        return tagService.getTagsByArticleId(blogId).stream()
+        .filter(tag -> !tag.getIsDeleted()) // 只要 isDeleted == false
+        .map(TagDO::getName)              // 提取 name
+        .collect(Collectors.toList());
+         
     }
 
 }
