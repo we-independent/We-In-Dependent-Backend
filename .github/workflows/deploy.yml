@@ -1,0 +1,23 @@
+name: Deploy to Oracle VM
+
+on:
+  push:
+    branches:
+      - main  # Trigger when pushing to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}     # Your Oracle VM IP
+          username: ${{ secrets.SSH_USER }} # Usually ubuntu
+          key: ${{ secrets.SSH_KEY }}       # Private key from Oracle VM
+          script: |
+            sudo ./deploy.sh
