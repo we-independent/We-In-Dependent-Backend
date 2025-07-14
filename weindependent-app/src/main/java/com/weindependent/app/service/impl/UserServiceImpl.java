@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.weindependent.app.database.dataobject.UserDO;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
+import com.weindependent.app.database.mapper.weindependent.UserNotificationMapper;
 import com.weindependent.app.dto.ChangePasswordQry;
 import com.weindependent.app.dto.HelpCenterRequestQry;
 import com.weindependent.app.dto.VerifyPasswordQry;
@@ -16,28 +17,31 @@ import com.weindependent.app.utils.PageInfoUtil;
 import com.weindependent.app.utils.PasswordUtil;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.UpdateUserQry;
+import com.weindependent.app.config.EmailConfig;
 import com.weindependent.app.convertor.UserConvertor;
-
 import cn.dev33.satoken.temp.SaTempUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.weindependent.app.dto.RegisterQry;
+
 import cn.dev33.satoken.stp.StpUtil;
 
 import com.weindependent.app.database.dataobject.HelpCenterRequestDO;
-import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.weindependent.app.database.mapper.weindependent.UserHelpCenterMapper;
 import com.weindependent.app.database.mapper.weindependent.UserImageMapper;
+import com.weindependent.app.service.IEmailService;
 import com.weindependent.app.service.IFileService;
+import com.weindependent.app.service.IUserNotificationService;
 import com.weindependent.app.vo.UploadedFileVO;
 
 import javax.annotation.Resource;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -63,14 +67,22 @@ public class UserServiceImpl implements UserService {
     private IFileService fileService;
 
     @Autowired
-    private EmailServiceImpl resetUserPasswordEmailService;
-
-
-    @Autowired
     private UserHelpCenterMapper userHelpCenterMapper;
 
     @Autowired
     private EmailServiceImpl emailServiceImpl;
+
+    @Autowired
+    private IEmailService iEmailService;
+
+    @Autowired
+    private UserNotificationMapper userNotificationMapper;
+
+    @Resource
+    private EmailConfig emailConfig;
+
+    @Autowired
+    private IUserNotificationService notificationService;
 
 //    @Override
 //    public UserDO queryByUsernameAndPassword(String username, String password) {
@@ -122,8 +134,12 @@ public class UserServiceImpl implements UserService {
         user.setVisaType(dto.getVisaType());
         user.setLoginProvider("local");
         user.setSubscription(dto.isSubscription());
-
-        return userMapper.insert(user) > 0;
+        boolean inserted = userMapper.insert(user) > 0;
+        // initialize notification after register
+        if(inserted){
+            notificationService.initializeNotificationSettings(user.getId(), dto.isSubscription());
+        }
+        return inserted;
     }
 
     @Override
@@ -253,6 +269,7 @@ public class UserServiceImpl implements UserService {
 
         userHelpCenterMapper.insert(request);
 
+        // admin 需要的info
         // Confirmation email send to user
         Map<String, String> emailParams = new HashMap<>();
         emailParams.put("name", userName);
@@ -268,7 +285,26 @@ public class UserServiceImpl implements UserService {
         adminMailParams.put("message", qry.getMessage());
         adminMailParams.put("replyTo", userEmail);
 
-        emailServiceImpl.send("info@weindependent.org", MailTypeEnum.HELP_CENTER_NOTIFY, adminMailParams);
+        // user info 
+        Map<String, String> userParams = new HashMap<>();
+        userParams.put("name", userName);
+        userParams.put("message", qry.getMessage());
+        userParams.put("email", userEmail);             
+        userParams.put("subject", qry.getSubject());
+
+        log.info(userEmail, adminMailParams, userParams);   
+        log.info("是否启用通知 helpCenterEnabled: {}", userNotificationMapper.findByUserId(userId).getHelpCenterEnabled()); 
+        String adminEmail = emailConfig.getUsername(); 
+
+        // 发送confirmation email到用户邮箱
+        iEmailService.send(userEmail, MailTypeEnum.HELP_CENTER, adminMailParams);
+        // log.info("📨 给客服 info@weindependent.org 抄送通知邮件");
+        iEmailService.send(adminEmail, MailTypeEnum.HELP_CENTER_NOTIFY, userParams);
+    }
+
+    public static String generateReferenceId(int nextSeq) {
+        String year = String.valueOf(LocalDate.now().getYear());
+        return String.format("MSG-%s-%06d", year, nextSeq);
     }
 }
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.UserNotificationMapper">
+
+    <select id='findByUserId' parameterType="long" resultType="NotificationSettingsDO">
+        SELECT * FROM user_notification_settings WHERE user_id = #{userId}
+    </select>
+
+    <insert id='insert' parameterType='com.weindependent.app.database.dataobject.NotificationSettingsDO'>
+        INSERT INTO user_notification_settings
+            (user_id, updates_enabled, updates_general_announcements, updates_new_programs_or_features, updates_monthly_highlight, updates_holiday_messages,
+            donations_enabled, donations_donation_confirmations, donations_donation_updates, donations_billing_issues,
+            events_enabled, events_event_reminder, events_event_follow_up,
+            help_center_enabled)
+        VALUES
+            (#{userId}, #{updatesEnabled}, #{updatesGeneralAnnouncements}, #{updatesNewProgramsOrFeatures}, #{updatesMonthlyHighlight}, #{updatesHolidayMessages},
+            #{donationsEnabled}, #{donationsDonationConfirmations}, #{donationsDonationUpdates}, #{donationsBillingIssues},
+            #{eventsEnabled}, #{eventsEventReminder}, #{eventsEventFollowUp},
+            #{helpCenterEnabled})
+    </insert>
+
+
+    <update id='update' parameterType='com.weindependent.app.database.dataobject.NotificationSettingsDO'>
+        UPDATE user_notification_settings SET
+            updates_enabled = #{updatesEnabled},
+            updates_general_announcements = #{updatesGeneralAnnouncements},
+            updates_new_programs_or_features = #{updatesNewProgramsOrFeatures},
+            updates_holiday_messages = #{updatesHolidayMessages},
+            updates_monthly_highlight = #{updatesMonthlyHighlight},
+            donations_enabled = #{donationsEnabled},
+            donations_donation_confirmations = #{donationsDonationConfirmations},
+            donations_donation_updates = #{donationsDonationUpdates},
+            donations_billing_issues = #{donationsBillingIssues},
+            events_enabled = #{eventsEnabled},
+            events_event_reminder = #{eventsEventReminder},
+            events_event_follow_up = #{eventsEventFollowUp},
+            help_center_enabled = #{helpCenterEnabled}
+        WHERE
+            user_id = #{userId}
+    </update>
+
+
+    <update id="updateField" parameterType="map">
+        UPDATE user_notification_settings
+        <set>
+            <if test="fieldName == 'updatesEnabled'"> updates_enabled = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesGeneralAnnouncements'"> updates_general_announcements = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesNewProgramsOrFeatures'"> updates_new_programs_or_features = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesHolidayMessages'"> updates_holiday_messages = #{fieldValue}, </if>
+            <if test="fieldName == 'updatesMonthlyHighlight'"> updates_monthly_highlight = #{fieldValue}, </if>
+
+            <if test="fieldName == 'donationsEnabled'"> donations_enabled = #{fieldValue}, </if>
+            <!-- <if test="fieldName == 'donationsDonationConfirmations'"> donations_donation_confirmations = #{fieldValue}, </if>
+            <if test="fieldName == 'donationsDonationUpdates'"> donations_donation_updates = #{fieldValue}, </if>
+            <if test="fieldName == 'donationsBillingIssues'"> donations_billing_issues = #{fieldValue}, </if> -->
+
+            <if test="fieldName == 'eventsEnabled'"> events_enabled = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsEventReminder'"> events_event_reminder = #{fieldValue}, </if>
+            <if test="fieldName == 'eventsEventFollowUp'"> events_event_follow_up = #{fieldValue}, </if>
+<!-- 
+            <if test="fieldName == 'helpCenterEnabled'"> help_center_enabled = #{fieldValue}, </if> -->
+            <!-- <if test="fieldName == 'help_center_response_and_update'"> help_center_response_and_update = #{fieldValue}, </if> -->
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- <select id="findNotificationEnabledByUserId">
+        SELECT notification_enabled FROM t_system_user WHERE user_id = #{userId};
+    </select> -->
+
+    <select id="findAll" resultType="com.weindependent.app.database.dataobject.NotificationSettingsDO">
+        SELECT * FROM user_notification_settings
+    </select>
+
+</mapper>

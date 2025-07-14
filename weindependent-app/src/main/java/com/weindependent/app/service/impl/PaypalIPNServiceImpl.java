@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weindependent.app.database.dataobject.DonateDO;
+import com.weindependent.app.database.dataobject.DonationProgressDO;
+import com.weindependent.app.database.mapper.weindependent.DonationProgressMapper;
 import com.weindependent.app.database.mapper.weindependent.PaypalIPNMapper;
 import com.weindependent.app.database.mapper.weindependent.UserMapper;
 import com.weindependent.app.enums.ErrorCode;
@@ -41,6 +43,8 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
     private PaypalIPNMapper ipnMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private DonationProgressMapper donationProgressMapper;
 
     public int processIpn(String ipnMessage){
         log.info(ipnMessage);
@@ -49,20 +53,29 @@ public class PaypalIPNServiceImpl implements PaypalIPNService{
 
             Integer userId = userMapper.findByEmail(ipnParams.get("payer_email"));
             if (ipnMapper.insertIpnTransaction(
-                userId,
-                ipnParams.get("payer_email"),
-                ipnParams.get("first_name"),
-                ipnParams.get("last_name"),
-                ipnParams.get("contact_phone"),
-                ipnParams.get("txn_id"),
-                ipnParams.get("payment_status"),
-                parsePaymentDate(ipnParams.get("payment_date")),
-                ipnParams.containsKey("mc_gross") ? new BigDecimal(ipnParams.get("mc_gross")) : BigDecimal.ZERO,
-                ipnParams.containsKey("mc_fee") ? new BigDecimal(ipnParams.get("mc_fee")) : BigDecimal.ZERO,
-                ipnParams.get("mc_currency"),
-                ipnMessage,
-                ipnParams.get("txn_type")
-            )>=0) return ErrorCode.SUCCESS.getCode();
+                    userId,
+                    ipnParams.get("payer_email"),
+                    ipnParams.get("first_name"),
+                    ipnParams.get("last_name"),
+                    ipnParams.get("contact_phone"),
+                    ipnParams.get("txn_id"),
+                    ipnParams.get("payment_status"),
+                    parsePaymentDate(ipnParams.get("payment_date")),
+                    ipnParams.containsKey("mc_gross") ? new BigDecimal(ipnParams.get("mc_gross")) : BigDecimal.ZERO,
+                    ipnParams.containsKey("mc_fee") ? new BigDecimal(ipnParams.get("mc_fee")) : BigDecimal.ZERO,
+                    ipnParams.get("mc_currency"),
+                    ipnMessage,
+                    ipnParams.get("txn_type")) >= 0) {
+                // After successful insert, insert default step into donation_progress
+                DonationProgressDO progress = new DonationProgressDO();
+                progress.setTxnId(ipnParams.get("txn_id"));
+                progress.setStep(1); // Step 1: Donation Received
+                progress.setMessage("Donation received");
+                progress.setStepDate(parsePaymentDate(ipnParams.get("payment_date")));
+
+                donationProgressMapper.insertDonationProgressDO(progress);
+                return ErrorCode.SUCCESS.getCode();
+            }
             else return ErrorCode.UPDATE_DB_FAILED.getCode();
         } else return ErrorCode.IPN_INVALID.getCode();
     }

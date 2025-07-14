@@ -1,0 +1,41 @@
+<!-- ======================= -->
+<!-- General Notification Template -->
+<!-- File: updates-general.html -->
+<!-- ======================= -->
+<!-- general-updates.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>...</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="{{bannerImg}}" alt="Banner Image" />
+    </div>
+    <div class="title">{{title}}</div>
+    <div class="content">{{content}}</div>
+
+    {{#each images}}
+      <div class="image-section">
+        <img src="{{this.imageUrl}}" />
+        {{#if this.caption}}
+        <div class="caption">{{this.caption}}</div>
+        {{/if}}
+        {{#if this.buttonUrl}}
+        <a class="button" href="{{this.buttonUrl}}">{{this.buttonText}}</a>
+        {{/if}}
+      </div>
+    {{/each}}
+
+    {{#if buttonUrl}}
+    <div style="text-align: center;">
+      <a class="button" href="{{buttonUrl}}">{{buttonText}}</a>
+    </div>
+    {{/if}}
+
+    <div class="footer">
+      <p>We Independent Team</p>
+      <p><a href="{{unsubscribeLink}}">Unsubscribe</a></p>
+    </div>
+  </div>
+</body>
+</html>

@@ -7,7 +7,6 @@ import com.weindependent.app.dto.VerifyPasswordQry;
 import com.weindependent.app.vo.user.UserVO;
 import com.weindependent.app.dto.RegisterQry;
 import com.weindependent.app.dto.UpdateUserQry;
-import com.weindependent.app.database.dataobject.ImageDO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
