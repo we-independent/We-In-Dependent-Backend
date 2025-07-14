@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.SSH_USER }} # Usually ubuntu
           key: ${{ secrets.SSH_KEY }}       # Private key from Oracle VM
           script: |
-            sudo ./deploy.sh
+            sudo ./run.sh
