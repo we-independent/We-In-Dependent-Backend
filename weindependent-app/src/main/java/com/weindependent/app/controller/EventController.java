@@ -209,6 +209,6 @@ public class EventController {
         ZoneId zoneId = IEventService.getZoneIdByUserTimeZone(userTimeZone);
         EventVO event = IEventService.getEventById(eventId);
         String googleCalendarLink = IEventService.generateGoogleCalendarLink(event, zoneId);
-        IEventService.sendRegisterConfirmationEmail(eventId,userId,zoneId, event, googleCalendarLink);
+        IEventService.sendRegisterConfirmationEmail(userId,zoneId, event, googleCalendarLink);
     }
 }

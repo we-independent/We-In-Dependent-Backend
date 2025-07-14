@@ -133,7 +133,7 @@ public class EventServiceImpl implements IEventService {
     @Override
     public EventRegisterDetailVO register(Long id, ZoneId zoneId) {
         Long userId = StpUtil.getLoginIdAsLong();
-        EventVO eventVO = eventMapper.getById(id, null);
+        EventVO eventVO = getEventById(id);
         if (eventVO == null) {
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "Event not found");
         }
@@ -163,14 +163,15 @@ public class EventServiceImpl implements IEventService {
         eventRegisterDetailVO.setIcsText(icsText);
         eventRegisterDetailVO.setGoogleCalendarLink(googleCalendarLink);
 
-        sendRegisterConfirmationEmail(id,userId, zoneId,eventVO, googleCalendarLink);
+        sendRegisterConfirmationEmail(userId, zoneId,eventVO, googleCalendarLink);
         return eventRegisterDetailVO;
 
     }
 
 
     @Override
-    public void sendRegisterConfirmationEmail(Long eventId, Long userId, ZoneId zoneId, EventVO event, String googleCalendarLink) {
+    @Async
+    public void sendRegisterConfirmationEmail( Long userId, ZoneId zoneId, EventVO event, String googleCalendarLink) {
 
         UserDO user= userService.findUserById(userId);
         if(user == null){
@@ -178,8 +179,6 @@ public class EventServiceImpl implements IEventService {
         }
 
         Map<String, String> sendMailParams = new HashMap<>();
-        String formattedTime = event.getEventTime().atZone(zoneId)
-                .format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm a (z)"));
 
         sendMailParams.put("title", "[We Independent] "+ event.getTitle());
         sendMailParams.put("username",user.getRealName());
@@ -190,22 +189,11 @@ public class EventServiceImpl implements IEventService {
         sendMailParams.put("date", date);
         sendMailParams.put("time", time);
         sendMailParams.put("banner", event.getBannerUrl());
-        // sendMailParams.put("time", formattedTime);
 
-        List<EventSpeakerVO> speakers = getEventSpeakers(eventId);
-        String speakerNames = speakers.stream()
-            .map(s -> {
-                String firstName = s.getFirstName() != null ? s.getFirstName().trim() : "";
-                String lastName = s.getLastName() != null ? s.getLastName().trim() : "";
-
-                return Stream.of(firstName, lastName)
-                            .filter(str -> !str.isBlank())
-                            .collect(Collectors.joining(" "));
-            })
-            .filter(name -> !name.isBlank())
-            .collect(Collectors.joining(", "));
-        sendMailParams.put("speakers", speakerNames);
-
+        String speakerNames = event.getSpeakers().stream()
+                .map(s -> s.getFirstName() + " " + s.getLastName())
+                .collect(Collectors.joining(", "));
+        sendMailParams.put("speakerNames", speakerNames);
         sendMailParams.put("location", event.getLocation());
         sendMailParams.put("googleCalendarLink", googleCalendarLink);
         if(!emailService.send(user.getAccount(), MailTypeEnum.REGISTER_EVENT, sendMailParams)){
@@ -381,10 +369,6 @@ public class EventServiceImpl implements IEventService {
         }
     }
 
-    @Override
-    public List<EventSpeakerVO> getEventSpeakers(Long eventId){
-        return eventSpeakerMapper.getSpeakerByEventId(eventId);
-    }
 
     private String generateIcsCalendarText(EventVO eventVO, ZoneId zoneId) {
         String startUtc = eventVO.getEventTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
