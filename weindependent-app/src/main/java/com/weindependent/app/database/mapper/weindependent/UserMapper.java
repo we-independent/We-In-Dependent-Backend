@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.*;
 public interface UserMapper {
     UserDO query(Map<String, String> paramMap);
     List<UserDO> getAllUsers();
+    List<String> getAllAvatars();
     UserDO findByAccount(String account);
     int insert(UserDO user);
     UserDO findById(String id);
@@ -21,4 +22,5 @@ public interface UserMapper {
     void updateUser(UserDO userDO);
     int deleteUserById(@Param("userId") Long userId);
     int changePassword(@Param("id") Long id, @Param("newPassword")String newPassword);
+    Integer findByEmail(@Param("account") String account); //Elly added for paypal ipn
 }

@@ -15,6 +15,7 @@ public class UserConvertor {
         userVO.setLanguage(userDO.getLanguage());
         userVO.setVisaType(userDO.getVisaType());
         userVO.setSubscription(userDO.isSubscription());
+        userVO.setAvatar(userDO.getAvatar());
         return userVO;
     }
 

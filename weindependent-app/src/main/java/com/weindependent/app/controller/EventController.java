@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
+import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
 import com.weindependent.app.vo.event.RecentEventVO;
 import com.weindependent.app.vo.event.RecentEventVOs;
@@ -17,6 +18,8 @@ import javax.annotation.Resource;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.List;
 
 @Tag(name = "活動")
@@ -98,7 +101,10 @@ public class EventController {
     @SignatureAuth
     @SaCheckLogin
     @PostMapping("/register/{id}")
-    public void register(@PathVariable Long id ,@RequestParam(required = false) String userTimeZone ) { IEventService.register(id,userTimeZone);}
+    public EventRegisterDetailVO register(@PathVariable Long id , @RequestParam(required = false) String userTimeZone ) {
+        ZoneId zoneId= IEventService.getZoneIdByUserTimeZone(userTimeZone);
+        return IEventService.register(id,zoneId);
+    }
 
     @Operation(summary = "Unregister an event by ID")
     @SignatureAuth
@@ -168,6 +174,8 @@ public class EventController {
         return IEventService.getViewedEvents(page,size);
     }
 
+
+
 //    @Operation(summary = "Search events using full-text search in natural language mode")
 //    @SignatureAuth
 //    @GetMapping("/search/natural")
@@ -198,6 +206,9 @@ public class EventController {
             throw new Exception("Event not found, or user not registered to this event");
         }
         Long userId =StpUtil.getLoginIdAsLong();
-        IEventService.sendRegisterConfirmationEmail(eventId,userId,userTimeZone);
+        ZoneId zoneId = IEventService.getZoneIdByUserTimeZone(userTimeZone);
+        EventVO event = IEventService.getEventById(eventId);
+        String googleCalendarLink = IEventService.generateGoogleCalendarLink(event, zoneId);
+        IEventService.sendRegisterConfirmationEmail(eventId,userId,zoneId, event, googleCalendarLink);
     }
 }
