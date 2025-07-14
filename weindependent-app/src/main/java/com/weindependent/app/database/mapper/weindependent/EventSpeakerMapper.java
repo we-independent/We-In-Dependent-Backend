@@ -11,4 +11,5 @@ import org.apache.ibatis.annotations.Param;
 public interface EventSpeakerMapper {
     EventSpeakerVO getById(@Param("id") Long id);
     List<EventSpeakerVO> searchByName(@Param("name") String name);
+    List<EventSpeakerVO> getSpeakerByEventId(@Param("eventId") Long eventId);
 }

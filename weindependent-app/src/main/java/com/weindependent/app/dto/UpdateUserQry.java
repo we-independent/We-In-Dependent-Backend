@@ -17,4 +17,5 @@ public class UpdateUserQry {
   @NotNull(message = "isVisaPublic is required")
   private Boolean isVisaPublic;
   private Boolean notificationEnabled;
+
 }

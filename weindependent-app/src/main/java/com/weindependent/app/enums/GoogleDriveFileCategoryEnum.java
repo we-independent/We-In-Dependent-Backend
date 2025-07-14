@@ -11,6 +11,6 @@ public enum GoogleDriveFileCategoryEnum {
     EVENT_BANNER("event-banner"),
     EVENT_SPEAKER_BANNER("event-speaker-banner"),
     USER_PROFILE_IMAGE("user-profile-image");
-
+    
     public final String folderName;
 }

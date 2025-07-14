@@ -27,7 +27,7 @@
         SELECT * FROM t_system_user WHERE account = #{account}
     </select>
 
-    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO">
+    <insert id="insert" parameterType="com.weindependent.app.database.dataobject.UserDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_system_user (account, password, real_name, login_provider, language
         <if test="visaType != null and visaType != ''"> ,visa_type</if>
         <if test="notificationEnabled != null">, notification_enabled</if>
@@ -74,6 +74,12 @@
     <delete id="deleteUserById" parameterType="long">
         DELETE FROM t_system_user WHERE id = #{userId}
     </delete>
+    
+    <select id="findNotificationEnabledByUserId" parameterType="long" resultType="boolean">
+        SELECT notification_enabled
+        FROM t_system_user
+        WHERE id = #{userId}
+    </select>
 
     <select id="getAllAvatars" resultType="java.lang.String">
         SELECT avatar FROM t_system_user

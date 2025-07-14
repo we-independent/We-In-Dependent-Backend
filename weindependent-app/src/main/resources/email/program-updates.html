@@ -1,0 +1,85 @@
+<!-- ======================= -->
+<!-- Program or Feature Notification Template -->
+<!-- File: updates-program_or_feature.html -->
+<!-- ======================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #F8F9FA;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #FFFFFF;
+      padding: 40px;
+      border-radius: 12px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .header img {
+      width: 60px;
+    }
+    .title {
+      font-size: 24px;
+      color: #F35B44;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .content {
+      font-size: 16px;
+      color: #333333;
+      line-height: 1.6;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background-color: #F35B44;
+      color: white;
+      border-radius: 24px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888888;
+      margin-top: 40px;
+    }
+    .footer a {
+      color: #888888;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+        <!-- tmp img for test purpose -->
+      <img src="https://drive.google.com/uc?export=view&id=14mU0BvzcP5gaw16hU5yN64tfbb7tES2r" alt="We Independent Logo" />
+    </div>
+    <div class="title">{{title}}</div>
+    <div class="content">
+      {{content}}
+    </div>
+    {{#if buttonUrl}}
+    <div style="text-align: center;">
+      <a href="{{buttonUrl}}" class="button">{{buttonText}}</a>
+    </div>
+    {{/if}}
+    <div class="footer">
+      <p>We Independent Team<br/>Address, #PC City, State</p>
+      <!-- <p><a href="{{unsubscribeLink}}">Unsubscribe</a></p> -->
+    </div>
+  </div>
+</body>
+</html>

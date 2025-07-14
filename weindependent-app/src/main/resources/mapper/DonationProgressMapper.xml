@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weindependent.app.database.mapper.weindependent.DonationProgressMapper">
+
+    <select id="getAllWithTransactionInfo" resultType="com.weindependent.app.vo.DonationProgressVO">
+        SELECT ipn.user_id,
+               ipn.txn_id,
+               ipn.payer_email,
+               ipn.payer_first_name,
+               ipn.payer_last_name,
+               ipn.payer_phone,
+               ipn.payment_status,
+               ipn.payment_date,
+               ipn.mc_gross,
+               ipn.mc_fee,
+               ipn.txn_type,
+               ipn.mc_currency,
+               dp.step,
+               dp.message,
+               dp.step_date
+        FROM paypal_ipn_transaction ipn
+        LEFT JOIN donation_progress dp ON ipn.txn_id = dp.txn_id
+        ORDER BY ipn.payment_date DESC
+    </select>
+
+    <select id="getProgressByTxnId" parameterType="string" resultType="com.weindependent.app.vo.DonationProgressUserVO">
+        SELECT step, message, step_date
+        FROM donation_progress
+        WHERE txn_id = #{txnId}
+        ORDER BY step ASC
+    </select>
+
+    <insert id="insertDonationProgressDO" parameterType="com.weindependent.app.database.dataobject.DonationProgressDO">
+        INSERT INTO donation_progress (txn_id, step, message, step_date)
+        VALUES (#{txnId}, #{step}, #{message}, #{stepDate})
+        ON DUPLICATE KEY UPDATE
+            message = VALUES(message),
+            step_date = VALUES(step_date)
+    </insert>
+
+</mapper>
