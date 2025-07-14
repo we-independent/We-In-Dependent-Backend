@@ -42,7 +42,6 @@ jobs:
               fi
             fi
 
-            echo "[+] Running deployment script"
-            cd .github/workflows
-            chmod +x deploy.sh
-            /.deploy.sh
+            echo "[+] Running deployment script from .github/workflows"
+            chmod +x $APP_DIR/.github/workflows/deploy.sh
+            $APP_DIR/.github/workflows/deploy.sh
