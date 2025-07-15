@@ -8,13 +8,12 @@ PORT=8080
 
 echo "[+] Pull latest code"
 cd We-In-Dependent-Backend
-git pull origin main
 
 echo "[+] Build new Docker image"
 sudo DOCKER_BUILDKIT=1 docker build -t ${IMAGE_NAME} .
 
 echo "[+] Stop and remove old container (if exists)"
-sudo ocker stop ${CONTAINER_NAME} || true
+sudo docker stop ${CONTAINER_NAME} || true
 sudo docker rm ${CONTAINER_NAME} || true
 
 echo "[+] Start new container on port ${PORT}"
