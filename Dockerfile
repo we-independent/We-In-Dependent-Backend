@@ -1,15 +1,21 @@
 # Stage 1: Build
 FROM maven:3.9.6-eclipse-temurin-17 AS build
+# syntax=docker/dockerfile:1.4
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy only POM files first for dependency caching
+# Copy POM files first
 COPY pom.xml .
 COPY weindependent-app/pom.xml weindependent-app/
-RUN mvn dependency:go-offline
 
-# Now copy full source and build
+# Cache Maven dependencies using BuildKit mount
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn dependency:go-offline
+
+# Copy full source and build
 COPY . .
-RUN mvn clean package -pl weindependent-app -am -DskipTests
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn clean package -pl weindependent-app -am -DskipTests
 
 # Stage 2: Runtime
 FROM eclipse-temurin:17-jre
