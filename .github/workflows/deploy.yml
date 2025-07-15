@@ -40,3 +40,11 @@ jobs:
             echo "[+] Running deployment script"
             chmod +x $APP_DIR/.github/workflows/deploy.sh
             $APP_DIR/.github/workflows/deploy.sh
+      - name: Tag Deployment
+        run: |
+          TAG="deploy-$(date +'%Y%m%d-%H%M%S')"
+          echo "[+] Creating deployment tag: $TAG"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag $TAG
+          git push origin $TAG
