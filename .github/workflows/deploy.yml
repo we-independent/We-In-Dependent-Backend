@@ -17,31 +17,26 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SSH_HOST }}        # Oracle VM IP
+          username: ${{ secrets.SSH_USER }}    # Usually ubuntu
+          key: ${{ secrets.SSH_KEY }}          # SSH private key for VM
           command_timeout: 30m
           script: |
             set -e
-            APP_DIR="~/We-In-Dependent-Backend"
-            REPO="git@github.com:we-independent/We-In-Dependent-Backend.git"
+            APP_DIR="$HOME/We-In-Dependent-Backend"
+            REPO="https://github.com/we-independent/We-In-Dependent-Backend.git"
 
-            echo "[+] Adding GitHub to known hosts"
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+            echo "[+] Ensure Git is ready"
 
             if [ ! -d "$APP_DIR" ]; then
               echo "[+] Directory does not exist. Cloning fresh repository..."
               git clone $REPO $APP_DIR
             else
               echo "[+] Pulling latest changes..."
-              if ! git -C $APP_DIR pull origin main; then
-                echo "[!] Pull failed. Removing and recloning..."
-                rm -rf $APP_DIR
-                git clone $REPO $APP_DIR
-              fi
+              git -C $APP_DIR fetch origin
+              git -C $APP_DIR reset --hard origin/main
             fi
 
-            echo "[+] Running deployment script from .github/workflows"
+            echo "[+] Running deployment script"
             chmod +x $APP_DIR/.github/workflows/deploy.sh
             $APP_DIR/.github/workflows/deploy.sh
