@@ -12,7 +12,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    concurrency:
+      group: deploy-backend
+      cancel-in-progress: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
