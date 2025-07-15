@@ -1,10 +1,13 @@
-name: Deploy to Oracle VM
+name: Deploy with Semantic Versioning
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+permissions:
+  contents: write   # Needed for pushing tags and creating releases
 
 jobs:
   deploy:
@@ -13,20 +16,35 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Needed for full tag history
 
+      # Step 1: Determine next version
+      - name: Get Next Version
+        id: version
+        uses: anothrNick/github-tag-action@v1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true               # Prefix tag with 'v'
+          DEFAULT_BUMP: patch        # Default to patch bump
+          RELEASE_BRANCHES: main
+        # Auto-detects bump level:
+        #   - Commit starts with 'feat' → minor
+        #   - Commit starts with 'fix' → patch
+        #   - Commit starts with 'BREAKING CHANGE' → major
+
+      # Step 2: Deploy via SSH to Oracle VM
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST }}        # Oracle VM IP
-          username: ${{ secrets.SSH_USER }}    # Usually ubuntu
-          key: ${{ secrets.SSH_KEY }}          # SSH private key for VM
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
           command_timeout: 30m
           script: |
             set -e
             APP_DIR="$HOME/We-In-Dependent-Backend"
             REPO="https://github.com/we-independent/We-In-Dependent-Backend.git"
-
-            echo "[+] Ensure Git is ready"
 
             if [ ! -d "$APP_DIR" ]; then
               echo "[+] Directory does not exist. Cloning fresh repository..."
@@ -40,11 +58,34 @@ jobs:
             echo "[+] Running deployment script"
             chmod +x $APP_DIR/.github/workflows/deploy.sh
             $APP_DIR/.github/workflows/deploy.sh
-      - name: Tag Deployment
+
+      # Step 3: Generate changelog
+      - name: Generate Changelog
+        id: changelog
         run: |
-          TAG="deploy-$(date +'%Y%m%d-%H%M%S')"
-          echo "[+] Creating deployment tag: $TAG"
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git tag $TAG
-          git push origin $TAG
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "[+] Previous tag: $PREV_TAG"
+          if [ -z "$PREV_TAG" ]; then
+            LOG=$(git log --pretty=format:"- %s (%h)")
+          else
+            LOG=$(git log --pretty=format:"- %s (%h)" $PREV_TAG..HEAD)
+          fi
+          echo "LOG<<EOF" >> $GITHUB_ENV
+          echo "$LOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      # Step 4: Create GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.new_tag }}
+          name: "Release ${{ steps.version.outputs.new_tag }}"
+          body: |
+            ✅ Deployment Completed  
+            **Version:** ${{ steps.version.outputs.new_tag }}
+            **Triggered by:** ${{ github.actor }}
+
+            ### Changes:
+            ${{ env.LOG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
