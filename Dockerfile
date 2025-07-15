@@ -1,16 +1,18 @@
-FROM eclipse-temurin:17-jdk as build
+# Stage 1: Build the JAR
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy the entire project including parent POM
+# Copy all files (including parent POM)
 COPY . .
 
-RUN apt-get update && apt-get install -y maven && \
-    mvn clean package -pl weindependent-app -am -DskipTests
+# Build only the desired module, skipping tests
+RUN mvn clean package -pl weindependent-app -am -DskipTests
 
+# Stage 2: Runtime image
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copy the jar of the submodule
+# Copy the built JAR from the build stage
 COPY --from=build /app/weindependent-app/target/*.jar app.jar
 
 EXPOSE 8080
