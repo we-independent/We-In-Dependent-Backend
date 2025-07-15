@@ -37,6 +37,7 @@
         INSERT INTO donation_progress (txn_id, step, message, step_date)
         VALUES (#{txnId}, #{step}, #{message}, #{stepDate})
         ON DUPLICATE KEY UPDATE
+            step = VALUES(step),
             message = VALUES(message),
             step_date = VALUES(step_date)
     </insert>
