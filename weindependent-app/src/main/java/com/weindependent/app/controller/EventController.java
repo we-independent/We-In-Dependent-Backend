@@ -46,28 +46,11 @@ public class EventController {
     @GetMapping("/past")
     public RecentEventVOs getPastEventsCombined(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String mode,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) List<Integer> filter) {
 
-        if (keyword == null && (filter == null || filter.isEmpty())) {
-            return IEventService.getPastEvents(page, size);
-        }
-
-        if (keyword != null) {
-            String searchMode = (mode != null) ? mode : "natural";
-            switch (searchMode.toLowerCase()) {
-                case "boolean":
-                    return IEventService.searchEventsBoolean(keyword, page, size);
-                case "natural":
-                default:
-                    return IEventService.searchEventsNatural(keyword, page, size);
-            }
-        }
-        else {
-            return IEventService.filterPastEventsByTags(filter, page, size);
-        }
+        return IEventService.getPastEvents(page, size, keyword, filter);
     }
 
 

@@ -29,10 +29,12 @@ public interface EventMapper {
     List<RecentEventVO> getViewedEvents(int userId);
     List<RecentEventVO> getBookmarkedPastEvents(int userId);
     List<RecentEventVO> getBookmarkedUpcomingEvents(int userId);
-    List<RecentEventVO> searchEventsNatural(@Param("keyword") String keyword);
-    List<RecentEventVO> searchEventsBoolean(@Param("keyword") String keyword);
-    List<RecentEventVO> getPastEventsFiltered(
-            @Param("tagIds") List<Integer> tagIds
-    );
+//    List<RecentEventVO> searchEventsNatural(@Param("keyword") String keyword);
+//    List<RecentEventVO> searchEventsBoolean(@Param("keyword") String keyword);
+//    List<RecentEventVO> getPastEventsFiltered(
+//            @Param("tagIds") List<Integer> tagIds
+//    );
+    List<RecentEventVO> searchAndFilter(@Param("keyword") String keyword,
+                                        @Param("tagIds") List<Integer> tagIds);
     boolean isRegistered(Long eventId, int userId);
 }
