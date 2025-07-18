@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write   # Needed for pushing tags and creating releases
 
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/weindependent
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
