@@ -2,21 +2,24 @@
 
 set -e
 
+# Check for required argument (Docker image name with tag)
+if [ -z "$1" ]; then
+  echo "Usage: ./deploy.sh <docker-image>"
+  exit 1
+fi
+
+IMAGE_NAME="$1"
 CONTAINER_NAME="weindependent-backend-container"
-IMAGE_NAME="weindependent-backend-image"
-PORT=8080
+APP_PORT=8080
 
-echo "[+] Pull latest code"
-cd We-In-Dependent-Backend
+echo "[+] Pulling latest image: $IMAGE_NAME"
+docker pull "$IMAGE_NAME"
 
-echo "[+] Build new Docker image"
-sudo DOCKER_BUILDKIT=1 docker build -t ${IMAGE_NAME} .
+echo "[+] Stopping and removing old container (if exists)"
+docker stop "$CONTAINER_NAME" || true
+docker rm "$CONTAINER_NAME" || true
 
-echo "[+] Stop and remove old container (if exists)"
-sudo docker stop ${CONTAINER_NAME} || true
-sudo docker rm ${CONTAINER_NAME} || true
+echo "[+] Starting new container from image"
+docker run -d --name "$CONTAINER_NAME" -p $APP_PORT:$APP_PORT "$IMAGE_NAME"
 
-echo "[+] Start new container on port ${PORT}"
-sudo docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}:latest
-
-echo "[✓] Deployment complete. App running on port ${PORT}"
+echo "[✓] Deployment complete — $CONTAINER_NAME is running on port $APP_PORT"
