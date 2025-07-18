@@ -23,7 +23,7 @@ echo "[+] Starting new container from image"
 sudo docker run -d \
   --name "$CONTAINER_NAME" \
   -p $APP_PORT:$APP_PORT \
-  -v /home/ubuntu/We-In-Dependent-Backend/weindependent-app/src/main/resources/yaml:/config/application.yaml \
+  -v /home/ubuntu/We-In-Dependent-Backend/weindependent-app/src/main/resources/application.yaml:/config/application.yaml \
   "$IMAGE_NAME" \
   --spring.config.location=file:/config/application.yaml
 
