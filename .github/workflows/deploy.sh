@@ -13,13 +13,13 @@ CONTAINER_NAME="weindependent-backend-container"
 APP_PORT=8080
 
 echo "[+] Pulling latest image: $IMAGE_NAME"
-docker pull "$IMAGE_NAME"
+sudo docker pull "$IMAGE_NAME"
 
 echo "[+] Stopping and removing old container (if exists)"
-docker stop "$CONTAINER_NAME" || true
-docker rm "$CONTAINER_NAME" || true
+sudo docker stop "$CONTAINER_NAME" || true
+sudo docker rm "$CONTAINER_NAME" || true
 
 echo "[+] Starting new container from image"
-docker run -d --name "$CONTAINER_NAME" -p $APP_PORT:$APP_PORT "$IMAGE_NAME"
+sudo docker run -d --name "$CONTAINER_NAME" -p $APP_PORT:$APP_PORT "$IMAGE_NAME"
 
 echo "[✓] Deployment complete — $CONTAINER_NAME is running on port $APP_PORT"

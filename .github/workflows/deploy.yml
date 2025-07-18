@@ -43,14 +43,13 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Step 3: Build and push Docker image
-      - name: Build and push Docker image
+      - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/weindependent-backend:${{ steps.version.outputs.new_tag }}
+          tags: ${{ env.IMAGE_NAME }}:backend-${{ steps.version.outputs.new_tag }}
 
-      # Step 4: Deploy via SSH to Oracle VM
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -61,7 +60,7 @@ jobs:
           script: |
             APP_DIR="$HOME/We-In-Dependent-Backend"
             REPO="https://github.com/we-independent/We-In-Dependent-Backend.git"
-      
+
             if [ ! -d "$APP_DIR" ]; then
               echo "[+] Directory does not exist. Cloning fresh repository..."
               git clone $REPO $APP_DIR
@@ -70,15 +69,15 @@ jobs:
               git -C $APP_DIR fetch origin
               git -C $APP_DIR reset --hard origin/main
             fi
-      
+
             echo "[+] Logging into Docker Hub"
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      
+
             echo "[+] Running deployment script"
             chmod +x $APP_DIR/.github/workflows/deploy.sh
-            $APP_DIR/.github/workflows/deploy.sh ${{ secrets.DOCKER_USERNAME }}/weindependent-backend:${{ steps.version.outputs.new_tag }}
+            $APP_DIR/.github/workflows/deploy.sh ${{ env.IMAGE_NAME }}:backend-${{ steps.version.outputs.new_tag }}
 
-      # Step 3: Generate changelog
+      # Step 5: Generate changelog
       - name: Generate Changelog
         id: changelog
         run: |
@@ -93,7 +92,7 @@ jobs:
           echo "$LOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # Step 4: Create GitHub Release
+      # Step 6: Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
