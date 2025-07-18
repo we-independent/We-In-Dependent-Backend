@@ -59,14 +59,24 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           command_timeout: 30m
           script: |
-            set -e
-
+            APP_DIR="$HOME/We-In-Dependent-Backend"
+            REPO="https://github.com/we-independent/We-In-Dependent-Backend.git"
+      
+            if [ ! -d "$APP_DIR" ]; then
+              echo "[+] Directory does not exist. Cloning fresh repository..."
+              git clone $REPO $APP_DIR
+            else
+              echo "[+] Pulling latest changes..."
+              git -C $APP_DIR fetch origin
+              git -C $APP_DIR reset --hard origin/main
+            fi
+      
             echo "[+] Logging into Docker Hub"
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-
-            echo "[+] Running deployment script on server"
-            chmod +x ~/deploy.sh
-            ~/deploy.sh ${{ secrets.DOCKER_USERNAME }}/weindependent-backend:${{ steps.version.outputs.new_tag }}
+      
+            echo "[+] Running deployment script"
+            chmod +x $APP_DIR/.github/workflows/deploy.sh
+            $APP_DIR/.github/workflows/deploy.sh ${{ secrets.DOCKER_USERNAME }}/weindependent-backend:${{ steps.version.outputs.new_tag }}
 
       # Step 3: Generate changelog
       - name: Generate Changelog
