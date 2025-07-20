@@ -3,7 +3,6 @@ package com.weindependent.app.controller.dashboard;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.dto.BlogArticleEditQry;
@@ -56,7 +55,6 @@ public class DashboardBlogArticleController {
     /**
      * 查询博客文章列表
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章列表")
     @PostMapping("/blog/list")
@@ -67,7 +65,6 @@ public class DashboardBlogArticleController {
     /**
      * 查询博客文章详细信息
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章详细信息")
     @GetMapping(value = "/blog/{id}")
@@ -78,7 +75,6 @@ public class DashboardBlogArticleController {
     /**
      * 新增博客文章
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增博客文章")
     @PostMapping("/blog")
@@ -90,7 +86,6 @@ public class DashboardBlogArticleController {
     /**
      * 新增博客图片
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value = "/blog/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -101,7 +96,6 @@ public class DashboardBlogArticleController {
     /**
      * 修改博客文章
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章")
     @PutMapping("/blog/{id}")
@@ -134,7 +128,6 @@ public class DashboardBlogArticleController {
     /**
      * 删除博客文章
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除博客文章")
 @DeleteMapping("/blog/{ids}")
@@ -145,7 +138,6 @@ public boolean remove(@PathVariable @Valid List<Integer> ids) {
         return blogArticleService.deleteBlogArticleByIds(ids) > 0;
     }
 
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章列表")
     @GetMapping("/search-article-id-and-title/{keyword}")

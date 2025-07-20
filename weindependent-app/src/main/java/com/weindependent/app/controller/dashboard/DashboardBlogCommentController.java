@@ -2,7 +2,6 @@ package com.weindependent.app.controller.dashboard;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
 import com.weindependent.app.dto.BlogCommentQry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +35,6 @@ public class DashboardBlogCommentController {
     /**
      * 查询博客评论列表
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客评论列表")
     @PostMapping("/list")
@@ -50,7 +48,6 @@ public class DashboardBlogCommentController {
     /**
      * 删除博客评论
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除博客评论")
     @DeleteMapping("/{ids}")

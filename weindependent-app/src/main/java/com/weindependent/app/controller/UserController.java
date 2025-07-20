@@ -6,7 +6,6 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.database.dataobject.UserDO;
@@ -63,7 +62,7 @@ public class UserController {
     private UserImageMapper userImageMapper;
 
 
-    @SignatureAuth
+
     @Operation(summary = "用户注册")
     @PostMapping(value = "/register", consumes = "application/json;charset=UTF-8")
     public void register(@Validated @RequestBody RegisterQry registerQry) {
@@ -71,7 +70,7 @@ public class UserController {
         log.info("User registered successfully: {}", registerQry.getAccount());
     }
 
-    @SignatureAuth
+
     @Operation(summary = "用户登录")
     // @PostMapping("/login")    
     @PostMapping(value = "/login", consumes = "application/json;charset=UTF-8")
@@ -100,7 +99,7 @@ public class UserController {
         log.info("Login successful for user: {}", loginQry.getEmail());
         return loginVO;
     }
-    @SignatureAuth
+
     @Operation(summary = "重置密码")
     // @PostMapping("/reset/password")
     @PostMapping(value = "/reset/password", consumes = "application/json;charset=UTF-8")
@@ -119,7 +118,7 @@ public class UserController {
     }
 
 //    @Operation(summary = "登录")
-//    @SignatureAuth
+//
 //    @PostMapping("/login")
 //
 //    public LoginVO login(@Validated @RequestBody LoginQry loginQry) throws Exception {
@@ -144,10 +143,9 @@ public class UserController {
 //        return loginVO;
 //    }
 
-    @SignatureAuth
+
     @Operation(summary = "登出")
     @GetMapping("/logout")
-
     public Map<String, Object> logout() {
         StpUtil.logout();
 
@@ -155,10 +153,9 @@ public class UserController {
         return result;
     }
 
-    @SignatureAuth
+
     @Operation(summary = "查询登录状态")
     @GetMapping("/isLogin")
-
     public Map<String, Object> isLogin() {
         Map<String, Object> result = new HashMap<>();
         result.put("isLogin", StpUtil.isLogin());
@@ -166,7 +163,7 @@ public class UserController {
         return result;
     }
 
-//    @SignatureAuth
+//
 //    @Operation(summary = "用户注册")
 //    @GetMapping("/register")
 //
@@ -182,7 +179,7 @@ public class UserController {
 //        return result;
 //    }
 
-//    @SignatureAuth
+//
     @Operation(summary = "发送邮件")
     // @PostMapping("/send/email")
     @PostMapping(value = "/send/email", consumes = "application/json;charset=UTF-8")
@@ -201,7 +198,7 @@ public class UserController {
 
 
 
-    @SignatureAuth
+
     @Operation(summary = "用户列表")
     // @PostMapping("/list")
     @PostMapping(value = "/list", consumes = "application/json;charset=UTF-8")
@@ -211,7 +208,7 @@ public class UserController {
         return userService.getAllUsers(pageNum, pageSize);
     }
 
-    @SignatureAuth
+
     @Operation(summary = "更新使用者资料")
     // @PutMapping("/")
     @PutMapping(value = "/", consumes = "application/json;charset=UTF-8")
@@ -223,14 +220,14 @@ public class UserController {
     /**
      * 新增profile图片
      */
-    @SignatureAuth
+
     @Operation(summary = "新增个人头像图片")
     @PostMapping(value = "/profile/img/upload", consumes =
             MediaType.MULTIPART_FORM_DATA_VALUE)
     public  String createProfileImg(@RequestParam("file")  MultipartFile file) {
         return userService.createProfileImg(file);
     }
-    @SignatureAuth
+
     @Operation(summary = "删除账号（用户主动注销）")
     @DeleteMapping("/")
 
@@ -241,7 +238,7 @@ public class UserController {
         StpUtil.logout();
         log.info("Account deleted and user logged out: userId={}", userId);
     }
-    @SignatureAuth
+
     @Operation(summary = "验证旧密码")
     // @PostMapping("/verify-password")
     @PostMapping(value = "/verify-password", consumes = "application/json;charset=UTF-8")
@@ -249,7 +246,7 @@ public class UserController {
         userService.verifyPassword(verifyPasswordQry);
     }
 
-    @SignatureAuth
+
     @Operation(summary = "修改密码（登录状态）")
     // @PutMapping("/change-password")
     @PutMapping(value = "/change-password", consumes = "application/json;charset=UTF-8")
@@ -257,7 +254,7 @@ public class UserController {
         userService.changePassword(changePasswordQry);
     }
     //User Profile Help Center
-    @SignatureAuth
+
     @Operation(summary = "提交 Help Center 请求")
     @PostMapping(value = "/profile/help/send", consumes = "application/json;charset=UTF-8")
     public void sendHelp(@RequestBody HelpCenterRequestQry qry) {

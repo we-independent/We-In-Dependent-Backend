@@ -1,7 +1,6 @@
 package com.weindependent.app.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogArticleDO;
 import com.weindependent.app.database.dataobject.BlogArticleListDO;
 import com.weindependent.app.database.dataobject.TagDO;
@@ -177,7 +176,6 @@ public class GetBlogListController {
         return mostSavedService.getTopSavedBlogsForColdstart(3);
     }
 
-    @SignatureAuth
     @Operation(summary = "根据文章id查询所有评论列表")
     @GetMapping("/articles/{articleId}/comments")
     public List<BlogCommentVO> list(@PathVariable Integer articleId) {

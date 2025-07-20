@@ -1,6 +1,5 @@
 package com.weindependent.app.controller.dashboard;
 
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IDonationProgressService;
 import com.weindependent.app.vo.DonationProgressVO;
 import com.weindependent.app.vo.UpdateProgressRequestVO;
@@ -24,7 +23,6 @@ public class DashboardDonateProgressController {
 
     @Operation(summary = "List all transactions and their progress")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/all")
     public List<DonationProgressVO> getAllProgress() {
         return donationProgressService.getAllWithTransactionInfo();
@@ -32,7 +30,6 @@ public class DashboardDonateProgressController {
 
     @Operation(summary = "Update progress step for a transaction")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PutMapping("/update/{txnId}")
     public void updateProgress(@PathVariable String txnId, @RequestBody UpdateProgressRequestVO request) {
         donationProgressService.updateProgress(txnId, request.getStep());

@@ -1,6 +1,5 @@
 package com.weindependent.app.controller;
 
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.EventTagDO;
 import com.weindependent.app.service.IEventTagService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +23,6 @@ public class EventTagController {
     private IEventTagService IEventTagService;
 
     @Operation(summary = "Get all event tags")
-    @SignatureAuth
     @GetMapping()
     public List<EventTagDO> getAllTags() {
         return IEventTagService.getAllTags();

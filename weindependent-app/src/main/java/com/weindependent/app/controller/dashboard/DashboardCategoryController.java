@@ -3,7 +3,6 @@ package com.weindependent.app.controller.dashboard;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.CategoryDO;
 import com.weindependent.app.dto.CategoryQry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +34,6 @@ public class DashboardCategoryController {
     /**
      * 查询分类列表
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询分类列表")
     @PostMapping("/list")
@@ -46,7 +44,6 @@ public class DashboardCategoryController {
     /**
      * 查询所有分类
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询分类列表")
     @GetMapping("/all")
@@ -58,7 +55,6 @@ public class DashboardCategoryController {
     /**
      * 获取分类详细信息
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询分类详细信息")
     @GetMapping("/{id}")
@@ -69,7 +65,6 @@ public class DashboardCategoryController {
     /**
      * 新增分类
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增分类")
     @PostMapping
@@ -83,7 +78,6 @@ public class DashboardCategoryController {
     /**
      * 修改分类
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改分类")
     @PutMapping
@@ -96,7 +90,6 @@ public class DashboardCategoryController {
     /**
      * 删除分类
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除分类")
     @DeleteMapping("/{ids}")
