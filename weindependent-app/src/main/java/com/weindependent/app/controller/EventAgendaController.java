@@ -66,7 +66,6 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Delete agenda by ID")
-
     @SaCheckLogin
     @SaCheckRole("admin") 
     @DeleteMapping("/{id}")

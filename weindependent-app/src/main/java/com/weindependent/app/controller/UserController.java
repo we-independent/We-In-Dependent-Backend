@@ -143,7 +143,6 @@ public class UserController {
 //        return loginVO;
 //    }
 
-
     @Operation(summary = "登出")
     @GetMapping("/logout")
     public Map<String, Object> logout() {
@@ -152,7 +151,6 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         return result;
     }
-
 
     @Operation(summary = "查询登录状态")
     @GetMapping("/isLogin")
@@ -198,7 +196,6 @@ public class UserController {
 
 
 
-
     @Operation(summary = "用户列表")
     // @PostMapping("/list")
     @PostMapping(value = "/list", consumes = "application/json;charset=UTF-8")
@@ -208,11 +205,9 @@ public class UserController {
         return userService.getAllUsers(pageNum, pageSize);
     }
 
-
     @Operation(summary = "更新使用者资料")
     // @PutMapping("/")
     @PutMapping(value = "/", consumes = "application/json;charset=UTF-8")
-
     public void updateUser(@Valid @RequestBody UpdateUserQry updateUserQry) {
         userService.updateUser(updateUserQry);
     }
@@ -230,7 +225,6 @@ public class UserController {
 
     @Operation(summary = "删除账号（用户主动注销）")
     @DeleteMapping("/")
-
     public void deleteAccount() {
         Long userId = StpUtil.getLoginIdAsLong();
         userService.deleteAccount(userId);
@@ -245,7 +239,6 @@ public class UserController {
     public void verifyPassword(@Valid @RequestBody VerifyPasswordQry verifyPasswordQry) {
         userService.verifyPassword(verifyPasswordQry);
     }
-
 
     @Operation(summary = "修改密码（登录状态）")
     // @PutMapping("/change-password")
