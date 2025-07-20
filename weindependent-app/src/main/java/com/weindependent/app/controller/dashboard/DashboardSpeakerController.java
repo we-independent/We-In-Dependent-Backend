@@ -1,8 +1,6 @@
 package com.weindependent.app.controller.dashboard;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
-import cn.dev33.satoken.stp.StpUtil;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.dto.EventSpeakerQry;
 import com.weindependent.app.service.IDashboardSpeakerService;
@@ -27,7 +25,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Upload speaker banner")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ImageDO uploadBanner(@RequestParam("file") MultipartFile file) {
         return dashboardSpeakerService.uploadBanner(file);
@@ -35,7 +32,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Create speaker")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PostMapping()
     public void create(@Valid @RequestBody EventSpeakerQry qry) {
         dashboardSpeakerService.create(qry);
@@ -43,7 +39,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Update speaker by speaker ID")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @Valid @RequestBody EventSpeakerQry qry) {
         dashboardSpeakerService.update(id, qry);
@@ -51,7 +46,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Delete speaker(s) by speaker ID(s)")
     @SaCheckRole("admin")
-    @SignatureAuth
     @DeleteMapping("/{ids}")
     public void delete(@PathVariable List<Long> ids) {
         dashboardSpeakerService.delete(ids);
@@ -59,7 +53,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "List all speakers")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/list")
     public List<DashboardSpeakerVO> list() {
         return dashboardSpeakerService.list();
@@ -67,7 +60,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Get speaker by speaker ID")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/{id}")
     public DashboardSpeakerVO getById(@PathVariable Long id) {
         return dashboardSpeakerService.getById(id);
@@ -75,7 +67,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Search speaker by full name")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/search")
     public List<DashboardSpeakerVO> searchByName(@RequestParam String name) {
         return dashboardSpeakerService.searchByName(name);
@@ -83,7 +74,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Search speaker by first name")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/search/first-name")
     public List<DashboardSpeakerVO> searchByFirstName(@RequestParam String firstName) {
         return dashboardSpeakerService.searchByFirstName(firstName);
@@ -91,7 +81,6 @@ public class DashboardSpeakerController {
 
     @Operation(summary = "Search speaker by last name")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/search/last-name")
     public List<DashboardSpeakerVO> searchByLastName(@RequestParam String lastName) {
         return dashboardSpeakerService.searchByLastName(lastName);

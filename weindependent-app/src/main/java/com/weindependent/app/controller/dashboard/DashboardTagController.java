@@ -3,7 +3,6 @@ package com.weindependent.app.controller.dashboard;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.TagDO;
 import com.weindependent.app.dto.TagQry;
 import com.weindependent.app.vo.TagCategoryVO;
@@ -40,7 +39,6 @@ public class DashboardTagController {
     /**
      * 查询标签列表
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询标签列表")
     @PostMapping("/list")
@@ -52,7 +50,6 @@ public class DashboardTagController {
      * 查询所有未删除的标签
      * 返回标签的id、标签的name、标签所属分类的id和标签所属分类的name。如果标签没有所属分类或所属分类已经删除，则TagCategoryVO中的categoryId和categoryName 为 null
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询标签列表")
     @GetMapping("/all")
@@ -63,7 +60,6 @@ public class DashboardTagController {
     /**
      * 查询标签详细信息
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询标签详细信息")
     @GetMapping(value = "/{id}")
@@ -74,7 +70,6 @@ public class DashboardTagController {
     /**
      * 新增标签
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增标签")
     @PostMapping
@@ -88,7 +83,6 @@ public class DashboardTagController {
     /**
      * 修改标签
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改标签")
     @PutMapping
@@ -101,7 +95,6 @@ public class DashboardTagController {
     /**
      * 删除标签
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除标签")
     @DeleteMapping("/{ids}")

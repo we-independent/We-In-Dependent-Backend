@@ -2,7 +2,6 @@ package com.weindependent.app.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.NotificationSettingsDO;
 import com.weindependent.app.dto.UpdateNotificationFieldQry;
 import com.weindependent.app.enums.ErrorCode;
@@ -22,7 +21,6 @@ public class UserNotificationController {
     @Resource
     private UserNotificationServiceImpl notificationService;
 
-    @SignatureAuth
     @GetMapping("/settings")
     public NotificationSettingsDO getNotificationSettings() {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -30,7 +28,6 @@ public class UserNotificationController {
         return notificationService.getSettingsByUserId(userId);
     }
 
-    @SignatureAuth
     @SaCheckLogin
     @PostMapping(value = "/settings/update", consumes = "application/json;charset=UTF-8")
     public void updateField(@RequestBody UpdateNotificationFieldQry notificationQry) {

@@ -4,10 +4,6 @@ package com.weindependent.app.enums;
 public enum ErrorCode {
     SUCCESS(0, "success"),
     INVALID_PARAM(1, "Parameter exception"),
-    SIGN_AUTH_FAILED(2, "Signature verification failed"),
-    NON_VERSION(3, "The interface version number cannot be empty"),
-    NON_TIMESTAMP(4, "Timestamp cannot be empty"),
-    NON_SIGN(5, "The signature cannot be empty"),
     UNDEFINED_ERROR(6, "Unknown error"),
     INTERNAL_SERVER_ERROR(100, "Server internal error"),
     TOKEN_NOT_EXIST_OR_EXPIRED(-1, "Token does not exist or expired"),

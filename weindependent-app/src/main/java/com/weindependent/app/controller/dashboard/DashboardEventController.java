@@ -3,7 +3,6 @@ package com.weindependent.app.controller.dashboard;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.ImageDO;
 import com.weindependent.app.database.dataobject.EventDO;
 import com.weindependent.app.database.dataobject.UserDO;
@@ -34,7 +33,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Create a new event")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PostMapping()
     public EventDO create(@Valid @RequestBody EventQry eventQry)  {
         return IDashboardEventService.create(eventQry);
@@ -42,7 +40,6 @@ public class DashboardEventController {
 
     @Operation(summary = "list all events")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PostMapping("/list")
     public DashboardEventVOs list(@Valid @RequestBody EventListQry eventListQry)  {
         return IDashboardEventService.list(eventListQry);
@@ -50,7 +47,6 @@ public class DashboardEventController {
 
     @Operation(summary = "get an event by id")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/{id}")
     public DashboardEventVO getById(@PathVariable Long id)  {
         return IDashboardEventService.getById(id);
@@ -59,7 +55,7 @@ public class DashboardEventController {
     /**
      * 新增活動图片
      */
-    @SignatureAuth
+
     @SaCheckRole("admin")
     @Operation(summary = "新增博客banner图片")
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -69,7 +65,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Update an existing event")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody @Valid EventQry event){
         IDashboardEventService.update(id,event);
@@ -77,7 +72,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Delete an event")
     @SaCheckRole("admin")
-    @SignatureAuth
     @DeleteMapping("/{ids}")
     public void delete(@PathVariable @Valid List<Long> ids)  {
         IDashboardEventService.delete(ids);
@@ -86,7 +80,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Get all user that registered for an event")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/user/registered/{id}")
     public UserVOs getRegisteredUsers(@PathVariable Long id,
                                            @RequestParam(defaultValue = "1") int page,
@@ -96,7 +89,7 @@ public class DashboardEventController {
 
     @Operation(summary = "Get all user that bookmarked this event")
     @SaCheckRole("admin")
-    @SignatureAuth
+
     @GetMapping("/user/bookmark/{id}")
     public UserVOs getBookmarkedUsers(@PathVariable Long id,
                                       @RequestParam(defaultValue = "1") int page,
@@ -106,7 +99,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Assign speakers to an event")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PostMapping("/{eventId}/speakers")
     public void addSpeakersToEvent(@PathVariable Long eventId, @RequestBody List<Long> speakerIds) {
         IDashboardEventService.addSpeakersToEvent(eventId, speakerIds);
@@ -114,7 +106,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Update speakers of an event (replace existing ones)")
     @SaCheckRole("admin")
-    @SignatureAuth
     @PutMapping("/{eventId}/speakers")
     public void updateSpeakersOfEvent(@PathVariable Long eventId, @RequestBody List<Long> speakerIds) {
         IDashboardEventService.updateSpeakersOfEvent(eventId, speakerIds);
@@ -122,7 +113,6 @@ public class DashboardEventController {
 
     @Operation(summary = "Get speakers of an event")
     @SaCheckRole("admin")
-    @SignatureAuth
     @GetMapping("/{eventId}/speakers")
     public List<DashboardSpeakerVO> getSpeakersByEventId(@PathVariable Long eventId) {
         return IDashboardEventService.getSpeakersByEventId(eventId);

@@ -3,7 +3,6 @@ package com.weindependent.app.controller.dashboard;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageInfo;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogPdfDO;
 import com.weindependent.app.dto.BlogPdfQry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +39,6 @@ public class DashboardBlogPdfController {
     /**
      * 查询博客文章pdf列表
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章pdf列表")
     @PostMapping("/list")
@@ -51,7 +49,6 @@ public class DashboardBlogPdfController {
     /**
      * 查询博客文章pdf详细信息
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询博客文章pdf详细信息")
     @GetMapping(value = "/{id}")
@@ -62,7 +59,6 @@ public class DashboardBlogPdfController {
     /**
      * 新增博客文章pdf
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增博客文章pdf")
     @PostMapping
@@ -76,7 +72,6 @@ public class DashboardBlogPdfController {
     /**
      * 修改博客文章pdf
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改博客文章pdf")
     @PutMapping
@@ -90,7 +85,6 @@ public class DashboardBlogPdfController {
     /**
      * 删除博客文章pdf
      */
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除博客文章pdf")
     @DeleteMapping("/{ids}")

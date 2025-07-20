@@ -1,6 +1,5 @@
 package com.weindependent.app.controller;
 
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.DonateDO;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
@@ -62,7 +61,6 @@ public class DonateController {
      * @author Elly
      * @date Jul-03-2025
      */
-    @SignatureAuth
     @Operation(summary = "根据user id提取donate history")
     @GetMapping("/donate-history")
     public List<DonateDO> donateHistory(){
@@ -78,7 +76,6 @@ public class DonateController {
      * @auther Elly
      * @date Jul-03-2025
      */
-    @SignatureAuth
     @Operation(summary  = "get transaction details by user id and transaction id")
     @GetMapping("/donate-history-details/{txnId}")
     public DonateDO donateHistoryDetails(@PathVariable String txnId){

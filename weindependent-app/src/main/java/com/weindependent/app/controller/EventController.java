@@ -2,7 +2,6 @@ package com.weindependent.app.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IEventService;
 import com.weindependent.app.vo.event.EventRegisterDetailVO;
 import com.weindependent.app.vo.event.EventVO;
@@ -33,7 +32,6 @@ public class EventController {
     private IEventService IEventService;
 
     @Operation(summary = "Get upcoming events")
-    @SignatureAuth
     @GetMapping("/upcoming")
     public RecentEventVOs getUpcomingEvents(
             @RequestParam(defaultValue = "1") int page,
@@ -42,7 +40,6 @@ public class EventController {
     }
 
     @Operation(summary = "Search or filter past events with keyword, mode, or filters")
-    @SignatureAuth
     @GetMapping("/past")
     public RecentEventVOs getPastEventsCombined(
             @RequestParam(required = false) String keyword,
@@ -81,7 +78,6 @@ public class EventController {
 //    }
 
     @Operation(summary = "Get upcoming events by month")
-    @SignatureAuth
     @GetMapping("/upcoming/month")
     public List<RecentEventVO> getUpcomingByMonth(
             @RequestParam @NotNull @Min(1900) @Max(2100) Integer year,
@@ -91,14 +87,12 @@ public class EventController {
     }
 
     @Operation(summary = "Get event by ID")
-    @SignatureAuth
     @GetMapping("/{id}")
     public EventVO getEventById(@PathVariable Long id) {
         return IEventService.getEventById(id);
     }
 
     @Operation(summary = "Register an event by ID")
-    @SignatureAuth
     @SaCheckLogin
     @PostMapping("/register/{id}")
     public EventRegisterDetailVO register(@PathVariable Long id , @RequestParam(required = false) String userTimeZone ) {
@@ -107,25 +101,21 @@ public class EventController {
     }
 
     @Operation(summary = "Unregister an event by ID")
-    @SignatureAuth
     @SaCheckLogin
     @DeleteMapping("/register/{id}")
     public void unregister(@PathVariable Long id) {IEventService.unregister(id);}
 
     @Operation(summary = "Bookmark an event by ID")
-    @SignatureAuth
     @SaCheckLogin
     @PostMapping("/bookmark/{id}")
     public void bookmark(@PathVariable Long id) {IEventService.bookmark(id);}
 
     @Operation(summary = "Unbookmark an event by ID")
-    @SignatureAuth
     @SaCheckLogin
     @DeleteMapping("/bookmark/{id}")
     public void unbookmark(@PathVariable Long id) {IEventService.unbookmark(id);}
 
     @Operation(summary = "List All registered upcoming events 已註冊活動列表")
-    @SignatureAuth
     @SaCheckLogin
     @GetMapping("/registered/upcoming")
     public RecentEventVOs getRegisteredUpcomingEvents(
@@ -135,7 +125,6 @@ public class EventController {
     }
 
     @Operation(summary = "List all registered past events 已參加活動列表")
-    @SignatureAuth
     @SaCheckLogin
     @GetMapping("/registered/past")
     public RecentEventVOs getRegisteredPastEvents(
@@ -145,7 +134,6 @@ public class EventController {
     }
 
     @Operation(summary = "List All bookmarked past events")
-    @SignatureAuth
     @SaCheckLogin
     @GetMapping("/bookmarked/past")
     public RecentEventVOs getBookMarkedPastEvents(
@@ -155,7 +143,6 @@ public class EventController {
     }
 
     @Operation(summary = "List All bookmarked upcoming events")
-    @SignatureAuth
     @SaCheckLogin
     @GetMapping("/bookmarked/upcoming")
     public RecentEventVOs getBookMarkedUpcomingEvents(
@@ -165,7 +152,6 @@ public class EventController {
     }
 
     @Operation(summary = "List all viewed events ")
-    @SignatureAuth
     @SaCheckLogin
     @GetMapping("/viewed")
     public RecentEventVOs getViewedEvents(
@@ -198,7 +184,6 @@ public class EventController {
 //    }
 
     @Operation(summary = "Resend register event email")
-    @SignatureAuth
     @SaCheckLogin
     @PostMapping("/resend-register-confirmation-email/{eventId}")
     public void resendConfirmationEmail(@PathVariable Long eventId, @RequestParam(required = false) String userTimeZone ) throws Exception {

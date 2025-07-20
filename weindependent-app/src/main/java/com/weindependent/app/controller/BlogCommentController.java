@@ -1,6 +1,5 @@
 package com.weindependent.app.controller;
 
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogCommentDO;
 import com.weindependent.app.service.IBlogCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +19,6 @@ public class BlogCommentController {
     /**
      * 新增博客评论
      */
-    @SignatureAuth
     @Operation(summary = "新增博客评论")
     @PostMapping
     public boolean add(@RequestBody BlogCommentDO blogComment) {
@@ -30,7 +28,6 @@ public class BlogCommentController {
     /**
      * 修改博客评论
      */
-    @SignatureAuth
     @Operation(summary = "修改博客评论")
     @PutMapping("/{id}")
     public boolean edit(@PathVariable Integer id, @RequestBody BlogCommentDO blogComment) {
@@ -51,7 +48,6 @@ public class BlogCommentController {
     /**
      * 删除博客评论
      */
-    @SignatureAuth
     @Operation(summary = "删除博客评论")
     @DeleteMapping("/{ids}")
     public boolean remove(@PathVariable Integer[] ids) {

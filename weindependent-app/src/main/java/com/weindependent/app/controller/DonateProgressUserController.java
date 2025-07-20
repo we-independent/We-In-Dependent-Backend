@@ -1,6 +1,5 @@
 package com.weindependent.app.controller;
 
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.service.IDonationProgressService;
 import com.weindependent.app.vo.DonationProgressUserVO;
 
@@ -21,7 +20,6 @@ public class DonateProgressUserController {
     private IDonationProgressService donationProgressService;
 
     @Operation(summary = "Get donation progress for specific transaction")
-    @SignatureAuth
     @GetMapping("/{txnId}")
     public List<DonationProgressUserVO> getProgress(@PathVariable String txnId) {
         return donationProgressService.getProgressByTxnId(txnId);

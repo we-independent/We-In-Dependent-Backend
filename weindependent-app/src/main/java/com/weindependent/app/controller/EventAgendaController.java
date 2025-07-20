@@ -3,7 +3,6 @@ package com.weindependent.app.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.dto.EventAgendaCreateQry;
 import com.weindependent.app.dto.EventAgendaUpdateQry;
 import com.weindependent.app.dto.EventAgendasWithItemsQry;
@@ -42,7 +41,6 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Get agenda by event ID")
-    @SignatureAuth
     @GetMapping("/event/{eventId}")
     // public EventAgendaVO getAgendaByEventId(@PathVariable Long eventId) {
     //     return eventAgendaService.getAgendaByEventId(eventId);
@@ -52,7 +50,6 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Create agenda")
-    @SignatureAuth
     @SaCheckLogin
     @SaCheckRole("admin") 
     @PostMapping
@@ -61,7 +58,6 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Update agenda")
-    @SignatureAuth
     @SaCheckLogin
     @SaCheckRole("admin") 
     @PutMapping
@@ -70,7 +66,6 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Delete agenda by ID")
-    @SignatureAuth
     @SaCheckLogin
     @SaCheckRole("admin") 
     @DeleteMapping("/{id}")
@@ -79,7 +74,6 @@ public class EventAgendaController {
     }
 
     @Operation(summary = "Delete agenda by event ID")
-    @SignatureAuth
     @SaCheckLogin
     @SaCheckRole("admin") 
     @DeleteMapping("/event/{eventId}")

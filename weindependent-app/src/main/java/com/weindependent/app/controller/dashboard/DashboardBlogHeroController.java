@@ -2,7 +2,6 @@ package com.weindependent.app.controller.dashboard;
 
 
 import cn.dev33.satoken.annotation.SaCheckRole;
-import com.weindependent.app.annotation.SignatureAuth;
 import com.weindependent.app.database.dataobject.BlogHeroDO;
 import com.weindependent.app.dto.BlogHeroEditDTO;
 import com.weindependent.app.service.DashboardBlogHeroService;
@@ -22,7 +21,6 @@ public class DashboardBlogHeroController {
     @Resource
     private DashboardBlogHeroService dashboardBlogHeroService;
 
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询目前 hero section 推送文章")
     @GetMapping("/blog-hero-current")
@@ -30,7 +28,6 @@ public class DashboardBlogHeroController {
         return dashboardBlogHeroService.getCurrentBlogHeroDOList();
     }
 
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "查询历史 hero section 推送文章")
     @GetMapping("/blog-hero-previous")
@@ -38,7 +35,6 @@ public class DashboardBlogHeroController {
         return dashboardBlogHeroService.getPreviousBlogHeroDOList();
     }
 
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "按照 id 查询单个 hero section 推送文章")
     @GetMapping(value = "/blog-hero/{id}")
@@ -46,7 +42,6 @@ public class DashboardBlogHeroController {
         return dashboardBlogHeroService.getBlogHeroById(id);
     }
 
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "新增 hero section 推送文章")
     @PostMapping(value = "/blog-hero")
@@ -62,7 +57,6 @@ public class DashboardBlogHeroController {
 //        return dashboardBlogHeroService.update(updateHero) > 0;
 //    }
 
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "修改 hero section 推送文章")
     @PutMapping(value = "/blog-hero")
@@ -71,7 +65,6 @@ public class DashboardBlogHeroController {
     }
 
     //删除多个
-    @SignatureAuth
     @SaCheckRole("admin")
     @Operation(summary = "删除一或多项 hero section 推送文章")
     @DeleteMapping("/blog-hero/{ids}")

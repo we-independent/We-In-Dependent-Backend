@@ -1,6 +1,5 @@
 package com.weindependent.app.config;
 
-import com.weindependent.app.aspect.SignatureAuthAspect;
 import com.weindependent.app.enums.ErrorCode;
 import com.weindependent.app.exception.ResponseException;
 import com.weindependent.app.exception.SignatureAuthException;
