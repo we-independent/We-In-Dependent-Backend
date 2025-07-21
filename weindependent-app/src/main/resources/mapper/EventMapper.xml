@@ -18,8 +18,23 @@
              <if test="userId != null">
                  LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
              </if>
-        WHERE e.is_deleted = 0
-          AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &lt;= NOW()
+        <where>
+            e.is_deleted = 0
+            AND DATE_ADD(e.event_time, INTERVAL 1 DAY) &lt;= NOW()
+
+            <!-- 筛选tagIds -->
+            <if test="tagIds != null and tagIds.size() > 0">
+                AND e.tag_id IN
+                <foreach item="tagId" collection="tagIds" open="(" separator="," close=")">
+                    #{tagId}
+                </foreach>
+            </if>
+
+            <!-- 关键词搜索 -->
+            <if test="keyword != null and keyword != ''">
+                AND MATCH(e.title, e.summary) AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)
+            </if>
+        </where>
         ORDER BY e.event_time DESC
     </select>
 
@@ -239,115 +254,6 @@
         INSERT INTO event_user_viewed (user_id, event_id)
         VALUES (#{userId}, #{eventId})
     </insert>
-
-
-
-<!--    &lt;!&ndash; Natural Language Mode &ndash;&gt;-->
-<!--    <select id="searchEventsNatural" parameterType="string" resultType="com.weindependent.app.vo.event.RecentEventVO">-->
-<!--        SELECT-->
-<!--            e.id,-->
-<!--            e.title,-->
-<!--            e.content,-->
-<!--            e.event_time,-->
-<!--            e.location,-->
-<!--            e.link,-->
-<!--            e.tag_id,-->
-<!--            t.name AS tagName,-->
-<!--            e.banner_url-->
-<!--        FROM event e-->
-<!--                 LEFT JOIN event_tag t ON e.tag_id = t.id-->
-<!--        WHERE-->
-<!--                        e.is_deleted = 0-->
-<!--                    AND MATCH(e.title, e.summary, e.content)-->
-<!--            AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)-->
-<!--        ORDER BY e.event_time DESC-->
-<!--    </select>-->
-
-
-
-<!--    &lt;!&ndash; Boolean Mode &ndash;&gt;-->
-<!--    <select id="searchEventsBoolean" parameterType="string" resultType="com.weindependent.app.vo.event.RecentEventVO">-->
-<!--        SELECT-->
-<!--            e.id,-->
-<!--            e.title,-->
-<!--            e.content,-->
-<!--            e.event_time,-->
-<!--            e.location,-->
-<!--            e.link,-->
-<!--            e.tag_id,-->
-<!--            t.name AS tagName,-->
-<!--            e.banner_url-->
-<!--        FROM event e-->
-<!--                 LEFT JOIN event_tag t ON e.tag_id = t.id-->
-<!--        WHERE-->
-<!--                        e.is_deleted = 0-->
-<!--                    AND MATCH(e.title, e.summary, e.content)-->
-<!--            AGAINST (#{keyword} IN BOOLEAN MODE)-->
-<!--        ORDER BY e.event_time DESC-->
-<!--    </select>-->
-
-
-<!--    <select id="getPastEventsFiltered" resultType="com.weindependent.app.vo.event.RecentEventVO">-->
-<!--        SELECT-->
-<!--            e.id,-->
-<!--            e.title,-->
-<!--            e.content,-->
-<!--            e.event_time,-->
-<!--            e.location,-->
-<!--            e.link,-->
-<!--            e.tag_id,-->
-<!--            e.banner_url,-->
-<!--            t.name AS tag_name-->
-<!--        FROM-->
-<!--            event e-->
-<!--        JOIN-->
-<!--            event_tag t ON e.tag_id = t.id-->
-<!--        <where>-->
-<!--            <if test="tagIds != null and tagIds.size() > 0">-->
-<!--                e.tag_id IN-->
-<!--                <foreach item="tagId" collection="tagIds" open="(" separator="," close=")">-->
-<!--                    #{tagId}-->
-<!--                </foreach>-->
-<!--            </if>-->
-<!--        </where>-->
-<!--        ORDER BY e.event_time DESC-->
-<!--    </select>-->
-
-
-    <select id="searchAndFilter" resultType="com.weindependent.app.vo.event.RecentEventVO">
-        SELECT
-            e.id,
-            e.title,
-            e.content,
-            e.event_time,
-            e.location,
-            e.link,
-            e.tag_id,
-            e.banner_url,
-            t.name AS tag_name
-        FROM
-            event e
-        JOIN
-            event_tag t ON e.tag_id = t.id
-        <where>
-            <!-- tags -->
-            <if test="tagIds != null and tagIds.size() > 0">
-                e.tag_id IN
-                <foreach item="tagId" collection="tagIds" open="(" separator="," close=")">
-                    #{tagId}
-                </foreach>
-            </if>
-
-            <!-- search -->
-            <if test="keyword != null and keyword != ''">
-                AND MATCH(e.title, e.content) AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)
-            </if>
-<!--            <if test="keyword != null and keyword != '' and mode == 'boolean'">-->
-<!--                AND MATCH(e.title, e.content) AGAINST (#{keyword} IN BOOLEAN MODE)-->
-<!--            </if>-->
-        </where>
-        ORDER BY e.event_time DESC
-    </select>
 
 
 
