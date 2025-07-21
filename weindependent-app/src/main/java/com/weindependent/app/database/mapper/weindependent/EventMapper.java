@@ -11,7 +11,9 @@ import java.util.List;
 @Mapper
 public interface EventMapper {
     List<RecentEventVO> getUpcoming(Integer userId);
-    List<RecentEventVO> getPast(Integer userId);
+    List<RecentEventVO> getPast(@Param("userId") Integer userId,
+                                @Param("keyword") String keyword,
+                                @Param("tagIds") List<Integer> tagIds);
     void recordUserViewEvent(Integer userId, Long eventId);
     List<RecentEventVO> getUpcomingByMonth(
                                     @Param("userId") Integer userId,
@@ -29,12 +31,5 @@ public interface EventMapper {
     List<RecentEventVO> getViewedEvents(int userId);
     List<RecentEventVO> getBookmarkedPastEvents(int userId);
     List<RecentEventVO> getBookmarkedUpcomingEvents(int userId);
-//    List<RecentEventVO> searchEventsNatural(@Param("keyword") String keyword);
-//    List<RecentEventVO> searchEventsBoolean(@Param("keyword") String keyword);
-//    List<RecentEventVO> getPastEventsFiltered(
-//            @Param("tagIds") List<Integer> tagIds
-//    );
-    List<RecentEventVO> searchAndFilter(@Param("keyword") String keyword,
-                                        @Param("tagIds") List<Integer> tagIds);
     boolean isRegistered(Long eventId, int userId);
 }

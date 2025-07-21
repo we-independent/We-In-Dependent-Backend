@@ -32,7 +32,7 @@
 
             <!-- 关键词搜索 -->
             <if test="keyword != null and keyword != ''">
-                AND MATCH(e.title, e.summary) AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)
+                AND MATCH(e.title, e.content) AGAINST (#{keyword} IN NATURAL LANGUAGE MODE)
             </if>
         </where>
         ORDER BY e.event_time DESC

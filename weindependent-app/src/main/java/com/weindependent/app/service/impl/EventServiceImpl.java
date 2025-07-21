@@ -88,7 +88,7 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public RecentEventVOs getPastEvents(int pageNum, int pageSize, String keyword, List<Integer> tagFilters
+    public RecentEventVOs getPast(int pageNum, int pageSize, String keyword, List<Integer> tagIds
     ) {
         Integer userId = null;
         if (StpUtil.isLogin()) {
@@ -96,17 +96,8 @@ public class EventServiceImpl implements IEventService {
         }
 
         Page page = PageHelper.startPage(pageNum, pageSize);
-        List<RecentEventVO> events;
 
-        boolean noKeyword = (keyword == null || keyword.trim().isEmpty());
-        boolean noTags = (tagFilters == null || tagFilters.isEmpty());
-
-        if(noKeyword && noTags){
-            events = eventMapper.getPast(userId);
-        }
-        else{
-            events = eventMapper.searchAndFilter(keyword, tagFilters);
-        }
+        List<RecentEventVO> events = eventMapper.getPast(userId, keyword, tagIds);
 
         if (events == null || events.isEmpty()) {
             RecentEventVOs result = new RecentEventVOs();
@@ -120,24 +111,6 @@ public class EventServiceImpl implements IEventService {
         result.setPages(page.getPages());
         return result;
     }
-
-//    public RecentEventVOs getPastEvents(int page, int size) {
-//        Integer userId =null;
-//        if(StpUtil.isLogin()){
-//            userId=StpUtil.getLoginIdAsInt();
-//        }
-//
-//        Page p = PageHelper.startPage(page, size);
-//        List<RecentEventVO> events = eventMapper.getPast(userId);
-//        if(events == null ){
-//            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
-//        }
-//
-//        RecentEventVOs recentEventVOs = new RecentEventVOs();
-//        recentEventVOs.setEvents(events);
-//        recentEventVOs.setPages(p.getPages());
-//        return recentEventVOs;
-//    }
 
 
     @Override
@@ -338,25 +311,6 @@ public class EventServiceImpl implements IEventService {
         return recentEventVOS;
     }
 
-//    @Override
-//    public RecentEventVOs searchEventsNatural(String keyword, int pageNum, int pageSize) {
-//        List<RecentEventVO> events = eventMapper.searchEventsNatural(keyword);
-//        Page page = PageHelper.startPage(pageNum, pageSize);
-//        RecentEventVOs result = new RecentEventVOs();
-//        result.setEvents(events);
-//        result.setPages(page.getPages());
-//        return result;
-//    }
-//
-//    @Override
-//    public RecentEventVOs searchEventsBoolean(String keyword, int pageNum, int pageSize) {
-//        List<RecentEventVO> events = eventMapper.searchEventsBoolean(keyword);
-//        Page page = PageHelper.startPage(pageNum, pageSize);
-//        RecentEventVOs result = new RecentEventVOs();
-//        result.setEvents(events);
-//        result.setPages(page.getPages());
-//        return result;
-//    }
 
     @Async
     protected void recordUserViewEvent(int userId, long eventId) {
@@ -367,20 +321,6 @@ public class EventServiceImpl implements IEventService {
         }
     }
 
-//    @Override
-//    public RecentEventVOs filterPastEventsByTags(List<Integer> filter, int pageNum, int pageSize) {
-//        List<RecentEventVO> events = eventMapper.getPastEventsFiltered(filter);
-//        Page page = PageHelper.startPage(pageNum, pageSize);
-//
-//        if (events == null || events.isEmpty()) {
-//            throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(), "No events found");
-//        }
-//
-//        RecentEventVOs result = new RecentEventVOs();
-//        result.setEvents(events);
-//        result.setPages(page.getPages());
-//        return result;
-//    }
 
     @Override
     public boolean isRegistered(Long eventId) {

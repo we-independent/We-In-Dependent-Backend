@@ -44,24 +44,15 @@ public class EventController {
     @Operation(summary = "Search or filter past events with keyword, mode, or filters")
     @SignatureAuth
     @GetMapping("/past")
-    public RecentEventVOs getPastEventsCombined(
+    public RecentEventVOs getPast(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) List<Integer> filter) {
 
-        return IEventService.getPastEvents(page, size, keyword, filter);
+        return IEventService.getPast(page, size, keyword, filter);
     }
 
-
-//    @Operation(summary = "Get past events")
-//    @SignatureAuth
-//    @GetMapping("/past")
-//    public RecentEventVOs getPastEvents(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        return IEventService.getPastEvents(page, size);
-//    }
 
     @Operation(summary = "Get upcoming events by month")
     @SignatureAuth
@@ -157,28 +148,6 @@ public class EventController {
         return IEventService.getViewedEvents(page,size);
     }
 
-
-
-//    @Operation(summary = "Search events using full-text search in natural language mode")
-//    @SignatureAuth
-//    @GetMapping("/search/natural")
-//    public RecentEventVOs searchEventsNatural(@RequestParam String keyword) {
-//        return IEventService.searchEventsNatural(keyword);
-//    }
-//
-//    @Operation(summary = "Search events using full-text search in boolean mode")
-//    @SignatureAuth
-//    @GetMapping("/search/boolean")
-//    public RecentEventVOs searchEventsBoolean(@RequestParam String keyword) {
-//        return IEventService.searchEventsBoolean(keyword);
-//    }
-//
-//    @Operation(summary = "Get past events with optional filters")
-//    @SignatureAuth
-//    @PostMapping("/past/filter")
-//    public RecentEventVOs filterPastEventsByTags(@RequestBody EventFilterQry filter) {
-//        return IEventService.filterPastEventsByTags(filter);
-//    }
 
     @Operation(summary = "Resend register event email")
     @SignatureAuth
