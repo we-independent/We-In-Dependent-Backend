@@ -97,6 +97,10 @@ public class EventServiceImpl implements IEventService {
 
         Page page = PageHelper.startPage(pageNum, pageSize);
 
+        if (keyword != null) {
+            keyword = keyword.trim();
+        }
+
         List<RecentEventVO> events = eventMapper.getPast(userId, keyword, tagIds);
 
         if (events == null || events.isEmpty()) {
