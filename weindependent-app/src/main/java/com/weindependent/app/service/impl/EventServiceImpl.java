@@ -62,14 +62,20 @@ public class EventServiceImpl implements IEventService {
         if(StpUtil.isLogin()){
             userId=StpUtil.getLoginIdAsInt();
         }
-        Page p = PageHelper.startPage(page, size);
+        boolean isPagination = page>0 && size>0;
+        Page p=null;
+        if(isPagination) {
+            p = PageHelper.startPage(page, size);
+        }
         List<RecentEventVO> events = eventMapper.getUpcoming(userId);
         if(events == null ){
             throw new ResponseException(ErrorCode.EVENT_NOT_EXIST.getCode(),"Cannot find events");
         }
         RecentEventVOs recentEventVOs = new RecentEventVOs();
         recentEventVOs.setEvents(events);
-        recentEventVOs.setPages(p.getPages());
+        if(isPagination ) {
+            recentEventVOs.setPages(p.getPages());
+        }
         return recentEventVOs;
     }
 

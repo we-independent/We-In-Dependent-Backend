@@ -31,11 +31,13 @@ public class EventController {
     @Resource
     private IEventService IEventService;
 
-    @Operation(summary = "Get upcoming events")
+    @Operation(summary = "Get upcoming events"
+            , description = "Get a list of upcoming events, set page and size > 0 to paginate results. "
+    )
     @GetMapping("/upcoming")
     public RecentEventVOs getUpcomingEvents(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int size) {
         return IEventService.getUpcomingEvents(page,size);
     }
 
