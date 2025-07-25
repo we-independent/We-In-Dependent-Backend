@@ -46,10 +46,11 @@ public class EventController {
     public RecentEventVOs getPast(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) List<Integer> filter) {
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(name = "tagIds", required = false) List<Integer> tagIds) {
 
-        return IEventService.getPast(page, size, keyword, filter);
+        if (keyword != null) keyword = keyword.trim();
+        return IEventService.getPast(page, size, keyword, tagIds);
     }
 
 
