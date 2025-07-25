@@ -23,6 +23,6 @@ public class EventSpeakerQry {
     @NotBlank(message = "speakerDescription is mandatory")
     private String description;
 
-    @NotNull(message = "bannerId is mandatory")
-    private Long bannerId;
+    @NotNull(message = "bannerUrl is mandatory")
+    private String bannerUrl;
 }
