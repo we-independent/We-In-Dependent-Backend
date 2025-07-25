@@ -6,8 +6,8 @@
 <mapper namespace="com.weindependent.app.database.mapper.dashboard.DashboardSpeakerMapper">
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO event_speaker (first_name, last_name, title, background, description, banner_id, create_time, update_time)
-        VALUES (#{firstName}, #{lastName}, #{title}, #{background}, #{description}, #{bannerId}, NOW(), NOW())
+        INSERT INTO event_speaker (first_name, last_name, title, background, description, banner_url)
+        VALUES (#{firstName}, #{lastName}, #{title}, #{background}, #{description}, #{bannerUrl}, NOW(), NOW())
     </insert>
 
     <update id="update" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO">
@@ -17,8 +17,7 @@
             title = #{title},
             background = #{background},
             description = #{description},
-            banner_id = #{bannerId},
-            update_time = NOW()
+            banner_url = #{bannerUrl},
         WHERE id = #{id}
     </update>
 
@@ -37,12 +36,9 @@
                s.title,
                s.background,
                s.description,
-               s.banner_id,
+               s.banner_url,
                img.file_path AS bannerUrl,
-               s.create_time,
-               s.update_time
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         ORDER BY s.update_time DESC
     </select>
 
@@ -53,12 +49,9 @@
                s.title,
                s.background,
                s.description,
-               s.banner_id,
+               s.banner_url,
                img.file_path AS bannerUrl,
-               s.create_time,
-               s.update_time
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE s.id = #{id}
     </select>
 
@@ -70,22 +63,10 @@
             s.background,
             s.description,
             s.banner_id,
-            img.file_path AS bannerUrl,
-            s.create_time,
-            s.update_time
+            s.banner_url,
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE s.id IN
         <foreach item="id" collection="list" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </select>
-
-    <select id="getBannerIdsBySpeakerIds" resultType="long">
-        SELECT banner_id
-        FROM event_speaker
-        WHERE id IN
-        <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
     </select>
@@ -98,11 +79,8 @@
                 s.background,
                 s.description,
                 s.banner_id,
-                img.file_path AS bannerUrl,
-                s.create_time,
-                s.update_time
+                s.banner_url,
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE CONCAT(s.first_name, ' ', s.last_name) LIKE CONCAT('%', #{name}, '%')
             ORDER BY s.update_time DESC
     </select>
@@ -115,11 +93,8 @@
                s.background,
                s.description,
                s.banner_id,
-               img.file_path AS bannerUrl,
-               s.create_time,
-               s.update_time
+               s.banner_url,
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE s.first_name LIKE CONCAT('%', #{firstName}, '%')
         ORDER BY s.update_time DESC
     </select>
@@ -132,11 +107,8 @@
                s.background,
                s.description,
                s.banner_id,
-               img.file_path AS bannerUrl,
-               s.create_time,
-               s.update_time
+               s.banner_url,
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE s.last_name LIKE CONCAT('%', #{lastName}, '%')
         ORDER BY s.update_time DESC
     </select>

@@ -13,9 +13,8 @@
                s.title,
                s.background,
                s.description,
-               img.file_path AS bannerUrl
+               s.banner_url
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE s.id = #{id}
     </select>
 
@@ -27,9 +26,8 @@
                s.title,
                s.background,
                s.description,
-               img.file_path AS bannerUrl
+               s.banner_url
         FROM event_speaker s
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE s.first_name LIKE CONCAT('%', #{name}, '%')
            OR s.last_name LIKE CONCAT('%', #{name}, '%')
         ORDER BY s.update_time DESC
@@ -44,10 +42,9 @@
             last_name AS lastName,
             background,
             description,
-            banner_id AS bannerId
+            banner_url
         FROM event_speaker s
         JOIN event_speaker_relation r
-        WHERE r.event_id = #{eventId}
         ORDER BY s.id ASC
     </select>
 

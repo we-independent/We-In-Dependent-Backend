@@ -89,20 +89,10 @@
         e.video_link as videoLink,
         t.name AS tagName,
         e.banner_url
-        <!-- u.id AS speakerId,
-        u.real_name AS speakerName,
-        s.title AS speakerTitle,
-        s.background AS speakerBackground,
-        s.description AS speakerDescription,
-        s.banner_id AS speakerBannerId,
-        img.file_path AS speakerBannerUrl -->
         <if test="userId != null">
             , CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END AS isBookMarked
         </if>
         FROM event e
-        <!-- LEFT JOIN t_system_user u ON e.speaker_user_id = u.id
-        LEFT JOIN event_speaker s ON s.user_id = u.id
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id -->
         <if test="userId != null">
             LEFT JOIN event_user_bookmark b ON e.id = b.event_id AND b.user_id = #{userId}
         </if>

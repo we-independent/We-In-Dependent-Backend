@@ -40,50 +40,20 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
     @Resource
     private DashboardSpeakerMapper dashboardSpeakerMapper;
 
-    @Resource
-    private DashboardEventSpeakerImageMapper dashboardEventSpeakerImageMapper;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void create(EventSpeakerQry qry) {
-        // EventSpeakerDO existing =
-        // dashboardSpeakerMapper.getByUserId(qry.getUserId());
-        // if (existing != null) {
-        // throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "This user
-        // already has a speaker profile. Please update instead.");
-        // }
-
         EventSpeakerDO speaker = new EventSpeakerDO();
         BeanUtils.copyProperties(qry, speaker);
-        // speaker.setUserId(qry.getUserId());
         int affected = dashboardSpeakerMapper.insert(speaker);
         if (affected == 0) {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to insert speaker");
         }
 
-        // Mark banner image as not deleted (set is_deleted = 0)
-        int updated = dashboardEventSpeakerImageMapper.setNotDeletedById(speaker.getBannerId());
-        if (updated == 0) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(),
-                    "Failed to activate the uploaded speaker image");
-        }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void update(Long id, EventSpeakerQry qry) {
-        // Fetch existing speaker
-        // EventSpeakerDO existing =
-        // dashboardSpeakerMapper.getByUserId(qry.getUserId());
-        DashboardSpeakerVO existing = dashboardSpeakerMapper.getById(id);
-        if (existing == null) {
-            throw new ResponseException(ErrorCode.SPEAKER_NOT_EXIST.getCode(), "Speaker not found");
-        }
-
-        // Check if banner has changed
-        Long oldBannerId = existing.getBannerId();
-        Long newBannerId = qry.getBannerId();
-
         EventSpeakerDO speaker = new EventSpeakerDO();
         BeanUtils.copyProperties(qry, speaker);
         speaker.setId(id);
@@ -92,37 +62,16 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to update speaker");
         }
 
-        // If bannerId changed, mark new image active and old one deleted
-        if (!newBannerId.equals(oldBannerId)) {
-            dashboardEventSpeakerImageMapper.setNotDeletedById(newBannerId);
-
-            // if the original banner ID is 15, which is the default image, skip it
-            if (oldBannerId == 15) {
-                return;
-            }
-            // Mark old banner as deleted
-            dashboardEventSpeakerImageMapper.setDeletedById(oldBannerId);
-        }
     }
 
     @Override
     public void delete(List<Long> ids) {
-        // Get banner IDs before deleting speaker records
-        List<Long> bannerIds = dashboardSpeakerMapper.getBannerIdsBySpeakerIds(ids);
 
         int affected = dashboardSpeakerMapper.delete(ids);
         if (affected == 0) {
             throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Failed to delete speaker(s)");
         }
 
-        // Loop through and mark each banner as deleted
-        for (Long bannerId : bannerIds) {
-            // if the original banner ID is 15, which is the default image, skip it
-            if (bannerId == 15) {
-                continue;
-            }
-            dashboardEventSpeakerImageMapper.setDeletedById(bannerId);
-        }
     }
 
     @Override
@@ -147,7 +96,7 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
     }
 
     @Override
-    public ImageDO uploadBanner(MultipartFile file) {
+    public String uploadBanner(MultipartFile file) {
         MultipartFile resizedFile;
         try {
             resizedFile = ImageResizeUtil.resizeImage(file, RESIZE_WIDTH, RESIZE_HEIGHT);
@@ -158,19 +107,7 @@ public class DashboardSpeakerServiceImpl implements IDashboardSpeakerService {
 
         UploadedFileVO uploadedFileVO = fileService.uploadFile(resizedFile, null,
                 GoogleDriveFileCategoryEnum.EVENT_SPEAKER_BANNER);
-
-        ImageDO imageDo = new ImageDO();
-        imageDo.setCategory("event-speaker-banner");
-        imageDo.setFileName(uploadedFileVO.getFileName());
-        imageDo.setFileKey(uploadedFileVO.getFileKey());
-        imageDo.setFileType(resizedFile.getContentType());
-        imageDo.setFilePath(uploadedFileVO.getFilePath());
-        imageDo.setIsDeleted(1);
-        int affectedRows = dashboardEventSpeakerImageMapper.insert(imageDo);
-        if (affectedRows != 1) {
-            throw new ResponseException(ErrorCode.UPDATE_DB_FAILED.getCode(), "Fail to add image to db");
-        }
-        return imageDo;
+        return uploadedFileVO.getFilePath();
     }
 
     @Override
