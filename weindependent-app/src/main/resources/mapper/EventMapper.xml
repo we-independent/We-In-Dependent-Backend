@@ -159,7 +159,6 @@
         FROM event_user_register r
                  JOIN event e ON r.event_id = e.id
         WHERE r.user_id = #{userId}
-          AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) > NOW()
         ORDER BY e.event_time
     </select>
@@ -176,7 +175,6 @@
         FROM event_user_register r
                  JOIN event e ON r.event_id = e.id
         WHERE r.user_id = #{userId}
-          AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &lt;= NOW()
         ORDER BY e.event_time DESC
     </select>
@@ -193,7 +191,6 @@
         FROM event_user_viewed v
                  JOIN event e ON v.event_id = e.id
         WHERE v.user_id = #{userId}
-          AND e.is_deleted = 0
         ORDER BY e.event_time DESC
     </select>
 
@@ -210,7 +207,6 @@
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
         WHERE b.user_id = #{userId}
-          AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &lt;= NOW()
         ORDER BY e.event_time DESC
     </select>
@@ -228,7 +224,6 @@
         FROM event_user_bookmark b
                  JOIN event e ON b.event_id = e.id
         WHERE b.user_id = #{userId}
-          AND e.is_deleted = 0
           AND DATE_ADD(e.event_time, INTERVAL e.duration MINUTE) &gt; NOW()
         ORDER BY e.event_time DESC
     </select>
