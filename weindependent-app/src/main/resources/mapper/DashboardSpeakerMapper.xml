@@ -7,7 +7,7 @@
 
     <insert id="insert" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO event_speaker (first_name, last_name, title, background, description, banner_url)
-        VALUES (#{firstName}, #{lastName}, #{title}, #{background}, #{description}, #{bannerUrl}, NOW(), NOW())
+        VALUES (#{firstName}, #{lastName}, #{title}, #{background}, #{description}, #{bannerUrl})
     </insert>
 
     <update id="update" parameterType="com.weindependent.app.database.dataobject.EventSpeakerDO">
