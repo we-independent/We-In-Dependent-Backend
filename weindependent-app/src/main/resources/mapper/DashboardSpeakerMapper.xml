@@ -39,7 +39,7 @@
                s.banner_url,
                img.file_path AS bannerUrl,
         FROM event_speaker s
-        ORDER BY s.update_time DESC
+        ORDER BY s.last_name
     </select>
 
     <select id="getById" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
@@ -82,7 +82,7 @@
                 s.banner_url,
         FROM event_speaker s
         WHERE CONCAT(s.first_name, ' ', s.last_name) LIKE CONCAT('%', #{name}, '%')
-            ORDER BY s.update_time DESC
+        ORDER BY s.last_name
     </select>
 
     <select id="searchByFirstName" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
@@ -96,7 +96,7 @@
                s.banner_url,
         FROM event_speaker s
         WHERE s.first_name LIKE CONCAT('%', #{firstName}, '%')
-        ORDER BY s.update_time DESC
+        ORDER BY s.last_name
     </select>
 
     <select id="searchByLastName" resultType="com.weindependent.app.vo.event.dashboard.DashboardSpeakerVO">
@@ -110,7 +110,7 @@
                s.banner_url,
         FROM event_speaker s
         WHERE s.last_name LIKE CONCAT('%', #{lastName}, '%')
-        ORDER BY s.update_time DESC
+        ORDER BY s.first_name
     </select>
 
 </mapper>
