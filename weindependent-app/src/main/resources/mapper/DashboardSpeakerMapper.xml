@@ -36,8 +36,7 @@
                s.title,
                s.background,
                s.description,
-               s.banner_url,
-               img.file_path AS bannerUrl
+               s.banner_url
         FROM event_speaker s
         ORDER BY s.last_name
     </select>
@@ -49,8 +48,7 @@
                s.title,
                s.background,
                s.description,
-               s.banner_url,
-               img.file_path AS bannerUrl
+               s.banner_url
         FROM event_speaker s
         WHERE s.id = #{id}
     </select>
