@@ -14,7 +14,7 @@ public interface IDashboardSpeakerService {
     void delete(List<Long> ids);
     List<DashboardSpeakerVO> list();
     DashboardSpeakerVO getById(Long id);
-    ImageDO uploadBanner(MultipartFile file);
+    String uploadBanner(MultipartFile file);
 
     List<DashboardSpeakerVO> searchByName(String name);
     List<DashboardSpeakerVO> searchByFirstName(String firstName);

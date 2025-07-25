@@ -119,11 +119,9 @@
             s.title,
             s.background,
             s.description,
-            s.banner_id AS bannerId,
-            img.file_path AS bannerUrl
+            s.banner_url
         FROM event_speaker s
         INNER JOIN event_speaker_relation esr ON esr.speaker_id = s.id
-        LEFT JOIN event_speaker_image img ON s.banner_id = img.id
         WHERE esr.event_id = #{eventId}
     </select>
 

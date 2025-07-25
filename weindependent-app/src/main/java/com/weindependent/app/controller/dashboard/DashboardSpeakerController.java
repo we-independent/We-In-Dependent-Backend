@@ -26,7 +26,7 @@ public class DashboardSpeakerController {
     @Operation(summary = "Upload speaker banner")
     @SaCheckRole("admin")
     @PostMapping(value = "/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageDO uploadBanner(@RequestParam("file") MultipartFile file) {
+    public String uploadBanner(@RequestParam("file") MultipartFile file) {
         return dashboardSpeakerService.uploadBanner(file);
     }
 
