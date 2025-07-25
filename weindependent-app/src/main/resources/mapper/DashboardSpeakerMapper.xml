@@ -17,7 +17,7 @@
             title = #{title},
             background = #{background},
             description = #{description},
-            banner_url = #{bannerUrl},
+            banner_url = #{bannerUrl}
         WHERE id = #{id}
     </update>
 
@@ -37,7 +37,7 @@
                s.background,
                s.description,
                s.banner_url,
-               img.file_path AS bannerUrl,
+               img.file_path AS bannerUrl
         FROM event_speaker s
         ORDER BY s.last_name
     </select>
@@ -50,7 +50,7 @@
                s.background,
                s.description,
                s.banner_url,
-               img.file_path AS bannerUrl,
+               img.file_path AS bannerUrl
         FROM event_speaker s
         WHERE s.id = #{id}
     </select>
@@ -63,7 +63,7 @@
             s.background,
             s.description,
             s.banner_id,
-            s.banner_url,
+            s.banner_url
         FROM event_speaker s
         WHERE s.id IN
         <foreach item="id" collection="list" open="(" separator="," close=")">
@@ -79,7 +79,7 @@
                 s.background,
                 s.description,
                 s.banner_id,
-                s.banner_url,
+                s.banner_url
         FROM event_speaker s
         WHERE CONCAT(s.first_name, ' ', s.last_name) LIKE CONCAT('%', #{name}, '%')
         ORDER BY s.last_name
@@ -93,7 +93,7 @@
                s.background,
                s.description,
                s.banner_id,
-               s.banner_url,
+               s.banner_url
         FROM event_speaker s
         WHERE s.first_name LIKE CONCAT('%', #{firstName}, '%')
         ORDER BY s.last_name
@@ -107,7 +107,7 @@
                s.background,
                s.description,
                s.banner_id,
-               s.banner_url,
+               s.banner_url
         FROM event_speaker s
         WHERE s.last_name LIKE CONCAT('%', #{lastName}, '%')
         ORDER BY s.first_name
