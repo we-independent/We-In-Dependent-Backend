@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface IEventService {
     RecentEventVOs getUpcomingEvents(int page, int size);
-    RecentEventVOs getPastEvents(int page, int size);
+    RecentEventVOs getPast(int page, int size, String keyword, List<Integer> filter);
     List<RecentEventVO> getUpcomingByMonth(int year, int month);
     EventVO getEventById(Long id);
     EventRegisterDetailVO register(Long id, ZoneId zoneId);
@@ -27,9 +27,6 @@ public interface IEventService {
     RecentEventVOs getViewedEvents(int page, int size);
     RecentEventVOs getBookmarkedPastEvents(int page, int size);
     RecentEventVOs getBookmarkedUpcomingEvents(int page, int size);
-    RecentEventVOs searchEventsNatural(String keyword, int pageNum, int pageSize);
-    RecentEventVOs searchEventsBoolean(String keyword, int pageNum, int pageSize);
-    RecentEventVOs filterPastEventsByTags(List<Integer> tagIds, int pageNum, int pageSize);
     boolean isRegistered(Long id);
     String generateGoogleCalendarLink(EventVO eventVO, ZoneId zoneId);
     ZoneId getZoneIdByUserTimeZone(String userTimeZone);

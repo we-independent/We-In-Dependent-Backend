@@ -43,41 +43,16 @@ public class EventController {
 
     @Operation(summary = "Search or filter past events with keyword, mode, or filters")
     @GetMapping("/past")
-    public RecentEventVOs getPastEventsCombined(
+    public RecentEventVOs getPast(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String mode,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) List<Integer> filter) {
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(name = "tagIds", required = false) List<Integer> tagIds) {
 
-        if (keyword == null && (filter == null || filter.isEmpty())) {
-            return IEventService.getPastEvents(page, size);
-        }
-
-        if (keyword != null) {
-            String searchMode = (mode != null) ? mode : "natural";
-            switch (searchMode.toLowerCase()) {
-                case "boolean":
-                    return IEventService.searchEventsBoolean(keyword, page, size);
-                case "natural":
-                default:
-                    return IEventService.searchEventsNatural(keyword, page, size);
-            }
-        }
-        else {
-            return IEventService.filterPastEventsByTags(filter, page, size);
-        }
+        if (keyword != null) keyword = keyword.trim();
+        return IEventService.getPast(page, size, keyword, tagIds);
     }
 
-
-//    @Operation(summary = "Get past events")
-//    @SignatureAuth
-//    @GetMapping("/past")
-//    public RecentEventVOs getPastEvents(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        return IEventService.getPastEvents(page, size);
-//    }
 
     @Operation(summary = "Get upcoming events by month")
     @GetMapping("/upcoming/month")
@@ -162,28 +137,6 @@ public class EventController {
         return IEventService.getViewedEvents(page,size);
     }
 
-
-
-//    @Operation(summary = "Search events using full-text search in natural language mode")
-//    @SignatureAuth
-//    @GetMapping("/search/natural")
-//    public RecentEventVOs searchEventsNatural(@RequestParam String keyword) {
-//        return IEventService.searchEventsNatural(keyword);
-//    }
-//
-//    @Operation(summary = "Search events using full-text search in boolean mode")
-//    @SignatureAuth
-//    @GetMapping("/search/boolean")
-//    public RecentEventVOs searchEventsBoolean(@RequestParam String keyword) {
-//        return IEventService.searchEventsBoolean(keyword);
-//    }
-//
-//    @Operation(summary = "Get past events with optional filters")
-//    @SignatureAuth
-//    @PostMapping("/past/filter")
-//    public RecentEventVOs filterPastEventsByTags(@RequestBody EventFilterQry filter) {
-//        return IEventService.filterPastEventsByTags(filter);
-//    }
 
     @Operation(summary = "Resend register event email")
     @SaCheckLogin
