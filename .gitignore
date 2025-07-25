@@ -14,3 +14,4 @@
 /files/
 .DS_Store
 /weindependent-app/src/main/resources/application.yaml
+*/secret/*
