@@ -13,6 +13,7 @@ public class DonateVolunteerConverter {
     public DonateVolunteerDO toDO(DonateVolunteerQry qry) {
         DonateVolunteerDO volunteerDO = new DonateVolunteerDO();
         BeanUtils.copyProperties(qry, volunteerDO);
+        volunteerDO.setInterests(String.join(",", qry.getInterests()));
 
         return volunteerDO;
     }

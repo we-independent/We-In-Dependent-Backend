@@ -3,6 +3,7 @@ package com.weindependent.app.database.dataobject;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 志愿者申请对象 donate_volunteer

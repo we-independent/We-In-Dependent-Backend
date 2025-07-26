@@ -47,7 +47,7 @@ public class DonateVolunteerController {
         return fileService.uploadFile(
                 resumeFile,
                 null,
-                GoogleDriveFileCategoryEnum.DONATE_APPLICATION_RESUME
+                GoogleDriveFileCategoryEnum.DONATE_VOLUNTEER_RESUME
         );
     }
 

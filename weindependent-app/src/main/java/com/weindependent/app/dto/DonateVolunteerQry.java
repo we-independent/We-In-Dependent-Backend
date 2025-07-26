@@ -3,6 +3,7 @@ package com.weindependent.app.dto;
 import lombok.Data;
 
 import javax.validation.constraints.*;
+import java.util.List;
 
 @Data
 public class DonateVolunteerQry {
@@ -21,7 +22,7 @@ public class DonateVolunteerQry {
 
     @NotNull(message = "at least one interest must be selected")
     @Size(min = 1, message = "at least one interest must be selected")
-    private String[] interests;
+    private List<String> interests;
     private Boolean needsOPT = false;
     private String optStartTime;
     private String motivation;
