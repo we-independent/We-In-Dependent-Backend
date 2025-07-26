@@ -35,7 +35,7 @@ public class DonateVolunteerController {
      * Step 1: Upload resume file
      */
     @PostMapping(value = "/upload-resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UploadedFileVO> uploadResume(@RequestPart("resume") MultipartFile resumeFile) {
+    public UploadedFileVO uploadResume(@RequestPart("resume") MultipartFile resumeFile) {
         if (resumeFile == null || resumeFile.isEmpty()) {
             throw new IllegalArgumentException("Resume file is required");
         }
@@ -44,24 +44,23 @@ public class DonateVolunteerController {
             throw new IllegalArgumentException("Resume file too large (max 5MB)");
         }
 
-        UploadedFileVO uploadedFileVO = fileService.uploadFile(
+        return fileService.uploadFile(
                 resumeFile,
                 null,
                 GoogleDriveFileCategoryEnum.DONATE_APPLICATION_RESUME
         );
-        return ResponseEntity.ok(uploadedFileVO);
     }
 
     /**
      * Step 2: Submit metadata + resume info
      */
     @PostMapping(value = "/apply", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> submitApplication(@Validated @RequestBody DonateVolunteerQry application) {
+    public String submitApplication(@Validated @RequestBody DonateVolunteerQry application) {
 
-            DonateVolunteerDO volunteerDO = donateVolunteerConverter.toDO(application);
-            donateVolunteerMapper.insert(volunteerDO);
+        DonateVolunteerDO volunteerDO = donateVolunteerConverter.toDO(application);
+        donateVolunteerMapper.insert(volunteerDO);
 
-            return ResponseEntity.ok("Application submitted successfully");
+        return "Application submitted successfully";
     }
 }
 

@@ -14,12 +14,6 @@ public class DonateVolunteerConverter {
         DonateVolunteerDO volunteerDO = new DonateVolunteerDO();
         BeanUtils.copyProperties(qry, volunteerDO);
 
-        if (qry.getInterests() != null) {
-            volunteerDO.setInterests(String.join(",", qry.getInterests()));
-        }
-        volunteerDO.setResumeUrl(qry.getResumeUrl());
-        volunteerDO.setCreateTime(LocalDateTime.now());
-
         return volunteerDO;
     }
 }
