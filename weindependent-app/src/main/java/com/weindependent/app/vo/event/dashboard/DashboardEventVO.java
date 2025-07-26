@@ -23,10 +23,4 @@ public class DashboardEventVO {
     private String videoLink;
     private Integer tagId;
     private String tagName;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
-    private Long createUserId;
-    private String createUserName;
-    private Long updateUserId;
-    private String updateUserName;
 }
