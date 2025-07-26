@@ -27,7 +27,7 @@ public class DonateVolunteerQry {
     private String motivation;
     private String additionalInfo;
 
-    @NotNull
+    @NotBlank
     private String resumeUrl;
 
 }
