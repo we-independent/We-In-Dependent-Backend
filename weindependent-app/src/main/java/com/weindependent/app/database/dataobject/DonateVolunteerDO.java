@@ -40,12 +40,6 @@ public class DonateVolunteerDO {
     /** 额外信息 */
     private String additionalInfo;
 
-    /** 简历文件在Google Drive的ID */
-    private String resumeDriveId;
-
-    /** 简历文件名 */
-    private String resumeFileName;
-
     /** 简历访问链接 */
     private String resumeUrl;
 

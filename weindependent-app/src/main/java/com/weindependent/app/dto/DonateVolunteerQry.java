@@ -26,8 +26,8 @@ public class DonateVolunteerQry {
     private String optStartTime;
     private String motivation;
     private String additionalInfo;
-    private String resumeDriveId;
-    private String resumeFileName;
+
+    @NotNull
     private String resumeUrl;
 
 }

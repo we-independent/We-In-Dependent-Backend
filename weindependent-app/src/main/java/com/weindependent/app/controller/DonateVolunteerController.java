@@ -1,5 +1,6 @@
 package com.weindependent.app.controller;
 
+import com.weindependent.app.convertor.DonateVolunteerConverter;
 import com.weindependent.app.database.dataobject.DonateVolunteerDO;
 import com.weindependent.app.database.mapper.weindependent.DonateVolunteerMapper;
 import com.weindependent.app.dto.DonateVolunteerQry;
@@ -27,58 +28,40 @@ public class DonateVolunteerController {
     @Autowired
     private DonateVolunteerMapper donateVolunteerMapper;
 
+    @Autowired
+    private DonateVolunteerConverter donateVolunteerConverter;
+
     /**
      * Step 1: Upload resume file
      */
     @PostMapping(value = "/upload-resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadResume(@RequestPart("resume") MultipartFile resumeFile) {
-        try {
-            if (resumeFile == null || resumeFile.isEmpty()) {
-                return ResponseEntity.badRequest().body("Resume file is required");
-            }
-
-            if (resumeFile.getSize() > 5 * 1024 * 1024) {
-                return ResponseEntity.badRequest().body("Resume file too large (max 5MB)");
-            }
-
-            UploadedFileVO uploadedFileVO = fileService.uploadFile(resumeFile, null, GoogleDriveFileCategoryEnum.DONATE_APPLICATION_RESUME);
-            return ResponseEntity.ok(uploadedFileVO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error uploading resume");
+    public ResponseEntity<UploadedFileVO> uploadResume(@RequestPart("resume") MultipartFile resumeFile) {
+        if (resumeFile == null || resumeFile.isEmpty()) {
+            throw new IllegalArgumentException("Resume file is required");
         }
+
+        if (resumeFile.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("Resume file too large (max 5MB)");
+        }
+
+        UploadedFileVO uploadedFileVO = fileService.uploadFile(
+                resumeFile,
+                null,
+                GoogleDriveFileCategoryEnum.DONATE_APPLICATION_RESUME
+        );
+        return ResponseEntity.ok(uploadedFileVO);
     }
 
     /**
      * Step 2: Submit metadata + resume info
      */
     @PostMapping(value = "/apply", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> submitApplication(@Validated @RequestBody DonateVolunteerQry application) {
-        try {
-            if (application.getResumeDriveId() == null || application.getResumeDriveId().isEmpty()) {
-                return ResponseEntity.badRequest().body("Resume must be uploaded first");
-            }
+    public ResponseEntity<String> submitApplication(@Validated @RequestBody DonateVolunteerQry application) {
 
-            DonateVolunteerDO volunteerDO = new DonateVolunteerDO();
-            BeanUtils.copyProperties(application, volunteerDO);
-
-            if (application.getInterests() != null) {
-                volunteerDO.setInterests(String.join(",", application.getInterests()));
-            }
-
-            volunteerDO.setResumeDriveId(application.getResumeDriveId());
-            volunteerDO.setResumeFileName(application.getResumeFileName());
-            volunteerDO.setResumeUrl(application.getResumeUrl());
-            volunteerDO.setCreateTime(LocalDateTime.now());
-
+            DonateVolunteerDO volunteerDO = donateVolunteerConverter.toDO(application);
             donateVolunteerMapper.insert(volunteerDO);
 
             return ResponseEntity.ok("Application submitted successfully");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error processing application");
-        }
     }
 }
 

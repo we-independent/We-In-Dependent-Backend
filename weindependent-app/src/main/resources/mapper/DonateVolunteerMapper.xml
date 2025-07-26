@@ -15,8 +15,7 @@
             needs_opt,
             opt_start_time,
             motivation,
-            additional_info,
-            create_time
+            additional_info
         ) VALUES (
                      #{fullName},
                      #{email},
@@ -25,8 +24,7 @@
                      #{needsOPT},
                      #{optStartTime},
                      #{motivation},
-                     #{additionalInfo},
-                     NOW()
+                     #{additionalInfo}
                  )
     </insert>
 
