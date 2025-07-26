@@ -68,9 +68,6 @@
             <if test="createTimeEnd != null">
                 AND e.create_time &lt;= #{createTimeEnd}
             </if>
-            <if test="isDeleted != null">
-                AND e.is_deleted = #{isDeleted}
-            </if>
         </where>
         ORDER BY e.event_time DESC
     </select>
@@ -94,17 +91,13 @@
         ORDER BY eub.create_time DESC
     </select>
 
-    <update id="delete" parameterType="java.util.List">
-        UPDATE event e
-        SET
-            e.is_deleted = true,
-            ei.is_deleted = true,
-            e.update_user_id = #{updateUserId}
-        WHERE e.id IN
+    <delete id="delete" parameterType="java.util.List">
+        DELETE FROM event
+        WHERE id IN
         <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </update>
+    </delete>
 
     <update id="update" parameterType="com.weindependent.app.database.dataobject.EventDO">
         UPDATE event e
