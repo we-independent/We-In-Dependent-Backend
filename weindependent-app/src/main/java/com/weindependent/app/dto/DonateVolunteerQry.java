@@ -27,7 +27,7 @@ public class DonateVolunteerQry {
     private String motivation;
     private String additionalInfo;
 
-    @NotBlank
+    @NotBlank(message = "please upload your resume")
     private String resumeUrl;
 
 }

@@ -11,7 +11,7 @@ public enum GoogleDriveFileCategoryEnum {
     EVENT_BANNER("event-banner"),
     EVENT_SPEAKER_BANNER("event-speaker-banner"),
     USER_PROFILE_IMAGE("user-profile-image"),
-    DONATE_APPLICATION_RESUME("donate-application-resume");
+    DONATE_VOLUNTEER_RESUME("donate-volunteer-resume");
     
     public final String folderName;
 }
